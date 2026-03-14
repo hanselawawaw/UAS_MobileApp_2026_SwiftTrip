@@ -142,7 +142,7 @@ class _FlightSearchCardState extends State<_FlightSearchCard> {
                     ),
                   ),
                   child: Text(
-                    'Multi-city',
+                    'Multi-city', // TODO: Implement Multi-city
                     textAlign: TextAlign.center,
                     style: const TextStyle(
                       fontFamily: 'Poppins',
@@ -253,7 +253,7 @@ class _FlightSearchCardState extends State<_FlightSearchCard> {
                     border: Border.all(color: Colors.black.withOpacity(0.1)),
                   ),
                   child: Text(
-                    'Kendaraan Darat',
+                    'Kendaraan Darat', // TODO: Implement Kendaraan Darat
                     style: const TextStyle(
                       fontFamily: 'Poppins',
                       color: const Color(0xFF616161),
@@ -396,7 +396,7 @@ class _CouponSection extends StatelessWidget {
               ),
             ),
             Text(
-              'Use Coupon?',
+              'Use Coupon?', // TODO: Implement Use Coupon
               style: const TextStyle(
                 fontFamily: 'Poppins',
                 fontSize: 12,
@@ -547,7 +547,7 @@ class _CouponCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: const Text(
-                  'COPY',
+                  'COPY', // TODO: Implement Copy
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 10,
