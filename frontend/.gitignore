@@ -24,3 +24,7 @@
 !.vscode/extensions.json
 .DS_Store
 *.log
+
+# Ignore all generated plugin files
+**/generated_plugin_registrant.*
+**/generated_plugins.cmake
