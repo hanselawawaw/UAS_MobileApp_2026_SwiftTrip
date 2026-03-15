@@ -115,21 +115,21 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       // Facebook
-                      _socialButton(
+                      AuthWidgets.socialButton(
                         child: SvgPicture.asset(
                           'assets/icons/facebook_logo.svg',
                           width: 20,
                         ),
                       ),
                       // X (Twitter)
-                      _socialButton(
+                      AuthWidgets.socialButton(
                         child: SvgPicture.asset(
                           'assets/icons/x_logo.svg',
                           width: 20,
                         ),
                       ),
                       // Google
-                      _socialButton(
+                      AuthWidgets.socialButton(
                         child: SvgPicture.asset(
                           'assets/icons/google_logo.svg',
                           width: 20,
@@ -219,25 +219,6 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
           ),
         ),
       ),
-    );
-  }
-
-  Widget _socialButton({required Widget child}) {
-    return Container(
-      width: 74,
-      height: 40,
-      decoration: ShapeDecoration(
-        color: const Color(0xFF2B99E3),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        shadows: const [
-          BoxShadow(
-            color: Color(0x26000000),
-            blurRadius: 20,
-            offset: Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Center(child: child),
     );
   }
 }

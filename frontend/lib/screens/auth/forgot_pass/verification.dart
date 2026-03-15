@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../login.dart';
 import 'package:swifttrip_frontend/repositories/auth_repository.dart';
+import '../widgets/auth_widgets.dart';
 
 class VerificationPage extends StatefulWidget {
   final String email;
@@ -48,13 +49,13 @@ class _VerificationPageState extends State<VerificationPage> {
                   ),
                 ),
                 const SizedBox(height: 50),
-                _inputField(
+                AuthWidgets.inputField(
                   controller: _passwordController,
                   hint: 'Password',
                   obscure: true,
                 ),
                 const SizedBox(height: 14),
-                _inputField(
+                AuthWidgets.inputField(
                   controller: _confirmPasswordController,
                   hint: 'Confirm Password',
                   obscure: true,
@@ -139,63 +140,6 @@ class _VerificationPageState extends State<VerificationPage> {
             ),
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _inputField({
-    required TextEditingController controller,
-    required String hint,
-    required bool obscure,
-  }) {
-    return Container(
-      width: 347,
-      height: 56,
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      decoration: ShapeDecoration(
-        color: const Color(0xFFE8EDF2),
-        shape: RoundedRectangleBorder(
-          side: const BorderSide(width: 1, color: Color(0xFFD1DEE5)),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        shadows: const [
-          BoxShadow(
-            color: Color(0x26000000),
-            blurRadius: 20,
-            offset: Offset(0, 4),
-            spreadRadius: 0,
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: TextField(
-              controller: controller,
-              obscureText: obscure,
-              style: const TextStyle(
-                color: Color(0xFF0C161C),
-                fontSize: 16,
-                fontFamily: 'Poppins',
-                fontWeight: FontWeight.w400,
-                height: 1.50,
-              ),
-              decoration: InputDecoration(
-                hintText: hint,
-                hintStyle: const TextStyle(
-                  color: Color(0xFF4F7A93),
-                  fontSize: 16,
-                  fontFamily: 'Poppins',
-                  fontWeight: FontWeight.w400,
-                  height: 1.50,
-                ),
-                border: InputBorder.none,
-                contentPadding: EdgeInsets.zero,
-                isDense: true,
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }
