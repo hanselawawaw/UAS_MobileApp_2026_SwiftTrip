@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:swifttrip_frontend/screens/auth/login.dart';
+import 'package:swifttrip_frontend/screens/splash/splash_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       theme: ThemeData(colorScheme: .fromSeed(seedColor: Colors.deepPurple)),
       debugShowCheckedModeBanner: false,
-      home: const LoginPage(),
+      home: const SplashScreen(),
     );
   }
 }
