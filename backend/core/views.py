@@ -98,7 +98,8 @@ def verify_otp(request):
     if str(cached_otp) == str(otp):
         # Set a short-lived verified token/flag so we can securely update the password next
         cache.set(f"pwd_reset_verified_{email}", True, timeout=600)
-        cache.delete(cache_key)
+        # Keeping the OTP in cache so it can be verified again during the 10min window
+        # in case the user encounters validation errors further down the flow (e.g. signup)
         
         return Response({'detail': 'Email verified successfully.'}, status=status.HTTP_200_OK)
     else:

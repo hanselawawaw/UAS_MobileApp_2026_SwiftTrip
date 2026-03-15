@@ -7,15 +7,16 @@ class ProfileCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+      height: 114,
+      padding: const EdgeInsets.symmetric(horizontal: 17, vertical: 21),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(20),
         boxShadow: const [
           BoxShadow(
-            color: Color(0x14000000),
-            blurRadius: 12,
-            offset: Offset(0, 2),
+            color: Color(0x26000000),
+            blurRadius: 20,
+            offset: Offset(0, 4),
           ),
         ],
       ),
@@ -23,11 +24,18 @@ class ProfileCard extends StatelessWidget {
         children: [
           // Avatar circle
           Container(
-            width: 56,
-            height: 56,
+            width: 68,
+            height: 68,
             decoration: const BoxDecoration(
-              color: Color(0xFFF0F0F0),
+              color: Colors.white,
               shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: Color(0x3F000000),
+                  blurRadius: 20,
+                  offset: Offset(0, 4),
+                ),
+              ],
             ),
             child: const Icon(
               Icons.person_outline,
@@ -38,6 +46,7 @@ class ProfileCard extends StatelessWidget {
           const SizedBox(width: 16),
           const Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
                 'Timoty Arnold',
@@ -53,9 +62,9 @@ class ProfileCard extends StatelessWidget {
                 'timotyarnold@gmail.com',
                 style: TextStyle(
                   fontFamily: 'Poppins',
-                  fontWeight: FontWeight.w300,
-                  fontSize: 12,
-                  color: Colors.black54,
+                  fontWeight: FontWeight.w400,
+                  fontSize: 10,
+                  color: Colors.black,
                 ),
               ),
             ],

@@ -144,7 +144,7 @@ class _LoginPageState extends State<LoginPage> {
                     try {
                       final authRepo = AuthRepository();
                       bool success = await authRepo.login(email, password);
-                      
+
                       if (success && mounted) {
                         Navigator.pushReplacement(
                           context,
@@ -156,7 +156,11 @@ class _LoginPageState extends State<LoginPage> {
                     } catch (e) {
                       if (mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text(e.toString().replaceAll('Exception: ', ''))),
+                          SnackBar(
+                            content: Text(
+                              e.toString().replaceAll('Exception: ', ''),
+                            ),
+                          ),
                         );
                       }
                     }

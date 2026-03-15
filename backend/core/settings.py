@@ -34,6 +34,7 @@ ALLOWED_HOSTS = [
     'localhost', 
     '192.168.1.11',
     '[IP_ADDRESS]',
+    '192.168.1.27',
 ]
 
 

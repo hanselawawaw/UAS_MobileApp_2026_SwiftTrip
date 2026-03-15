@@ -6,6 +6,7 @@ class BannerCarousel extends StatelessWidget {
   final PageController controller;
   final int currentIndex;
   final ValueChanged<int> onPageChanged;
+  final VoidCallback? onTap;
 
   const BannerCarousel({
     super.key,
@@ -13,6 +14,7 @@ class BannerCarousel extends StatelessWidget {
     required this.controller,
     required this.currentIndex,
     required this.onPageChanged,
+    this.onTap,
   });
 
   @override
@@ -26,13 +28,16 @@ class BannerCarousel extends StatelessWidget {
             onPageChanged: onPageChanged,
             itemCount: images.length,
             itemBuilder: (_, i) {
-              return Image.asset(
-                images[i],
-                fit: BoxFit.cover,
-                width: double.infinity,
-                errorBuilder: (_, _, _) => Container(
-                  color: Colors.blueGrey.shade200,
-                  child: const Icon(Icons.image, size: 48, color: Colors.white),
+              return GestureDetector(
+                onTap: onTap,
+                child: Image.asset(
+                  images[i],
+                  fit: BoxFit.cover,
+                  width: double.infinity,
+                  errorBuilder: (_, _, _) => Container(
+                    color: Colors.blueGrey.shade200,
+                    child: const Icon(Icons.image, size: 48, color: Colors.white),
+                  ),
                 ),
               );
             },

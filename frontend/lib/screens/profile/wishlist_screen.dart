@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-// ─────────────────────────────────────────────────────────────────────────────
 // MODEL
-// ─────────────────────────────────────────────────────────────────────────────
-
 class WishlistItem {
   final String id;
   final String title;
@@ -25,10 +22,7 @@ class WishlistItem {
   });
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
 // WISHLIST SCREEN
-// ─────────────────────────────────────────────────────────────────────────────
-
 class WishlistScreen extends StatefulWidget {
   const WishlistScreen({super.key});
 
@@ -67,6 +61,7 @@ class _WishlistScreenState extends State<WishlistScreen> {
         children: [
           // ── Top Bar ──────────────────────────────────────────────────────
           _WishlistTopBar(),
+          const SizedBox(height: 10),
 
           // ── Title ────────────────────────────────────────────────────────
           const Padding(
@@ -81,7 +76,9 @@ class _WishlistScreenState extends State<WishlistScreen> {
               ),
             ),
           ),
+          const SizedBox(height: 10),
           const Divider(height: 20, indent: 20, endIndent: 20),
+          const SizedBox(height: 10),
 
           // ── List ─────────────────────────────────────────────────────────
           Expanded(
@@ -133,7 +130,11 @@ class _WishlistTopBar extends StatelessWidget {
           const Spacer(),
           GestureDetector(
             onTap: () => Navigator.pop(context),
-            child: const Icon(Icons.chevron_left, size: 30, color: Colors.black),
+            child: const Icon(
+              Icons.chevron_left,
+              size: 30,
+              color: Colors.black,
+            ),
           ),
         ],
       ),
@@ -141,15 +142,7 @@ class _WishlistTopBar extends StatelessWidget {
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
 // WISHLIST CARD
-// Layout persis screenshot:
-//  - Gambar kiri, rounded HANYA di sisi kiri card (topLeft + bottomLeft)
-//  - ⚙ gear icon → pojok KIRI BAWAH gambar
-//  - ♡ heart icon → pojok KANAN ATAS gambar (agak ke tengah, di atas gambar)
-//  - Teks judul, rating bintang, deskripsi di kanan
-// ─────────────────────────────────────────────────────────────────────────────
-
 class _WishlistCard extends StatelessWidget {
   final WishlistItem item;
   final VoidCallback onToggleWishlist;
@@ -158,19 +151,19 @@ class _WishlistCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const double cardHeight = 118.0;
-    const double imageWidth  = 140.0;
+    const double cardHeight = 102.0;
+    const double imageWidth = 157.0;
 
     return Container(
       height: cardHeight,
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(20),
         boxShadow: const [
           BoxShadow(
-            color: Color(0x1A000000),
-            blurRadius: 10,
-            offset: Offset(0, 3),
+            color: Color(0x3F000000),
+            blurRadius: 20,
+            offset: Offset(0, 4),
           ),
         ],
       ),
@@ -182,11 +175,11 @@ class _WishlistCard extends StatelessWidget {
             height: cardHeight,
             child: Stack(
               children: [
-                // Image — rounded hanya di sisi kiri card
+                // Image — rounded only on left side
                 ClipRRect(
                   borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(16),
-                    bottomLeft: Radius.circular(16),
+                    topLeft: Radius.circular(20),
+                    bottomLeft: Radius.circular(20),
                   ),
                   child: _ItemImage(
                     item: item,
@@ -195,7 +188,7 @@ class _WishlistCard extends StatelessWidget {
                   ),
                 ),
 
-                // % Percentage — pojok KIRI ATAS
+                // % Percentage — top LEFT corner
                 Positioned(
                   top: 8,
                   left: 8,
@@ -219,7 +212,7 @@ class _WishlistCard extends StatelessWidget {
                   ),
                 ),
 
-                // ♡ Heart — pojok KANAN ATAS
+                // ♡ Heart — top RIGHT corner
                 Positioned(
                   top: 8,
                   right: 8,
@@ -227,8 +220,7 @@ class _WishlistCard extends StatelessWidget {
                     icon: item.isWishlisted
                         ? Icons.favorite
                         : Icons.favorite_border,
-                    iconColor:
-                        item.isWishlisted ? Colors.red : Colors.black54,
+                    iconColor: item.isWishlisted ? Colors.red : Colors.black54,
                     onTap: onToggleWishlist,
                   ),
                 ),
@@ -239,7 +231,7 @@ class _WishlistCard extends StatelessWidget {
           // ── TEXT CONTENT ─────────────────────────────────────────────────
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(12, 14, 12, 14),
+              padding: const EdgeInsets.fromLTRB(12, 14, 12, 10),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -249,13 +241,16 @@ class _WishlistCard extends StatelessWidget {
                     item.title,
                     style: const TextStyle(
                       fontFamily: 'Poppins',
-                      fontWeight: FontWeight.w600,
+                      fontWeight:
+                          FontWeight.w400, // updated from w600 per Figma
                       fontSize: 13,
                       color: Colors.black,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
+
+                  const SizedBox(height: 2),
 
                   // Rating: number + star icon
                   Row(
@@ -264,7 +259,7 @@ class _WishlistCard extends StatelessWidget {
                         '${item.rating.toInt()}',
                         style: const TextStyle(
                           fontFamily: 'Poppins',
-                          fontWeight: FontWeight.w500,
+                          fontWeight: FontWeight.w400, // updated per Figma
                           fontSize: 12,
                           color: Colors.black,
                         ),
@@ -281,7 +276,7 @@ class _WishlistCard extends StatelessWidget {
                     item.description,
                     style: const TextStyle(
                       fontFamily: 'Poppins',
-                      fontWeight: FontWeight.w300,
+                      fontWeight: FontWeight.w400, // updated per Figma
                       fontSize: 10,
                       color: Colors.black54,
                       height: 1.6,
@@ -352,8 +347,11 @@ class _ItemImage extends StatelessWidget {
       width: width,
       height: height,
       color: Colors.blueGrey.shade100,
-      child: Icon(Icons.image_outlined,
-          color: Colors.blueGrey.shade300, size: 32),
+      child: Icon(
+        Icons.image_outlined,
+        color: Colors.blueGrey.shade300,
+        size: 32,
+      ),
     );
 
     if (item.imageUrl != null && item.imageUrl!.isNotEmpty) {

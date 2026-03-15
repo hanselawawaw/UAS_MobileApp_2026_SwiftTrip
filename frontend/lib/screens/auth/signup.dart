@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'forgot_pass/forgot_pass.dart';
 import 'package:swifttrip_frontend/repositories/auth_repository.dart';
 import 'widgets/auth_widgets.dart';
+import 'user_info.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -192,7 +193,7 @@ class _SignupPageState extends State<SignupPage> {
                 // ── Primary Action: Sign Up Button ────────────────────
                 GestureDetector(
                   onTap: () async {
-                    final email = _emailController.text;
+                    final email = _emailController.text.trim();
                     final password = _passwordController.text;
                     final confirm = _confirmPasswordController.text;
                     final otp = _verificationController.text.trim();
@@ -222,10 +223,15 @@ class _SignupPageState extends State<SignupPage> {
                       if (signupSuccess && mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
-                            content: Text('Signup successful! Please log in.'),
+                            content: Text('Signup successful! Please complete your profile.'),
                           ),
                         );
-                        Navigator.pop(context);
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const UserInfoPage(),
+                          ),
+                        );
                       }
                     } catch (e) {
                       if (mounted) {

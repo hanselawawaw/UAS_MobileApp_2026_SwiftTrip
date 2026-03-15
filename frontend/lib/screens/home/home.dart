@@ -50,7 +50,8 @@ const _recommendations = [
 // ─────────────────────────────────────────────
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  final VoidCallback? onNavigateToDestination;
+  const HomePage({super.key, this.onNavigateToDestination});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -174,6 +175,7 @@ class _HomePageState extends State<HomePage> {
                                       currentIndex: _currentBanner,
                                       onPageChanged: (i) =>
                                           setState(() => _currentBanner = i),
+                                      onTap: widget.onNavigateToDestination,
                                     ),
                                     const Positioned(
                                       bottom: 0,

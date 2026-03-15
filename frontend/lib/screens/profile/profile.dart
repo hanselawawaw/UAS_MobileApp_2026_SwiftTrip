@@ -27,8 +27,9 @@ class ProfilePage extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // ── User card ────────────────────────────────────────────
+                  const SizedBox(height: 30),
                   const ProfileCard(),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 50),
 
                   // ── Wishlist ─────────────────────────────────────────────
                   MenuSection(
@@ -47,7 +48,7 @@ class ProfilePage extends StatelessWidget {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 30),
 
                   // ── Subscription / Payment / Language ────────────────────
                   MenuSection(
@@ -83,7 +84,7 @@ class ProfilePage extends StatelessWidget {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 30),
 
                   // ── Clear Cache / Log Out ────────────────────────────────
                   MenuSection(
@@ -116,7 +117,9 @@ class ProfilePage extends StatelessWidget {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 100), // padding for CurvedNavigationBar
+                  const SizedBox(
+                    height: 100,
+                  ), // padding for CurvedNavigationBar
                 ],
               ),
             ),

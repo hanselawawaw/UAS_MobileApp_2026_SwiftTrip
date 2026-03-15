@@ -17,9 +17,10 @@ class MenuSection extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: const [
           BoxShadow(
-            color: Color(0x14000000),
-            blurRadius: 12,
-            offset: Offset(0, 2),
+            color: Color(0x26000000),
+            blurRadius: 20,
+            offset: Offset(0, 4),
+            spreadRadius: 0,
           ),
         ],
       ),

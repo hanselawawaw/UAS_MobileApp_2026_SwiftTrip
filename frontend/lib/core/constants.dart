@@ -24,8 +24,8 @@ class Constants {
   // Colors — Warning
   static const Color warningColor = Color(0xFFF3CFCE);
 
-  // Update this ONE line whenever you change Wi-Fi networks
-  static const String machineIp = '192.168.1.11';
+  // Update this ONE line whenever you change Wi-Fi networks (use 127.0.0.1 for Web, 10.0.2.2 for Android Emulator, or your IPv4 for real devices)
+  static const String machineIp = '192.168.1.27';
 
   static const String baseUrl = 'http://$machineIp:8000/api/auth/';
 }
