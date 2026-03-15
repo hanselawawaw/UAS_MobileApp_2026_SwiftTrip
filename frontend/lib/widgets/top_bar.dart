@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class TopBar extends StatelessWidget {
-  const TopBar({super.key});
+  // 1. The Logic Gate
+  final bool showBackButton;
+
+  const TopBar({super.key, this.showBackButton = false});
 
   @override
   Widget build(BuildContext context) {
@@ -16,13 +19,29 @@ class TopBar extends StatelessWidget {
       ),
       child: Row(
         children: [
-          // Logo
+          // 2. The Back Arrow (Only renders if showBackButton is true)
+          if (showBackButton) ...[
+            GestureDetector(
+              onTap: () {
+                Navigator.pop(context);
+              },
+              child: const Icon(
+                Icons.arrow_back_ios_new,
+                color: Colors.black,
+                size: 24,
+              ),
+            ),
+            const SizedBox(width: 16),
+          ],
+
+          // 3. Your Logo
           SvgPicture.asset('assets/icons/swifttrip_logo.svg', height: 30),
 
           const Spacer(),
 
-          // Menu icon
-          SvgPicture.asset('assets/icons/hamburger.svg', height: 30),
+          // 4. The Hamburger Menu (Only renders if showBackButton is false)
+          if (!showBackButton)
+            SvgPicture.asset('assets/icons/hamburger.svg', height: 30),
         ],
       ),
     );

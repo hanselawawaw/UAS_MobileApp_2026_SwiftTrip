@@ -130,7 +130,7 @@ class _CartPageState extends State<CartPage> {
                   _tickets.length,
                   (i) => Padding(
                     padding: const EdgeInsets.only(bottom: 16),
-                    child: _TicketCard(
+                    child: TicketCard(
                       ticket: _tickets[i],
                       formatRp: _formatRp,
                       onDelete: () => _removeTicket(i),
@@ -161,15 +161,16 @@ class _CartPageState extends State<CartPage> {
 }
 
 // TICKET CARD
-class _TicketCard extends StatelessWidget {
+class TicketCard extends StatelessWidget {
   final CartTicket ticket;
   final String Function(int) formatRp;
-  final VoidCallback onDelete;
+  final VoidCallback? onDelete;
 
-  const _TicketCard({
+  const TicketCard({
+    super.key,
     required this.ticket,
     required this.formatRp,
-    required this.onDelete,
+    this.onDelete,
   });
 
   @override
@@ -192,7 +193,7 @@ class _TicketCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // ── Blue header bar ─────────────────────────────────────────
-          _CardHeader(type: ticket.type, bookingId: ticket.bookingId),
+          CardHeader(type: ticket.type, bookingId: ticket.bookingId),
 
           // ── Class label ─────────────────────────────────────────────
           Padding(
@@ -208,32 +209,32 @@ class _TicketCard extends StatelessWidget {
             ),
           ),
 
-          _Divider(),
+          const TicketDivider(),
 
           // ── FROM / TO ───────────────────────────────────────────────
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
             child: Row(
               children: [
-                _LabelValue(label: 'FROM', value: ticket.from),
+                LabelValue(label: 'FROM', value: ticket.from),
                 const SizedBox(width: 100),
-                _LabelValue(label: 'TO', value: ticket.to),
+                LabelValue(label: 'TO', value: ticket.to),
               ],
             ),
           ),
 
-          _Divider(),
+          const TicketDivider(),
 
           // ── DATE / DEPARTURE / ARRIVE ───────────────────────────────
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
             child: Row(
               children: [
-                _LabelValue(label: 'DATE', value: ticket.date),
+                LabelValue(label: 'DATE', value: ticket.date),
                 const SizedBox(width: 40),
-                _LabelValue(label: 'DEPARTURE', value: ticket.departure),
+                LabelValue(label: 'DEPARTURE', value: ticket.departure),
                 const SizedBox(width: 40),
-                _LabelValue(label: 'ARRIVE', value: ticket.arrive),
+                LabelValue(label: 'ARRIVE', value: ticket.arrive),
               ],
             ),
           ),
@@ -243,16 +244,16 @@ class _TicketCard extends StatelessWidget {
             padding: const EdgeInsets.only(left: 15, right: 15, bottom: 10),
             child: Row(
               children: [
-                _LabelValue(label: 'TRAIN', value: ticket.train),
+                LabelValue(label: 'TRAIN', value: ticket.train),
                 const SizedBox(width: 40),
-                _LabelValue(label: 'CARRIAGE', value: ticket.carriage),
+                LabelValue(label: 'CARRIAGE', value: ticket.carriage),
                 const SizedBox(width: 40),
-                _LabelValue(label: 'SEAT', value: ticket.seat),
+                LabelValue(label: 'SEAT', value: ticket.seat),
               ],
             ),
           ),
 
-          _Divider(),
+          const TicketDivider(),
 
           // ── Delete button + Price ───────────────────────────────────
           Padding(
@@ -260,34 +261,35 @@ class _TicketCard extends StatelessWidget {
             child: Row(
               children: [
                 // Delete button
-                GestureDetector(
-                  onTap: onDelete,
-                  child: Container(
-                    width: 30,
-                    height: 30,
-                    decoration: BoxDecoration(
-                      color: const Color(0x60FF7C7C),
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Color(0x26000000),
-                          blurRadius: 10,
-                          offset: Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: Center(
-                      child: SvgPicture.string(
-                        '''<svg width="15" height="15" viewBox="4.66 0.38 10.68 11.24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                if (onDelete != null)
+                  GestureDetector(
+                    onTap: onDelete,
+                    child: Container(
+                      width: 30,
+                      height: 30,
+                      decoration: BoxDecoration(
+                        color: const Color(0x60FF7C7C),
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Color(0x26000000),
+                            blurRadius: 10,
+                            offset: Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: Center(
+                        child: SvgPicture.string(
+                          '''<svg width="15" height="15" viewBox="4.66 0.38 10.68 11.24" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M7.99810 0.381836V1.00614H4.66162V2.25454H5.32893V10.3695C5.32893 10.7006 5.46954 11.0181 5.71983 11.2523C5.97012 11.4864 6.30963 11.6179 6.66354 11.6179H13.3365C13.6904 11.6179 14.0299 11.4864 14.2802 11.2523C14.5305 11.0181 14.6711 10.7006 14.6711 10.3695V2.25454H15.3384V1.00614H12.0019V0.381836H7.99810ZM6.66354 2.25454H13.3365V10.3695H6.66354V2.25454ZM7.99810 3.50295V9.12095H9.33270V3.50295H7.99810ZM10.6673 3.50295V9.12095H12.0019V3.50295H10.6673Z" fill="white"/>
 </svg>''',
-                        width: 15,
-                        height: 15,
-                        fit: BoxFit.contain,
+                          width: 15,
+                          height: 15,
+                          fit: BoxFit.contain,
+                        ),
                       ),
                     ),
                   ),
-                ),
 
                 const Spacer(),
 
@@ -310,11 +312,11 @@ class _TicketCard extends StatelessWidget {
   }
 }
 
-class _CardHeader extends StatelessWidget {
+class CardHeader extends StatelessWidget {
   final String type;
   final String bookingId;
 
-  const _CardHeader({required this.type, required this.bookingId});
+  const CardHeader({super.key, required this.type, required this.bookingId});
 
   @override
   Widget build(BuildContext context) {
@@ -359,11 +361,11 @@ class _CardHeader extends StatelessWidget {
 }
 
 // LABEL + VALUE column (DATE / Jakarta etc.)
-class _LabelValue extends StatelessWidget {
+class LabelValue extends StatelessWidget {
   final String label;
   final String value;
 
-  const _LabelValue({required this.label, required this.value});
+  const LabelValue({super.key, required this.label, required this.value});
 
   @override
   Widget build(BuildContext context) {
@@ -394,7 +396,9 @@ class _LabelValue extends StatelessWidget {
 }
 
 // DIVIDER
-class _Divider extends StatelessWidget {
+class TicketDivider extends StatelessWidget {
+  const TicketDivider({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Divider(

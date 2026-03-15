@@ -11,6 +11,7 @@ import 'widgets/schedule_carousel.dart';
 import 'widgets/search_bar.dart';
 import 'widgets/section_header.dart';
 import '../../widgets/top_bar.dart';
+import '../history/history.dart';
 
 // ─────────────────────────────────────────────
 // CONSTANTS / MOCK DATA
@@ -190,7 +191,14 @@ class _HomePageState extends State<HomePage> {
                               SectionHeader(
                                 title: 'Your Schedule',
                                 actionLabel: 'History >',
-                                onAction: () {},
+                                onAction: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => const HistoryPage(),
+                                    ),
+                                  );
+                                },
                               ),
                               const SizedBox(height: 12),
 
