@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import '../room_chat.dart';
 
 const _chatIconSvg = '''
 <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -15,17 +16,25 @@ class FloatingButtons extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Container(
-          width: 52,
-          height: 52,
-          decoration: ShapeDecoration(
-            color: const Color(0xFF0B4882),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
+        GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const RoomChatPage()),
+            );
+          },
+          child: Container(
+            width: 52,
+            height: 52,
+            decoration: ShapeDecoration(
+              color: const Color(0xFF0B4882),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
             ),
-          ),
-          child: Center(
-            child: SvgPicture.string(_chatIconSvg, width: 28, height: 28),
+            child: Center(
+              child: SvgPicture.string(_chatIconSvg, width: 28, height: 28),
+            ),
           ),
         ),
       ],
