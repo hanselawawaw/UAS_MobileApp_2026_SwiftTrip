@@ -34,29 +34,31 @@ class _LanguageScreenState extends State<LanguageScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        automaticallyImplyLeading: false,
-        leadingWidth: 160,
-        leading: Padding(
-          padding: const EdgeInsets.only(left: 16),
-          child: SvgPicture.asset(
-            'assets/icons/swifttrip_logo.svg',
-            fit: BoxFit.contain,
-          ),
-        ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: IconButton(
-              icon: const Icon(Icons.chevron_left, color: Colors.black),
-              onPressed: () => Navigator.pop(context),
+      appBar: null,
+      body: Column(
+        children: [
+          // ── Top Bar ────────────────────────────────────────────────────
+          Container(
+            color: Colors.white,
+            padding: EdgeInsets.only(
+              top: MediaQuery.of(context).padding.top + 15,
+              left: 20,
+              right: 20,
+              bottom: 15,
+            ),
+            child: Row(
+              children: [
+                SvgPicture.asset('assets/icons/swifttrip_logo.svg', height: 30),
+                const Spacer(),
+                GestureDetector(
+                  onTap: () => Navigator.pop(context),
+                  child: const Icon(Icons.chevron_left, size: 30, color: Colors.black),
+                ),
+              ],
             ),
           ),
-        ],
-      ),
-      body: Column(
+          Expanded(
+            child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Padding(
@@ -72,8 +74,8 @@ class _LanguageScreenState extends State<LanguageScreen> {
             ),
           ),
           const Divider(height: 20, indent: 20, endIndent: 20),
-          Expanded(
-            child: ListView.builder(
+              Expanded(
+                child: ListView.builder(
               itemCount: _languages.length,
               itemBuilder: (_, i) {
                 final lang = _languages[i];
@@ -115,6 +117,9 @@ class _LanguageScreenState extends State<LanguageScreen> {
                 );
               },
             ),
+          ),
+            ],
+          ),
           ),
         ],
       ),

@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import '../../widgets/top_bar.dart';
+import '../auth/login.dart';
 import 'widgets/profile_card.dart';
 import 'widgets/menu_section.dart';
 import 'language_screen.dart';
 import 'clear_cache_screen.dart';
 import 'wishlist_screen.dart';
 import 'payment_options_screen.dart';
+import 'subscription_plan_screen.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -17,7 +19,7 @@ class ProfilePage extends StatelessWidget {
       body: Column(
         children: [
           // ── Top Bar ───────────────────────────────────────────────────────
-          _TopBar(),
+          const TopBar(),
 
           // ── Scrollable content ────────────────────────────────────────────
           Expanded(
@@ -55,7 +57,14 @@ class ProfilePage extends StatelessWidget {
                       MenuItem(
                         icon: Icons.credit_card_outlined,
                         label: 'Subscription Plan',
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const SubscriptionPlanScreen(),
+                            ),
+                          );
+                        },
                       ),
                       MenuItem(
                         icon: Icons.account_balance_outlined,
@@ -107,9 +116,12 @@ class ProfilePage extends StatelessWidget {
                         labelColor: Colors.black,
                         showArrow: false,
                         onTap: () {
-                          Navigator.pushNamedAndRemoveUntil(
+                          // Hapus seluruh navigation stack lalu arahkan ke LoginPage
+                          Navigator.pushAndRemoveUntil(
                             context,
-                            '/login',
+                            MaterialPageRoute(
+                              builder: (_) => const LoginPage(),
+                            ),
                             (route) => false,
                           );
                         },
@@ -121,32 +133,6 @@ class ProfilePage extends StatelessWidget {
               ),
             ),
           ),
-        ],
-      ),
-    );
-  }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// TOP BAR  — logo kiri, hamburger kanan
-// ─────────────────────────────────────────────────────────────────────────────
-
-class _TopBar extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: Colors.white,
-      padding: EdgeInsets.only(
-        top: MediaQuery.of(context).padding.top + 15,
-        left: 20,
-        right: 20,
-        bottom: 15,
-      ),
-      child: Row(
-        children: [
-          SvgPicture.asset('assets/icons/swifttrip_logo.svg', height: 30),
-          const Spacer(),
-          SvgPicture.asset('assets/icons/hamburger.svg', height: 30),
         ],
       ),
     );

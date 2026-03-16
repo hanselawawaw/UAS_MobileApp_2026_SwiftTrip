@@ -44,29 +44,31 @@ class _ClearCacheScreenState extends State<ClearCacheScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFFF5F5F5),
-        elevation: 0,
-        automaticallyImplyLeading: false,
-        leadingWidth: 160,
-        leading: Padding(
-          padding: const EdgeInsets.only(left: 16),
-          child: SvgPicture.asset(
-            'assets/icons/swifttrip_logo.svg',
-            fit: BoxFit.contain,
-          ),
-        ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: IconButton(
-              icon: const Icon(Icons.chevron_left, color: Colors.black),
-              onPressed: () => Navigator.pop(context),
+      appBar: null,
+      body: Column(
+        children: [
+          // ── Top Bar ────────────────────────────────────────────────────
+          Container(
+            color: const Color(0xFFF5F5F5),
+            padding: EdgeInsets.only(
+              top: MediaQuery.of(context).padding.top + 15,
+              left: 20,
+              right: 20,
+              bottom: 15,
+            ),
+            child: Row(
+              children: [
+                SvgPicture.asset('assets/icons/swifttrip_logo.svg', height: 30),
+                const Spacer(),
+                GestureDetector(
+                  onTap: () => Navigator.pop(context),
+                  child: const Icon(Icons.chevron_left, size: 30, color: Colors.black),
+                ),
+              ],
             ),
           ),
-        ],
-      ),
-      body: Padding(
+          Expanded(
+            child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -154,6 +156,9 @@ class _ClearCacheScreenState extends State<ClearCacheScreen> {
           ],
         ),
       ),
+    ),
+  ],
+),
     );
   }
 }
