@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../widgets/top_bar.dart';
+import '../main/main_screen.dart';
+import 'onboarding.dart';
+
 // ─────────────────────────────────────────────────────────────────────────────
 // MODELS
 // ─────────────────────────────────────────────────────────────────────────────
@@ -88,7 +92,16 @@ class _CustomerServicePageState extends State<CustomerServicePage> {
       body: Column(
         children: [
           // ── Top Bar ────────────────────────────────────────────────────
-          _CsTopBar(),
+          TopBar(
+            showBackButton: true,
+            showHamburger: true,
+            onHamburgerTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const OnboardingPage()),
+              );
+            },
+          ),
 
           // ── Scrollable content ─────────────────────────────────────────
           Expanded(
@@ -97,9 +110,12 @@ class _CustomerServicePageState extends State<CustomerServicePage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  const SizedBox(height: 24),
                   // ── Search bar ─────────────────────────────────────────
-                  _SearchBar(controller: _searchController,
-                      onChanged: (_) => setState(() {})),
+                  _SearchBar(
+                    controller: _searchController,
+                    onChanged: (_) => setState(() {}),
+                  ),
                   const SizedBox(height: 24),
 
                   // ── FAQ section ────────────────────────────────────────
@@ -132,24 +148,19 @@ class _CustomerServicePageState extends State<CustomerServicePage> {
                   const SizedBox(height: 12),
 
                   // Horizontal scrollable
-                  LayoutBuilder(
-                    builder: (context, constraints) {
-                      final cardW = constraints.maxWidth * 0.72;
-                      return SizedBox(
-                        height: 160,
-                        child: ListView.separated(
-                          scrollDirection: Axis.horizontal,
-                          clipBehavior: Clip.none,
-                          padding: const EdgeInsets.only(right: 4),
-                          itemCount: _recentQuestions.length,
-                          separatorBuilder: (_, __) => const SizedBox(width: 12),
-                          itemBuilder: (_, i) => _RecentCard(
-                            item: _recentQuestions[i],
-                            cardWidth: cardW,
-                          ),
-                        ),
-                      );
-                    },
+                  SizedBox(
+                    height: 130,
+                    child: ListView.separated(
+                      scrollDirection: Axis.horizontal,
+                      clipBehavior: Clip.none,
+                      padding: const EdgeInsets.only(right: 4),
+                      itemCount: _recentQuestions.length,
+                      separatorBuilder: (_, __) => const SizedBox(width: 12),
+                      itemBuilder: (_, i) => _RecentCard(
+                        item: _recentQuestions[i],
+                        cardWidth: 350,
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -159,47 +170,24 @@ class _CustomerServicePageState extends State<CustomerServicePage> {
       ),
 
       // ── Floating Chat Button ─────────────────────────────────────────────
-      floatingActionButton: Container(
-        width: 52,
-        height: 52,
-        decoration: BoxDecoration(
-          color: const Color(0xFF0B4882),
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: IconButton(
-          onPressed: () {},
-          icon: const Icon(Icons.chat_bubble_outline,
-              color: Colors.white, size: 24),
-        ),
-      ),
-    );
-  }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// TOP BAR
-// ─────────────────────────────────────────────────────────────────────────────
-
-class _CsTopBar extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: Colors.white,
-      padding: EdgeInsets.only(
-        top: MediaQuery.of(context).padding.top + 15,
-        left: 20,
-        right: 20,
-        bottom: 15,
-      ),
-      child: Row(
-        children: [
-          SvgPicture.asset('assets/icons/swifttrip_logo.svg', height: 30),
-          const Spacer(),
-          GestureDetector(
-            onTap: () => Navigator.pop(context),
-            child: SvgPicture.asset('assets/icons/hamburger.svg', height: 30),
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 25, right: 25),
+        child: Container(
+          width: 52,
+          height: 52,
+          decoration: BoxDecoration(
+            color: const Color(0xFF0B4882),
+            borderRadius: BorderRadius.circular(16),
           ),
-        ],
+          child: IconButton(
+            onPressed: () {},
+            icon: SvgPicture.string('''
+              <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M2.61279 28.7402V5.22554C2.61279 4.50703 2.86884 3.89217 3.38094 3.38094C3.89304 2.86971 4.5079 2.61366 5.22554 2.61279H26.1275C26.846 2.61279 27.4613 2.86884 27.9734 3.38094C28.4855 3.89304 28.7411 4.5079 28.7402 5.22554V20.902C28.7402 21.6205 28.4846 22.2358 27.9734 22.7479C27.4622 23.26 26.8469 23.5156 26.1275 23.5148H7.83828L2.61279 28.7402ZM7.83828 18.2893H18.2893V15.6765H7.83828V18.2893ZM7.83828 14.3701H23.5147V11.7574H7.83828V14.3701ZM7.83828 10.451H23.5147V7.83828H7.83828V10.451Z" fill="white"/>
+</svg>
+              ''', height: 24),
+          ),
+        ),
       ),
     );
   }
@@ -218,16 +206,17 @@ class _SearchBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 46,
+      height: 44,
       padding: const EdgeInsets.symmetric(horizontal: 16),
       decoration: ShapeDecoration(
         color: Colors.white,
-        shape: const StadiumBorder(),
-        shadows: [
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        shadows: const [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 16,
-            offset: const Offset(0, 3),
+            color: Color(0x26000000),
+            blurRadius: 20,
+            offset: Offset(0, 4),
+            spreadRadius: 0,
           ),
         ],
       ),
@@ -237,16 +226,13 @@ class _SearchBar extends StatelessWidget {
             child: TextField(
               controller: controller,
               onChanged: onChanged,
-              style: const TextStyle(
-                fontFamily: 'Poppins',
-                fontSize: 13,
-              ),
+              style: const TextStyle(fontFamily: 'Poppins', fontSize: 13),
               decoration: InputDecoration(
                 hintText: 'Let Us Help Answering Your Question',
                 hintStyle: TextStyle(
                   fontFamily: 'Poppins',
                   fontSize: 12,
-                  color: Colors.black.withOpacity(0.40),
+                  color: Colors.black.withOpacity(0.4),
                 ),
                 border: InputBorder.none,
                 isDense: true,
@@ -294,55 +280,70 @@ class _FaqCardState extends State<_FaqCard> {
       ),
       child: Column(
         children: [
-          // ── Header row ────────────────────────────────────────────────
-          InkWell(
-            onTap: () => setState(() => _expanded = !_expanded),
-            borderRadius: BorderRadius.circular(14),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: 18, vertical: 16),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      widget.faq.question,
-                      style: const TextStyle(
-                        fontFamily: 'Poppins',
-                        fontWeight: FontWeight.w400,
-                        fontSize: 14,
-                        color: Colors.black,
+          Material(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            elevation: 4,
+            child: InkWell(
+              onTap: () => setState(() => _expanded = !_expanded),
+              borderRadius: BorderRadius.circular(20),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 23,
+                  vertical: 19,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // ── Header ──
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            widget.faq.question,
+                            style: const TextStyle(
+                              fontFamily: 'Poppins',
+                              fontWeight: FontWeight.w400,
+                              fontSize: 16,
+                              height: 1.25,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ),
+                        Icon(
+                          _expanded
+                              ? Icons.keyboard_arrow_down_rounded
+                              : Icons.chevron_right,
+                          size: 22,
+                        ),
+                      ],
+                    ),
+
+                    // ── Answer ──
+                    AnimatedSize(
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeInOut,
+                      child: AnimatedOpacity(
+                        duration: const Duration(milliseconds: 250),
+                        opacity: _expanded ? 1.0 : 0.0,
+                        child: _expanded
+                            ? Padding(
+                                padding: const EdgeInsets.only(top: 12),
+                                child: Text(
+                                  widget.faq.answer,
+                                  style: const TextStyle(
+                                    fontFamily: 'Poppins',
+                                    fontWeight: FontWeight.w300,
+                                    fontSize: 13,
+                                    height: 1.6,
+                                    color: Colors.black54,
+                                  ),
+                                ),
+                              )
+                            : const SizedBox.shrink(),
                       ),
                     ),
-                  ),
-                  Icon(
-                    _expanded
-                        ? Icons.keyboard_arrow_down_rounded
-                        : Icons.chevron_right,
-                    size: 22,
-                    color: Colors.black87,
-                  ),
-                ],
-              ),
-            ),
-          ),
-
-          // ── Answer ────────────────────────────────────────────────────
-          AnimatedCrossFade(
-            duration: const Duration(milliseconds: 200),
-            crossFadeState: _expanded
-                ? CrossFadeState.showSecond
-                : CrossFadeState.showFirst,
-            firstChild: const SizedBox(width: double.infinity),
-            secondChild: Padding(
-              padding: const EdgeInsets.fromLTRB(18, 0, 18, 16),
-              child: Text(
-                widget.faq.answer,
-                style: const TextStyle(
-                  fontFamily: 'Poppins',
-                  fontWeight: FontWeight.w300,
-                  fontSize: 13,
-                  color: Colors.black54,
-                  height: 1.6,
+                  ],
                 ),
               ),
             ),
@@ -361,48 +362,61 @@ class _RecentCard extends StatelessWidget {
   final _RecentQuestion item;
   final double cardWidth;
 
-  const _RecentCard({required this.item, this.cardWidth = 260});
+  // TODO: Add onTap callback for 'Read more' navigation when backend is ready
+  const _RecentCard({required this.item, this.cardWidth = 400});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: cardWidth,
+      width: 350,
       margin: const EdgeInsets.only(bottom: 4),
-      padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
-      decoration: BoxDecoration(
+      padding: const EdgeInsets.fromLTRB(12, 10, 12, 14),
+      decoration: ShapeDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        boxShadow: [
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        shadows: const [
           BoxShadow(
-            color: Colors.black.withOpacity(0.06),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+            color: Color(0x26000000),
+            blurRadius: 20,
+            offset: Offset(0, 4),
           ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           // ── Username ───────────────────────────────────────────────────
           Row(
             children: [
               Container(
-                width: 28,
-                height: 28,
-                decoration: const BoxDecoration(
-                  color: Color(0xFFF0F0F0),
-                  shape: BoxShape.circle,
+                width: 33.52,
+                height: 33.52,
+                decoration: const ShapeDecoration(
+                  color: Colors.white,
+                  shape: OvalBorder(),
+                  shadows: [
+                    BoxShadow(
+                      color: Color(0x3F000000),
+                      blurRadius: 20,
+                      offset: Offset(0, 4),
+                    ),
+                  ],
                 ),
-                child: const Icon(Icons.person_outline,
-                    size: 16, color: Colors.black54),
+                child: const Icon(
+                  Icons.person_outline,
+                  size: 16,
+                  color: Colors.black54,
+                ),
               ),
               const SizedBox(width: 8),
               Text(
                 item.username,
                 style: const TextStyle(
                   fontFamily: 'Poppins',
-                  fontWeight: FontWeight.w500,
-                  fontSize: 13,
+                  fontWeight: FontWeight.w400,
+                  fontSize: 12,
+                  height: 1.67,
                   color: Colors.black,
                 ),
               ),
@@ -415,11 +429,13 @@ class _RecentCard extends StatelessWidget {
             item.question,
             style: const TextStyle(
               fontFamily: 'Poppins',
-              fontWeight: FontWeight.w300,
-              fontSize: 13,
-              color: Colors.black87,
-              height: 1.5,
+              fontWeight: FontWeight.w400,
+              fontSize: 12,
+              height: 1.67,
+              color: Colors.black,
             ),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
           ),
           const SizedBox(height: 8),
 
@@ -427,13 +443,17 @@ class _RecentCard extends StatelessWidget {
           Align(
             alignment: Alignment.centerRight,
             child: GestureDetector(
+              // TODO: Navigate to full question/answer detail page
+              // TODO: Pass item.id to fetch full thread from backend
               onTap: () {},
               child: const Text(
                 'Read more >',
+                textAlign: TextAlign.center,
                 style: TextStyle(
                   fontFamily: 'Poppins',
-                  fontWeight: FontWeight.w500,
+                  fontWeight: FontWeight.w600,
                   fontSize: 12,
+                  height: 2,
                   color: Color(0xFF2B99E3),
                 ),
               ),

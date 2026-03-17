@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:swifttrip_frontend/screens/customer_service/onboarding.dart';
 import '../../widgets/top_bar.dart';
 import '../auth/login.dart';
 import 'widgets/profile_card.dart';
@@ -18,7 +19,12 @@ class ProfilePage extends StatelessWidget {
       body: Column(
         children: [
           // ── Top Bar ───────────────────────────────────────────────────────
-          const TopBar(),
+          TopBar(
+            onHamburgerTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const OnboardingPage()),
+            ),
+          ),
 
           // ── Scrollable content ────────────────────────────────────────────
           Expanded(

@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import '../screens/customer_service/customer_service_overlay.dart';
 
 class TopBar extends StatelessWidget {
   // 1. The Logic Gate
   final bool showBackButton;
+  final bool showHamburger;
+  final VoidCallback? onHamburgerTap;
 
-  const TopBar({super.key, this.showBackButton = false});
+  const TopBar({
+    super.key,
+    this.showBackButton = false,
+    this.showHamburger = true,
+    this.onHamburgerTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -41,8 +47,11 @@ class TopBar extends StatelessWidget {
           const Spacer(),
 
           // 4. The Hamburger Menu (Only renders if showBackButton is false)
-          if (!showBackButton)
-            SvgPicture.asset('assets/icons/hamburger.svg', height: 30),
+          if (showHamburger)
+            GestureDetector(
+              onTap: onHamburgerTap,
+              child: SvgPicture.asset('assets/icons/hamburger.svg', height: 30),
+            ),
         ],
       ),
     );
