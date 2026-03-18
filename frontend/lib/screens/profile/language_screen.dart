@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import '../../widgets/top_bar.dart';
 
 class LanguageScreen extends StatefulWidget {
   const LanguageScreen({super.key});
@@ -12,22 +13,8 @@ class _LanguageScreenState extends State<LanguageScreen> {
   int? _selectedIndex;
 
   static const List<_LangData> _languages = [
-    _LangData(flag: '🇯🇵', name: 'Japan'),
-    _LangData(flag: '🇪🇬', name: 'Egypt'),
-    _LangData(flag: '🇨🇳', name: 'Mandarin'),
-    _LangData(flag: '🇮🇹', name: 'Italian'),
-    _LangData(flag: '🇮🇳', name: 'India'),
-    _LangData(flag: '🇪🇸', name: 'Spain'),
-    _LangData(flag: '🇯🇵', name: 'Japan'),
-    _LangData(flag: '🇪🇬', name: 'Egypt'),
-    _LangData(flag: '🇨🇳', name: 'Mandarin'),
-    _LangData(flag: '🇮🇹', name: 'Italian'),
-    _LangData(flag: '🇮🇳', name: 'India'),
-    _LangData(flag: '🇪🇸', name: 'Spain'),
-    _LangData(flag: '🇯🇵', name: 'Japan'),
-    _LangData(flag: '🇪🇬', name: 'Egypt'),
-    _LangData(flag: '🇨🇳', name: 'Mandarin'),
-    _LangData(flag: '🇮🇹', name: 'Italian'),
+    _LangData(flag: '🇮🇩', name: 'Indonesia'),
+    _LangData(flag: '🇬🇧', name: 'English'),
   ];
 
   @override
@@ -38,88 +25,79 @@ class _LanguageScreenState extends State<LanguageScreen> {
       body: Column(
         children: [
           // ── Top Bar ────────────────────────────────────────────────────
-          Container(
-            color: Colors.white,
-            padding: EdgeInsets.only(
-              top: MediaQuery.of(context).padding.top + 15,
-              left: 20,
-              right: 20,
-              bottom: 15,
-            ),
-            child: Row(
+          TopBar(showBackButton: true, showHamburger: false),
+
+          // ── Content ────────────────────────────────────────────────────
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SvgPicture.asset('assets/icons/swifttrip_logo.svg', height: 30),
-                const Spacer(),
-                GestureDetector(
-                  onTap: () => Navigator.pop(context),
-                  child: const Icon(Icons.chevron_left, size: 30, color: Colors.black),
+                const SizedBox(height: 10),
+                const Padding(
+                  padding: EdgeInsets.fromLTRB(20, 8, 20, 0),
+                  child: Text(
+                    'Language',
+                    style: TextStyle(
+                      fontFamily: 'Poppins',
+                      fontWeight: FontWeight.w700,
+                      fontSize: 24,
+                      color: Colors.black,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                const Divider(
+                  height: 20,
+                  indent: 20,
+                  endIndent: 20,
+                  color: Colors.black,
+                ),
+
+                // ── List View ────────────────────────────────────────────────────
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: _languages.length,
+                    itemBuilder: (_, i) {
+                      final lang = _languages[i];
+                      final isSelected = _selectedIndex == i;
+                      return InkWell(
+                        onTap: () => setState(() => _selectedIndex = i),
+                        child: Container(
+                          color: isSelected
+                              ? const Color(0xFFE8F4FD)
+                              : Colors.transparent,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 14,
+                          ),
+                          child: Row(
+                            children: [
+                              SizedBox(
+                                width: 32,
+                                child: Text(
+                                  lang.flag,
+                                  style: const TextStyle(fontSize: 20),
+                                ),
+                              ),
+                              const SizedBox(width: 10),
+                              Text(
+                                lang.name,
+                                style: const TextStyle(
+                                  fontFamily: 'Poppins',
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 14,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
                 ),
               ],
             ),
-          ),
-          Expanded(
-            child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Padding(
-            padding: EdgeInsets.fromLTRB(20, 8, 20, 0),
-            child: Text(
-              'Language',
-              style: TextStyle(
-                fontFamily: 'Poppins',
-                fontWeight: FontWeight.w700,
-                fontSize: 24,
-                color: Colors.black,
-              ),
-            ),
-          ),
-          const Divider(height: 20, indent: 20, endIndent: 20),
-              Expanded(
-                child: ListView.builder(
-              itemCount: _languages.length,
-              itemBuilder: (_, i) {
-                final lang = _languages[i];
-                final isSelected = _selectedIndex == i;
-                return InkWell(
-                  onTap: () => setState(() => _selectedIndex = i),
-                  child: Container(
-                    color: isSelected
-                        ? const Color(0xFFE8F4FD)
-                        : Colors.transparent,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 14,
-                    ),
-                    child: Row(
-                      children: [
-                        SizedBox(
-                          width: 32,
-                          child: Text(
-                            lang.flag,
-                            style: const TextStyle(fontSize: 20),
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        Container(width: 1, height: 20, color: Colors.black26),
-                        const SizedBox(width: 12),
-                        Text(
-                          lang.name,
-                          style: const TextStyle(
-                            fontFamily: 'Poppins',
-                            fontWeight: FontWeight.w400,
-                            fontSize: 14,
-                            color: Colors.black,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-            ],
-          ),
           ),
         ],
       ),
