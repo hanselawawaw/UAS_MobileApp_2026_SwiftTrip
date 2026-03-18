@@ -13,6 +13,7 @@ import 'widgets/section_header.dart';
 import '../../widgets/top_bar.dart';
 import '../history/history.dart';
 import '../destination/destination.dart';
+import '../customer_service/onboarding.dart';
 
 // ─────────────────────────────────────────────
 // CONSTANTS / MOCK DATA
@@ -156,7 +157,16 @@ class _HomePageState extends State<HomePage> {
                 Column(
                   children: [
                     // ── Top app bar ──
-                    const TopBar(),
+                    TopBar(
+                      onHamburgerTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const OnboardingPage(),
+                          ),
+                        );
+                      },
+                    ),
 
                     // ── Scrollable body ──
                     Expanded(
@@ -228,7 +238,8 @@ class _HomePageState extends State<HomePage> {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => const DestinationPage(),
+                                        builder: (context) =>
+                                            const DestinationPage(),
                                       ),
                                     );
                                   }

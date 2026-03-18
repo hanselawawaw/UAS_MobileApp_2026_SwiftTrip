@@ -4,10 +4,10 @@ import '../../widgets/top_bar.dart';
 import '../auth/login.dart';
 import 'widgets/profile_card.dart';
 import 'widgets/menu_section.dart';
-import 'language_screen.dart';
-import 'clear_cache_screen.dart';
-import 'wishlist_screen.dart';
-import 'subscription_plan_screen.dart';
+import 'language.dart';
+import 'clear_cache.dart';
+import 'wishlist.dart';
+import 'subscription_plan.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
