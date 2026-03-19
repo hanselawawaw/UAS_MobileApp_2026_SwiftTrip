@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import '../../../widgets/top_bar.dart';
-import '../../main/main_screen.dart';
+import 'package:swifttrip_frontend/screens/customer_service/onboarding.dart';
+import '../../widgets/top_bar.dart';
+import '../main/main_screen.dart';
 
 class PaymentDetailPage extends StatelessWidget {
   const PaymentDetailPage({super.key});
@@ -34,7 +35,13 @@ class PaymentDetailPage extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            const TopBar(showBackButton: true),
+            TopBar(
+              showBackButton: true,
+              onHamburgerTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const OnboardingPage()),
+              ),
+            ),
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.symmetric(horizontal: 20),

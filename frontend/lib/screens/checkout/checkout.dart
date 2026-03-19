@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../widgets/top_bar.dart';
-import 'subpage/successful.dart';
+import 'successful.dart';
 import '../customer_service/onboarding.dart';
 
 class CheckoutPage extends StatefulWidget {
