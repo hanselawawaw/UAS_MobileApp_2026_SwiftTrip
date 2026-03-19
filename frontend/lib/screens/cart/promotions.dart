@@ -62,7 +62,7 @@ class _PromotionsPageState extends State<PromotionsPage> {
         bottom: false,
         child: Column(
           children: [
-            const TopBar(showBackButton: true),
+            const TopBar(showBackButton: true, showHamburger: false),
             const SizedBox(height: 20),
             Expanded(
               child: ListView.separated(

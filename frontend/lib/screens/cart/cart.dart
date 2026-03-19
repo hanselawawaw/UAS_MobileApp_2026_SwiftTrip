@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:swifttrip_frontend/screens/customer_service/onboarding.dart';
 import '../../widgets/top_bar.dart';
-import '../promotions/promotions.dart';
+import 'promotions.dart';
 import '../checkout/checkout.dart';
 import '../customer_service/main_page.dart';
 
