@@ -199,7 +199,10 @@ class _ChatTopBar extends StatelessWidget {
                 MaterialPageRoute(builder: (context) => const MainScreen()),
               );
             },
-            child: SvgPicture.asset('assets/icons/swifttrip_logo.svg', height: 30),
+            child: SvgPicture.asset(
+              'assets/icons/swifttrip_logo.svg',
+              height: 30,
+            ),
           ),
           const Spacer(),
           // Bookmark icon

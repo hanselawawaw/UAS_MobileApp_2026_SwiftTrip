@@ -7,6 +7,7 @@ class ScheduleCarousel extends StatelessWidget {
   final PageController controller;
   final int currentIndex;
   final ValueChanged<int> onPageChanged;
+  final VoidCallback? onTap;
 
   const ScheduleCarousel({
     super.key,
@@ -14,6 +15,7 @@ class ScheduleCarousel extends StatelessWidget {
     required this.controller,
     required this.currentIndex,
     required this.onPageChanged,
+    this.onTap,
   });
 
   @override
@@ -26,7 +28,10 @@ class ScheduleCarousel extends StatelessWidget {
             controller: controller,
             onPageChanged: onPageChanged,
             itemCount: items.length,
-            itemBuilder: (_, i) => _ScheduleCard(item: items[i]),
+            itemBuilder: (_, i) => _ScheduleCard(
+              item: items[i],
+              onTap: onTap,
+            ),
           ),
         ),
         const SizedBox(height: 10),
@@ -42,110 +47,114 @@ class ScheduleCarousel extends StatelessWidget {
 
 class _ScheduleCard extends StatelessWidget {
   final ScheduleItem item;
+  final VoidCallback? onTap;
 
-  const _ScheduleCard({required this.item});
+  const _ScheduleCard({required this.item, this.onTap});
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(left: 12, right: 12, bottom: 16),
-      child: SizedBox(
-        width: 350,
-        height: 125,
-        child: Stack(
-          clipBehavior: Clip.none,
-          children: [
-            // ── White card background with shadow ──────────────────────
-            Positioned(
-              left: 0,
-              top: 0,
-              child: Container(
-                width: 350,
-                height: 125,
-                decoration: ShapeDecoration(
-                  color: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
+      child: GestureDetector(
+        onTap: onTap,
+        child: SizedBox(
+          width: 350,
+          height: 125,
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              // ── White card background with shadow ──────────────────────
+              Positioned(
+                left: 0,
+                top: 0,
+                child: Container(
+                  width: 350,
+                  height: 125,
+                  decoration: ShapeDecoration(
+                    color: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    shadows: const [
+                      BoxShadow(
+                        color: Color(0x26000000),
+                        blurRadius: 20,
+                        offset: Offset(0, 4),
+                        spreadRadius: 0,
+                      ),
+                    ],
                   ),
-                  shadows: const [
-                    BoxShadow(
-                      color: Color(0x26000000),
-                      blurRadius: 20,
-                      offset: Offset(0, 4),
-                      spreadRadius: 0,
+                ),
+              ),
+
+              // ── Title ──────────────────────────────────────────────────
+              Positioned(
+                left: 23,
+                top: 35,
+                child: Text(
+                  item.title,
+                  style: const TextStyle(
+                    color: Colors.black,
+                    fontSize: 16,
+                    fontFamily: 'Poppins',
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+
+              // ── Time range ─────────────────────────────────────────────
+              Positioned(
+                left: 23,
+                top: 59,
+                child: Text(
+                  item.time,
+                  style: const TextStyle(
+                    color: Colors.black,
+                    fontSize: 13,
+                    fontFamily: 'Poppins',
+                    fontWeight: FontWeight.w300,
+                  ),
+                ),
+              ),
+
+              // ── "get more details" ─────────────────────────────────────
+              Positioned(
+                left: 23,
+                top: 89,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'get more details',
+                      style: TextStyle(
+                        color: Colors.black.withOpacity(0.40),
+                        fontSize: 8,
+                        fontFamily: 'Poppins',
+                        fontWeight: FontWeight.w300,
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    Icon(
+                      Icons.arrow_forward,
+                      size: 8,
+                      color: Colors.black.withOpacity(0.40),
                     ),
                   ],
                 ),
               ),
-            ),
 
-            // ── Title ──────────────────────────────────────────────────
-            Positioned(
-              left: 23,
-              top: 35,
-              child: Text(
-                item.title,
-                style: const TextStyle(
-                  color: Colors.black,
-                  fontSize: 16,
-                  fontFamily: 'Poppins',
-                  fontWeight: FontWeight.w500,
+              // ── Vacation logo illustration ─────────────────────────────
+              Positioned(
+                left: 208,
+                top: 13,
+                child: _ScheduleImage(
+                  imageAsset:
+                      item.imageAsset ?? 'assets/images/home/vacation_logo.png',
+                  imageUrl: item.imageUrl,
                 ),
               ),
-            ),
-
-            // ── Time range ─────────────────────────────────────────────
-            Positioned(
-              left: 23,
-              top: 59,
-              child: Text(
-                item.time,
-                style: const TextStyle(
-                  color: Colors.black,
-                  fontSize: 13,
-                  fontFamily: 'Poppins',
-                  fontWeight: FontWeight.w300,
-                ),
-              ),
-            ),
-
-            // ── "get more details" ─────────────────────────────────────
-            Positioned(
-              left: 23,
-              top: 89,
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    'get more details',
-                    style: TextStyle(
-                      color: Colors.black.withOpacity(0.40),
-                      fontSize: 8,
-                      fontFamily: 'Poppins',
-                      fontWeight: FontWeight.w300,
-                    ),
-                  ),
-                  const SizedBox(width: 4),
-                  Icon(
-                    Icons.arrow_forward,
-                    size: 8,
-                    color: Colors.black.withOpacity(0.40),
-                  ),
-                ],
-              ),
-            ),
-
-            // ── Vacation logo illustration ─────────────────────────────
-            Positioned(
-              left: 208,
-              top: 13,
-              child: _ScheduleImage(
-                imageAsset:
-                    item.imageAsset ?? 'assets/images/home/vacation_logo.png',
-                imageUrl: item.imageUrl,
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

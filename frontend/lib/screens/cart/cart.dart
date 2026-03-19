@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:swifttrip_frontend/screens/customer_service/onboarding.dart';
 import '../../widgets/top_bar.dart';
 import '../promotions/promotions.dart';
 import '../checkout/checkout.dart';
+import '../customer_service/main_page.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // DATA MODEL — backend-friendly, swap with fromJson later
@@ -258,7 +260,14 @@ class _CartPageState extends State<CartPage> {
       backgroundColor: const Color(0xFFF6F6F6),
       body: Column(
         children: [
-          const TopBar(),
+          TopBar(
+            onHamburgerTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const OnboardingPage()),
+              );
+            },
+          ),
           const SizedBox(height: 20),
 
           // ── Independent Ticket Scroll Area ────────────────────────────

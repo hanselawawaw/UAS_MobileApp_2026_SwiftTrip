@@ -14,6 +14,7 @@ import '../../widgets/top_bar.dart';
 import '../history/history.dart';
 import '../destination/destination.dart';
 import '../customer_service/onboarding.dart';
+import 'next_trip.dart';
 
 // ─────────────────────────────────────────────
 // CONSTANTS / MOCK DATA
@@ -218,8 +219,18 @@ class _HomePageState extends State<HomePage> {
                                   items: _serverSchedules,
                                   controller: _scheduleController,
                                   currentIndex: _currentSchedule,
-                                  onPageChanged: (i) =>
-                                      setState(() => _currentSchedule = i),
+                                  onPageChanged: (i) {
+                                    setState(() => _currentSchedule = i);
+                                  },
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            const NextTripPage(),
+                                      ),
+                                    );
+                                  },
                                 ),
 
                               const SizedBox(height: 20),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../widgets/top_bar.dart';
 import 'subpage/successful.dart';
+import '../customer_service/onboarding.dart';
 
 class CheckoutPage extends StatefulWidget {
   const CheckoutPage({super.key});
@@ -22,7 +23,17 @@ class _CheckoutPageState extends State<CheckoutPage> {
         bottom: false,
         child: Column(
           children: [
-            const TopBar(showBackButton: true),
+            TopBar(
+              showBackButton: true,
+              onHamburgerTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const OnboardingPage(),
+                  ),
+                );
+              },
+            ),
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.symmetric(
