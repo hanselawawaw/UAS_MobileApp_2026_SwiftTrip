@@ -240,7 +240,10 @@ class _FlightSearchCardState extends State<FlightSearchCard>
                 children: [
                   Expanded(
                     child: GestureDetector(
-                      onTap: () => setState(() => _isMultiCity = false),
+                      onTap: () => setState(() {
+                        _isMultiCity = false;
+                        _ticketFound = null;
+                      }),
                       child: Container(
                         padding: const EdgeInsets.only(bottom: 8),
                         decoration: BoxDecoration(
@@ -270,7 +273,10 @@ class _FlightSearchCardState extends State<FlightSearchCard>
                   ),
                   Expanded(
                     child: GestureDetector(
-                      onTap: () => setState(() => _isMultiCity = true),
+                      onTap: () => setState(() {
+                        _isMultiCity = true;
+                        _ticketFound = null;
+                      }),
                       child: Container(
                         padding: const EdgeInsets.only(bottom: 8),
                         decoration: BoxDecoration(
@@ -382,6 +388,17 @@ class _FlightSearchCardState extends State<FlightSearchCard>
                     ),
                   ],
                 ),
+                if (_ticketFound == true)
+                  _SearchInputFieldWithTrailing(
+                    label: 'Penerbangan',
+                    icon: Icons.airplanemode_active,
+                    value: 'Citilink', // TODO: Replace with backend response
+                    trailing: const Icon(
+                      Icons.keyboard_arrow_down,
+                      size: 20,
+                      color: Colors.black54,
+                    ),
+                  ),
               ] else ...[
                 // ── Multi-city layout ───────────────────────────────────────────
                 ...List.generate(_multiCityLegs.length, (i) {
@@ -408,8 +425,7 @@ class _FlightSearchCardState extends State<FlightSearchCard>
                             GestureDetector(
                               onTap: () => _removeLeg(i),
                               child: const Padding(
-                                padding:
-                                    EdgeInsets.only(bottom: 12, left: 8),
+                                padding: EdgeInsets.only(bottom: 12, left: 8),
                                 child: Icon(
                                   Icons.remove_circle_outline,
                                   color: Colors.black54,
@@ -467,17 +483,17 @@ class _FlightSearchCardState extends State<FlightSearchCard>
                 ),
 
                 // ── Penerbangan (airline picker) ────────────────────────────────
-                _SearchInputFieldWithTrailing(
-                  label: 'Penerbangan',
-                  icon: Icons.airplanemode_active,
-                  // TODO: Replace with selected airline from backend options
-                  value: 'Citilink',
-                  trailing: const Icon(
-                    Icons.keyboard_arrow_down,
-                    size: 20,
-                    color: Colors.black54,
+                if (_ticketFound == true)
+                  _SearchInputFieldWithTrailing(
+                    label: 'Penerbangan',
+                    icon: Icons.airplanemode_active,
+                    value: 'Citilink', // TODO: Replace with backend response
+                    trailing: const Icon(
+                      Icons.keyboard_arrow_down,
+                      size: 20,
+                      color: Colors.black54,
+                    ),
                   ),
-                ),
               ],
 
               const SizedBox(height: 20),
@@ -792,10 +808,7 @@ class _SearchInputFieldWithTrailing extends StatelessWidget {
                   ),
                 ),
               ),
-              if (trailing != null) ...[
-                const SizedBox(width: 8),
-                trailing!,
-              ],
+              if (trailing != null) ...[const SizedBox(width: 8), trailing!],
             ],
           ),
         ],
@@ -803,4 +816,3 @@ class _SearchInputFieldWithTrailing extends StatelessWidget {
     );
   }
 }
-

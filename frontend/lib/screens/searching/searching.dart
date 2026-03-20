@@ -305,7 +305,10 @@ class _FlightSearchCardState extends State<_FlightSearchCard>
                 children: [
                   Expanded(
                     child: GestureDetector(
-                      onTap: () => setState(() => _isMultiCity = false),
+                      onTap: () => setState(() {
+                        _isMultiCity = false;
+                        _ticketFound = null;
+                      }),
                       child: Container(
                         padding: const EdgeInsets.only(bottom: 8),
                         decoration: BoxDecoration(
@@ -335,7 +338,10 @@ class _FlightSearchCardState extends State<_FlightSearchCard>
                   ),
                   Expanded(
                     child: GestureDetector(
-                      onTap: () => setState(() => _isMultiCity = true),
+                      onTap: () => setState(() {
+                        _isMultiCity = true;
+                        _ticketFound = null;
+                      }),
                       child: Container(
                         padding: const EdgeInsets.only(bottom: 8),
                         decoration: BoxDecoration(
@@ -369,7 +375,7 @@ class _FlightSearchCardState extends State<_FlightSearchCard>
 
               // Inputs
               if (!_isMultiCity) ...[
-                // ── Round-trip layout ──────────────────────────────
+                // ── Round-trip layout ───────────────────────────────
                 Stack(
                   alignment: Alignment.centerRight,
                   children: [
@@ -447,8 +453,19 @@ class _FlightSearchCardState extends State<_FlightSearchCard>
                     ),
                   ],
                 ),
+                if (_ticketFound == true)
+                  _SearchInputFieldWithTrailing(
+                    label: 'Penerbangan',
+                    icon: Icons.airplanemode_active,
+                    value: 'Citilink', // TODO: Replace with backend response
+                    trailing: const Icon(
+                      Icons.keyboard_arrow_down,
+                      size: 20,
+                      color: Colors.black54,
+                    ),
+                  ),
               ] else ...[
-                // ── Multi-city layout ───────────────────────────────────────────
+                // ── Multi-city layout ────────────────────────────────
                 ...List.generate(_multiCityLegs.length, (i) {
                   final leg = _multiCityLegs[i];
                   return Column(
@@ -486,11 +503,9 @@ class _FlightSearchCardState extends State<_FlightSearchCard>
                     ],
                   );
                 }),
-
-                // ── Add leg button ──────────────────────────────────────────────
                 GestureDetector(
                   onTap: _addLeg,
-                  child: Padding(
+                  child: const Padding(
                     padding: EdgeInsets.only(bottom: 12),
                     child: Row(
                       children: [
@@ -504,7 +519,6 @@ class _FlightSearchCardState extends State<_FlightSearchCard>
                     ),
                   ),
                 ),
-
                 _SearchInputField(
                   label: 'Date',
                   icon: Icons.calendar_today_outlined,
@@ -529,105 +543,18 @@ class _FlightSearchCardState extends State<_FlightSearchCard>
                     ),
                   ],
                 ),
-
-                // ── Penerbangan (airline picker) ────────────────────────────────
-                _SearchInputFieldWithTrailing(
-                  label: 'Penerbangan',
-                  icon: Icons.airplanemode_active,
-                  // TODO: Replace with selected airline from backend options
-                  value: 'Citilink',
-                  trailing: const Icon(
-                    Icons.keyboard_arrow_down,
-                    size: 20,
-                    color: Colors.black54,
+                if (_ticketFound == true)
+                  _SearchInputFieldWithTrailing(
+                    label: 'Penerbangan',
+                    icon: Icons.airplanemode_active,
+                    value: 'Citilink', // TODO: Replace with backend response
+                    trailing: const Icon(
+                      Icons.keyboard_arrow_down,
+                      size: 20,
+                      color: Colors.black54,
+                    ),
                   ),
-                ),
               ],
-
-              const SizedBox(height: 20),
-
-              // Action Buttons
-              AnimatedSwitcher(
-                duration: const Duration(milliseconds: 350),
-                child: _ticketFound == true
-                    ? _PesanButton(key: const ValueKey('pesan'))
-                    : Row(
-                        key: const ValueKey('search'),
-                        children: [
-                          Expanded(
-                            child: GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        const LandVehicleSearch(),
-                                  ),
-                                );
-                              },
-                              child: Container(
-                                height: 40,
-                                alignment: Alignment.center,
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(20),
-                                  border: Border.all(
-                                    color: Colors.black.withOpacity(0.1),
-                                  ),
-                                ),
-                                child: const Text(
-                                  'Kendaraan Darat',
-                                  style: TextStyle(
-                                    fontFamily: 'Poppins',
-                                    color: Color(0xFF616161),
-                                    fontSize: 12,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: GestureDetector(
-                              onTap: _isSearching ? null : _handleSearch,
-                              child: Container(
-                                height: 40,
-                                alignment: Alignment.center,
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFF2B99E3),
-                                  borderRadius: BorderRadius.circular(20),
-                                  boxShadow: const [
-                                    BoxShadow(
-                                      color: Color(0x26000000),
-                                      blurRadius: 10,
-                                      offset: Offset(0, 4),
-                                    ),
-                                  ],
-                                ),
-                                child: _isSearching
-                                    ? const SizedBox(
-                                        width: 18,
-                                        height: 18,
-                                        child: CircularProgressIndicator(
-                                          color: Colors.white,
-                                          strokeWidth: 2,
-                                        ),
-                                      )
-                                    : const Text(
-                                        'Cari',
-                                        style: TextStyle(
-                                          fontFamily: 'Poppins',
-                                          color: Colors.white,
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-              ),
             ],
           ),
         ),
