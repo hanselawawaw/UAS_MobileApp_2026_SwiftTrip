@@ -568,7 +568,7 @@ class _BottomNavBar extends StatelessWidget {
               Navigator.pushAndRemoveUntil(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const MainScreen(initialIndex: 4),
+                  builder: (context) => const MainScreen(initialIndex: 3),
                 ), // Profile
                 (route) => false,
               );
