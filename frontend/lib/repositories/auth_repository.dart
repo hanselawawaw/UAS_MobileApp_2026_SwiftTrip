@@ -55,7 +55,9 @@ class AuthRepository {
       }
       throw Exception('Failed to load user profile');
     } on DioException catch (e) {
-      throw Exception(e.response?.data?['detail'] ?? 'Failed to fetch user profile.');
+      throw Exception(
+        e.response?.data?['detail'] ?? 'Failed to fetch user profile.',
+      );
     }
   }
 
@@ -74,7 +76,9 @@ class AuthRepository {
       }
       return false;
     } on DioException catch (e) {
-      throw Exception(e.response?.data?['detail'] ?? 'Failed to update profile.');
+      throw Exception(
+        e.response?.data?['detail'] ?? 'Failed to update profile.',
+      );
     }
   }
 

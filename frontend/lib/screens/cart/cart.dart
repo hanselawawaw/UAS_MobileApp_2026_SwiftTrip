@@ -11,32 +11,46 @@ import '../customer_service/main_page.dart';
 // ─────────────────────────────────────────────────────────────────────────────
 
 class CartTicket {
-  final String type;
+  final String type; // 'Train Ticket' | 'Accommodation'
   final String bookingId;
   final String classLabel;
-  final String from;
-  final String to;
-  final String date;
-  final String departure;
-  final String arrive;
-  final String train;
-  final String carriage;
-  final String seat;
   final int priceRp;
+
+  // TODO: Transport fields — from backend for train/flight tickets
+  final String? from;
+  final String? to;
+  final String? date;
+  final String? departure;
+  final String? arrive;
+  final String? train;
+  final String? carriage;
+  final String? seat;
+
+  // TODO: Accommodation fields — from backend for hotel/stay tickets
+  final String? imageUrl;
+  final String? stayDate;
+  final String? stayDuration;
+  final String? bedType;
+  final String? location;
 
   const CartTicket({
     required this.type,
     required this.bookingId,
     required this.classLabel,
-    required this.from,
-    required this.to,
-    required this.date,
-    required this.departure,
-    required this.arrive,
-    required this.train,
-    required this.carriage,
-    required this.seat,
     required this.priceRp,
+    this.from,
+    this.to,
+    this.date,
+    this.departure,
+    this.arrive,
+    this.train,
+    this.carriage,
+    this.seat,
+    this.imageUrl,
+    this.stayDate,
+    this.stayDuration,
+    this.bedType,
+    this.location,
   });
 }
 
@@ -65,18 +79,16 @@ class _CartPageState extends State<CartPage> {
       priceRp: 100000,
     ),
     const CartTicket(
-      type: 'Train Ticket',
+      type: 'Accommodation',
       bookingId: 'ID-1231KADASMASDKAASD',
-      classLabel: 'ECONOMY CLASS',
-      from: 'Jakarta',
-      to: 'Solo',
-      date: '19/2/2026',
-      departure: '13:00',
-      arrive: '16:00',
-      train: '5678',
-      carriage: '02',
-      seat: 'B7',
-      priceRp: 200000,
+      classLabel: 'Hotel Santika Bandung',
+      priceRp: 100000,
+      stayDate: '19/2/2026',
+      stayDuration: '1 Day 1 Night',
+      bedType: '2 Queen Sized Bed',
+      location: 'Hotel Santika Jln indonesia americano no.213 poetry 123194',
+      // TODO: Replace imageUrl with backend asset URL
+      imageUrl: null,
     ),
     const CartTicket(
       type: 'Train Ticket',
@@ -363,75 +375,129 @@ class TicketCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ── Blue header bar ─────────────────────────────────────────
-          CardHeader(type: ticket.type, bookingId: ticket.bookingId),
+          CardHeader(
+            type: ticket.type,
+            bookingId: ticket.bookingId,
+            color: ticket.type == 'Accommodation'
+                ? const Color(0xFFA83029)
+                : const Color(0xFF0098FF),
+          ),
 
-          // ── Class label ─────────────────────────────────────────────
-          Padding(
-            padding: const EdgeInsets.only(left: 15, top: 10, bottom: 6),
-            child: Text(
-              ticket.classLabel,
-              style: const TextStyle(
-                color: Colors.black,
-                fontSize: 15,
-                fontFamily: 'Cairo',
-                fontWeight: FontWeight.w700,
+          if (ticket.type == 'Accommodation') ...[
+            // ── Hotel image ──────────────────────────────────────────
+            ClipRRect(
+              child: ticket.imageUrl != null
+                  ? Image.network(
+                      ticket.imageUrl!,
+                      width: double.infinity,
+                      height: 120,
+                      fit: BoxFit.cover,
+                    )
+                  : Container(
+                      width: double.infinity,
+                      height: 120,
+                      color: const Color(0xFFE0E0E0),
+                      alignment: Alignment.center,
+                      child: const Icon(
+                        Icons.hotel,
+                        size: 40,
+                        color: Colors.white,
+                      ),
+                    ),
+            ),
+
+            // ── DATE / STAY / BED ─────────────────────────────────────
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+              child: Row(
+                children: [
+                  LabelValue(label: 'DATE', value: ticket.stayDate ?? '-'),
+                  const SizedBox(width: 24),
+                  LabelValue(label: 'STAY', value: ticket.stayDuration ?? '-'),
+                  const SizedBox(width: 24),
+                  LabelValue(label: 'BED', value: ticket.bedType ?? '-'),
+                ],
               ),
             ),
-          ),
+
+            // ── LOCATION ──────────────────────────────────────────────
+            Padding(
+              padding: const EdgeInsets.only(left: 15, right: 15, bottom: 10),
+              child: LabelValue(
+                label: 'LOCATION',
+                value: ticket.location ?? '-',
+              ),
+            ),
+          ] else ...[
+            // ── Class label ──────────────────────────────────────────
+            Padding(
+              padding: const EdgeInsets.only(left: 15, top: 10, bottom: 6),
+              child: Text(
+                ticket.classLabel,
+                style: const TextStyle(
+                  color: Colors.black,
+                  fontSize: 15,
+                  fontFamily: 'Cairo',
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+
+            const TicketDivider(),
+
+            // ── FROM / TO ────────────────────────────────────────────
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+              child: Row(
+                children: [
+                  LabelValue(label: 'FROM', value: ticket.from ?? '-'),
+                  const SizedBox(width: 100),
+                  LabelValue(label: 'TO', value: ticket.to ?? '-'),
+                ],
+              ),
+            ),
+
+            const TicketDivider(),
+
+            // ── DATE / DEPARTURE / ARRIVE ────────────────────────────
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+              child: Row(
+                children: [
+                  LabelValue(label: 'DATE', value: ticket.date ?? '-'),
+                  const SizedBox(width: 40),
+                  LabelValue(
+                    label: 'DEPARTURE',
+                    value: ticket.departure ?? '-',
+                  ),
+                  const SizedBox(width: 40),
+                  LabelValue(label: 'ARRIVE', value: ticket.arrive ?? '-'),
+                ],
+              ),
+            ),
+
+            // ── TRAIN / CARRIAGE / SEAT ──────────────────────────────
+            Padding(
+              padding: const EdgeInsets.only(left: 15, right: 15, bottom: 10),
+              child: Row(
+                children: [
+                  LabelValue(label: 'TRAIN', value: ticket.train ?? '-'),
+                  const SizedBox(width: 40),
+                  LabelValue(label: 'CARRIAGE', value: ticket.carriage ?? '-'),
+                  const SizedBox(width: 40),
+                  LabelValue(label: 'SEAT', value: ticket.seat ?? '-'),
+                ],
+              ),
+            ),
+          ],
 
           const TicketDivider(),
 
-          // ── FROM / TO ───────────────────────────────────────────────
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-            child: Row(
-              children: [
-                LabelValue(label: 'FROM', value: ticket.from),
-                const SizedBox(width: 100),
-                LabelValue(label: 'TO', value: ticket.to),
-              ],
-            ),
-          ),
-
-          const TicketDivider(),
-
-          // ── DATE / DEPARTURE / ARRIVE ───────────────────────────────
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-            child: Row(
-              children: [
-                LabelValue(label: 'DATE', value: ticket.date),
-                const SizedBox(width: 40),
-                LabelValue(label: 'DEPARTURE', value: ticket.departure),
-                const SizedBox(width: 40),
-                LabelValue(label: 'ARRIVE', value: ticket.arrive),
-              ],
-            ),
-          ),
-
-          // ── TRAIN / CARRIAGE / SEAT ─────────────────────────────────
-          Padding(
-            padding: const EdgeInsets.only(left: 15, right: 15, bottom: 10),
-            child: Row(
-              children: [
-                LabelValue(label: 'TRAIN', value: ticket.train),
-                const SizedBox(width: 40),
-                LabelValue(label: 'CARRIAGE', value: ticket.carriage),
-                const SizedBox(width: 40),
-                LabelValue(label: 'SEAT', value: ticket.seat),
-              ],
-            ),
-          ),
-
-          const TicketDivider(),
-
-          // ── Delete button + Price ───────────────────────────────────
+          // ── Delete button + Price (shared for both types) ─────────
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 10),
             child: Row(
               children: [
-                // Delete button
                 if (onDelete != null)
                   GestureDetector(
                     onTap: onDelete,
@@ -461,10 +527,7 @@ class TicketCard extends StatelessWidget {
                       ),
                     ),
                   ),
-
                 const Spacer(),
-
-                // Price
                 Text(
                   formatRp(ticket.priceRp),
                   style: const TextStyle(
@@ -486,8 +549,14 @@ class TicketCard extends StatelessWidget {
 class CardHeader extends StatelessWidget {
   final String type;
   final String bookingId;
+  final Color color;
 
-  const CardHeader({super.key, required this.type, required this.bookingId});
+  const CardHeader({
+    super.key,
+    required this.type,
+    required this.bookingId,
+    this.color = const Color(0xFF0098FF),
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -495,9 +564,9 @@ class CardHeader extends StatelessWidget {
       width: double.infinity,
       height: 30,
       padding: const EdgeInsets.symmetric(horizontal: 18),
-      decoration: const ShapeDecoration(
-        color: Color(0xFF0098FF),
-        shape: RoundedRectangleBorder(
+      decoration: ShapeDecoration(
+        color: color,
+        shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(10),
             topRight: Radius.circular(10),
