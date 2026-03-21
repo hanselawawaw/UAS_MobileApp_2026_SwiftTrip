@@ -234,7 +234,8 @@ class _DestinationSearchPageState extends State<DestinationSearchPage> {
                           color: Colors.black,
                         ),
                         decoration: InputDecoration(
-                          hintText: 'Looking For Something?',
+                          hintText:
+                              'Looking For Something?', // TODO: Create search page
                           hintStyle: TextStyle(
                             fontFamily: 'Cairo',
                             fontSize: 16,

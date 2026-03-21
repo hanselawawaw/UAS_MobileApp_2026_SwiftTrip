@@ -7,7 +7,7 @@ import 'category_page_base.dart';
 // ─────────────────────────────────────────────────────────────────────────────
 
 class DestinationDetailPage extends StatefulWidget {
-  final CategoryDestination destination;
+  final CategoryItem destination;
   final double pricePerNight;
   final double rating;
   final String description;
@@ -250,7 +250,7 @@ class _DetailTopBar extends StatelessWidget {
 // ─────────────────────────────────────────────────────────────────────────────
 
 class _HeroImage extends StatelessWidget {
-  final CategoryDestination destination;
+  final CategoryItem destination;
   final bool isFavorite;
   final VoidCallback onToggleFavorite;
 
@@ -284,9 +284,9 @@ class _HeroImage extends StatelessWidget {
                   fit: BoxFit.cover,
                   errorBuilder: (_, __, ___) => fallback,
                 )
-              : destination.imageAsset != null
+              : destination.imageUrl != null
               ? Image.asset(
-                  destination.imageAsset!,
+                  destination.imageUrl,
                   fit: BoxFit.cover,
                   errorBuilder: (_, __, ___) => fallback,
                 )
