@@ -5,6 +5,7 @@ import 'widgets/destination_search_bar.dart';
 import 'widgets/category_list.dart';
 import 'widgets/destination_section.dart';
 import 'widgets/destination_card.dart';
+import 'search.dart';
 
 // --- Main Page ---
 class DestinationPage extends StatelessWidget {
@@ -31,7 +32,16 @@ class DestinationPage extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 30),
-                  const DestinationSearchBar(),
+                  DestinationSearchBar(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const DestinationSearchPage(),
+                        ),
+                      );
+                    },
+                  ),
                   const SizedBox(height: 40),
                   const CategoryList(),
                   const SizedBox(height: 30),

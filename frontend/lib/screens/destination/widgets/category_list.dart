@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'category_item.dart';
 import '../categories/villa.dart';
 import '../categories/hotel.dart';
-import '../categories/pulau.dart';
-import '../categories/wahana.dart';
+import '../categories/apartment.dart';
+import '../categories/condo.dart';
 
 class CategoryList extends StatelessWidget {
   const CategoryList({super.key});
@@ -30,7 +30,7 @@ class CategoryList extends StatelessWidget {
       ),
       CategoryModel(
         label: 'Pulau',
-        targetPage: const PulauPage(),
+        targetPage: const ApartPage(),
         iconSvg:
             '''<svg width="29" height="32" viewBox="0 0 29 32" fill="none" xmlns="http://www.w3.org/2000/svg">
 <g clip-path="url(#clip0_138_997)">
@@ -48,7 +48,7 @@ class CategoryList extends StatelessWidget {
       ),
       CategoryModel(
         label: 'Wahana',
-        targetPage: const WahanaPage(),
+        targetPage: const CondoPage(),
         iconSvg:
             '''<svg width="33" height="33" viewBox="0 0 33 33" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M6 29V5H21L21.6667 7.82353H31V21.9412H19.3333L18.6667 19.1176H9.33333V29H6Z" fill="black"/>

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 class DestinationSearchBar extends StatelessWidget {
-  const DestinationSearchBar({super.key});
+  final VoidCallback? onTap;
+  const DestinationSearchBar({super.key, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -36,14 +37,17 @@ class DestinationSearchBar extends StatelessWidget {
             ),
           ],
         ),
-        child: const TextField(
+        child: TextField(
+          readOnly: onTap != null,
+          onTap: onTap,
+          textAlignVertical: TextAlignVertical.center,
           style: textStyle,
-          decoration: InputDecoration(
+          decoration: const InputDecoration(
             hintText: 'Search',
             hintStyle: hintStyle,
             prefixIcon: Icon(Icons.search, color: Color(0xFF9E9E9E), size: 18),
             border: InputBorder.none,
-            contentPadding: EdgeInsets.symmetric(vertical: 8),
+            contentPadding: EdgeInsets.zero,
             isDense: true,
           ),
         ),
