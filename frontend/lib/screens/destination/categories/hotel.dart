@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../category_page_base.dart';
+import '../detail_page.dart';
 
 class HotelPage extends StatefulWidget {
   const HotelPage({super.key});
@@ -122,8 +123,12 @@ class _HotelPageState extends State<HotelPage> {
       items: _items,
       isLoading: _isLoading,
       onItemTap: (item) {
-        debugPrint('Tapped on hotel: ${item.name} (ID: ${item.id})');
-        // TODO: Navigate to hotel detail page
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => DestinationDetailPage(destination: item),
+          ),
+        );
       },
     );
   }

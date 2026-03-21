@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../category_page_base.dart';
+import '../detail_page.dart';
 
 class AirySearchPage extends StatefulWidget {
   const AirySearchPage({super.key});
@@ -72,8 +73,12 @@ class _AirySearchPageState extends State<AirySearchPage> {
       items: _items,
       isLoading: _isLoading,
       onItemTap: (item) {
-        debugPrint('Tapped on airy place: ${item.name} (ID: ${item.id})');
-        // TODO: Navigate to place detail
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => DestinationDetailPage(destination: item),
+          ),
+        );
       },
     );
   }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../category_page_base.dart';
+import '../detail_page.dart';
 
 class CozySearchPage extends StatefulWidget {
   const CozySearchPage({super.key});
@@ -71,8 +72,12 @@ class _CozySearchPageState extends State<CozySearchPage> {
       items: _items,
       isLoading: _isLoading,
       onItemTap: (item) {
-        debugPrint('Tapped on cozy place: ${item.name} (ID: ${item.id})');
-        // TODO: Navigate to place detail
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => DestinationDetailPage(destination: item),
+          ),
+        );
       },
     );
   }

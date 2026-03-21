@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../category_page_base.dart';
+import '../detail_page.dart';
 
 class SleekSearchPage extends StatefulWidget {
   const SleekSearchPage({super.key});
@@ -71,8 +72,12 @@ class _SleekSearchPageState extends State<SleekSearchPage> {
       items: _items,
       isLoading: _isLoading,
       onItemTap: (item) {
-        debugPrint('Tapped on sleek place: ${item.name} (ID: ${item.id})');
-        // TODO: Navigate to place detail
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => DestinationDetailPage(destination: item),
+          ),
+        );
       },
     );
   }

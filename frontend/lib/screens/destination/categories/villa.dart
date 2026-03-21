@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../category_page_base.dart';
+import '../detail_page.dart';
 
 class VillaPage extends StatefulWidget {
   const VillaPage({super.key});
@@ -123,10 +124,12 @@ class _VillaPageState extends State<VillaPage> {
       items: _items,
       isLoading: _isLoading,
       onItemTap: (item) {
-        // TODO: Navigate to villa detail page: Navigator.of(context).push(...)
-        // Print the ID to verify link to backend data
-        debugPrint('Tapped on villa: ${item.name} (ID: ${item.id})');
-        // TODO: Pass item.id to fetch full villa details from backend
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => DestinationDetailPage(destination: item),
+          ),
+        );
       },
     );
   }

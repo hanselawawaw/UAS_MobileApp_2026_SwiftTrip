@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../category_page_base.dart';
+import '../detail_page.dart';
 
 class CondoPage extends StatefulWidget {
   const CondoPage({super.key});
@@ -125,8 +126,12 @@ class _CondoPageState extends State<CondoPage> {
       items: _items,
       isLoading: _isLoading,
       onItemTap: (item) {
-        debugPrint('Tapped on condo: ${item.name} (ID: ${item.id})');
-        // TODO: Navigate to condo detail page
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => DestinationDetailPage(destination: item),
+          ),
+        );
       },
     );
   }
