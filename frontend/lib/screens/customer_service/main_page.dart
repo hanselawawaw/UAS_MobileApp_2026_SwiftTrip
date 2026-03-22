@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../widgets/top_bar.dart';
 import 'onboarding.dart';
+import 'cs_chat.dart';
 import 'add_request.dart';
 import 'models/faq_item.dart';
 import 'models/recent_question.dart';
@@ -137,8 +138,15 @@ class _CustomerServicePageState extends State<CustomerServicePage> {
                             separatorBuilder: (_, __) =>
                                 const SizedBox(width: 12),
                             itemBuilder: (_, i) => RecentCard(
-                              item: _recentQuestions[i],
-                              cardWidth: 350,
+                              question: _recentQuestions[i],
+                              onReadMore: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => CsChatPage(ticketId: _recentQuestions[i].id),
+                                  ),
+                                );
+                              },
                             ),
                           ),
                         ),

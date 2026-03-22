@@ -41,10 +41,12 @@ class CustomerServiceService {
     await Future.delayed(const Duration(milliseconds: 500));
     return const [
       RecentQuestion(
+        id: 'RQ001',
         username: 'Wilson',
         question: 'How to get refund after accidentally press confirm?',
       ),
       RecentQuestion(
+        id: 'RQ002',
         username: 'James',
         question: 'Can I change my booking date after payment?',
       ),

@@ -2,17 +2,22 @@ import 'package:flutter/material.dart';
 import '../models/recent_question.dart';
 
 class RecentCard extends StatelessWidget {
-  final RecentQuestion item;
+  final RecentQuestion question;
+  final VoidCallback? onReadMore;
   final double cardWidth;
 
-  const RecentCard({super.key, required this.item, this.cardWidth = 350});
+  const RecentCard({
+    super.key,
+    required this.question,
+    this.onReadMore,
+    this.cardWidth = 350,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
       width: cardWidth,
-      margin: const EdgeInsets.only(bottom: 4),
-      padding: const EdgeInsets.fromLTRB(12, 10, 12, 14),
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
       decoration: ShapeDecoration(
         color: Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
@@ -26,14 +31,13 @@ class RecentCard extends StatelessWidget {
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           // ── Username ───────────────────────────────────────────────────
           Row(
             children: [
               Container(
-                width: 33.52,
-                height: 33.52,
+                width: 32,
+                height: 32,
                 decoration: const ShapeDecoration(
                   color: Colors.white,
                   shape: OvalBorder(),
@@ -48,12 +52,11 @@ class RecentCard extends StatelessWidget {
                 child: const Icon(
                   Icons.person_outline,
                   size: 16,
-                  color: Colors.black54,
                 ),
               ),
               const SizedBox(width: 8),
               Text(
-                item.username,
+                question.username,
                 style: const TextStyle(
                   fontFamily: 'Poppins',
                   fontWeight: FontWeight.w400,
@@ -68,26 +71,22 @@ class RecentCard extends StatelessWidget {
 
           // ── Question ───────────────────────────────────────────────────
           Text(
-            item.question,
+            question.question,
             style: const TextStyle(
               fontFamily: 'Poppins',
               fontWeight: FontWeight.w400,
-              fontSize: 12,
-              height: 1.67,
+              fontSize: 10,
+              height: 2,
               color: Colors.black,
             ),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 16),
 
           // ── Read more ──────────────────────────────────────────────────
           Align(
             alignment: Alignment.centerRight,
             child: GestureDetector(
-              onTap: () {
-                // TODO: Navigate to full question detail
-              },
+              onTap: onReadMore,
               child: const Text(
                 'Read more >',
                 textAlign: TextAlign.center,
