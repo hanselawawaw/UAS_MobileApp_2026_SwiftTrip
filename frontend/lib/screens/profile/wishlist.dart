@@ -1,29 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import '../../widgets/top_bar.dart';
+import '../destination/category_page_base.dart';
+import '../destination/detail_page.dart';
 
-// MODEL
-class WishlistItem {
-  final String id;
-  final String title;
-  final double rating;
-  final String description;
-  final String? imageAsset;
-  final String? imageUrl;
-  bool isWishlisted;
+// TODO: Integrate with backend API to fetch real wishlist data for the logged-in user.
+// TODO: Implement toggle favorite functionality that syncs with the database.
 
-  WishlistItem({
-    required this.id,
-    required this.title,
-    required this.rating,
-    required this.description,
-    this.imageAsset,
-    this.imageUrl,
-    this.isWishlisted = true,
-  });
-}
-
-// WISHLIST SCREEN
 class WishlistScreen extends StatefulWidget {
   const WishlistScreen({super.key});
 
@@ -32,350 +13,70 @@ class WishlistScreen extends StatefulWidget {
 }
 
 class _WishlistScreenState extends State<WishlistScreen> {
-  final List<WishlistItem> _items = [
-    WishlistItem(
+  // Mock data using CategoryItem model from reusable widgets
+  final List<CategoryItem> _items = [
+    const CategoryItem(
       id: 'item_1',
-      title: 'Bali Beach Retreat',
-      rating: 4.8,
-      description:
-          'Relaxing tropical escape with white sand beaches and sunset views.',
-      imageUrl: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e',
-    ),
-    WishlistItem(
-      id: 'item_2',
-      title: 'Tokyo City Lights',
-      rating: 4.7,
-      description:
-          'Modern city experience with neon lights, food, and culture.',
-      imageUrl: 'https://images.unsplash.com/photo-1549692520-acc6669e2f0c',
-    ),
-    WishlistItem(
-      id: 'item_3',
-      title: 'Swiss Alps Escape',
+      name: 'The Edge Bali Villa - Uluwatu',
       rating: 4.9,
       description:
-          'Snowy mountains, fresh air, and breathtaking alpine scenery.',
-      imageUrl: 'https://images.unsplash.com/photo-1501785888041-af3ef285b470',
+          'Luxury cliffside villa with private pool and panoramic Indian Ocean views.',
+      imageUrl: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e',
+      isFavorite: true,
     ),
-    WishlistItem(
-      id: 'item_4',
-      title: 'Santorini Sunset View',
+    const CategoryItem(
+      id: 'item_2',
+      name: 'Plataran Komodo Resort - Labuan Bajo',
       rating: 4.8,
-      description: 'Iconic white houses with blue domes overlooking the sea.',
-      imageUrl: 'https://images.unsplash.com/photo-1505739771715-9c3fcd5f1b38',
+      description: 'Beachfront resort near Komodo with clear turquoise waters.',
+      imageUrl: 'https://images.unsplash.com/photo-1518548419970-58e3b4079ab2',
+      isFavorite: true,
     ),
-    WishlistItem(
+    const CategoryItem(
+      id: 'item_3',
+      name: 'Padma Hotel Bandung - Ciumbuleuit',
+      rating: 4.8,
+      description:
+          'Mountain-view hotel with cool climate, infinity pool, and forest atmosphere.',
+      imageUrl: 'https://images.unsplash.com/photo-1501785888041-af3ef285b470',
+      isFavorite: true,
+    ),
+    const CategoryItem(
+      id: 'item_4',
+      name: 'Ayana Resort - Jimbaran Bali',
+      rating: 4.9,
+      description:
+          'Famous luxury resort with Rock Bar and stunning sunset ocean views.',
+      imageUrl: 'https://images.unsplash.com/photo-1505739771715-9c3fcd5f1b38',
+      isFavorite: true,
+    ),
+    const CategoryItem(
       id: 'item_5',
-      title: 'Dubai Desert Adventure',
-      rating: 4.6,
-      description: 'Golden dunes, luxury stays, and thrilling desert safari.',
+      name: 'The Ritz-Carlton Jakarta - Mega Kuningan',
+      rating: 4.7,
+      description:
+          'High-end city hotel with premium service in the heart of Jakarta business district.',
       imageUrl: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee',
+      isFavorite: true,
     ),
   ];
 
-  void _toggleWishlist(int index) {
-    setState(() => _items[index].isWishlisted = !_items[index].isWishlisted);
-    if (!_items[index].isWishlisted) {
-      Future.delayed(const Duration(milliseconds: 300), () {
-        if (mounted) setState(() => _items.removeAt(index));
-      });
-    }
+  void _navigateToDetail(CategoryItem item) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => DestinationDetailPage(destination: item),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // ── Top Bar ──────────────────────────────────────────────────────
-          const TopBar(showBackButton: true, showHamburger: false),
-          const SizedBox(height: 10),
-
-          // ── Title ────────────────────────────────────────────────────────
-          const Padding(
-            padding: EdgeInsets.fromLTRB(20, 12, 20, 0),
-            child: Text(
-              'Wishlist',
-              style: TextStyle(
-                fontFamily: 'Poppins',
-                fontWeight: FontWeight.w700,
-                fontSize: 26,
-                color: Colors.black,
-              ),
-            ),
-          ),
-          const SizedBox(height: 10),
-          const Divider(
-            height: 20,
-            indent: 20,
-            endIndent: 20,
-            color: Colors.black,
-          ),
-          const SizedBox(height: 10),
-
-          // ── List ─────────────────────────────────────────────────────────
-          Expanded(
-            child: _items.isEmpty
-                ? const Center(
-                    child: Text(
-                      'No wishlist items yet.',
-                      style: TextStyle(
-                        fontFamily: 'Poppins',
-                        fontSize: 14,
-                        color: Colors.black45,
-                      ),
-                    ),
-                  )
-                : ListView.separated(
-                    padding: const EdgeInsets.fromLTRB(20, 4, 20, 120),
-                    itemCount: _items.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: 14),
-                    itemBuilder: (_, i) => _WishlistCard(
-                      item: _items[i],
-                      onToggleWishlist: () => _toggleWishlist(i),
-                    ),
-                  ),
-          ),
-        ],
-      ),
+    // Reusable CategoryPageBase provides standardized layout (TopBar, Title, Divider, List)
+    return CategoryPageBase(
+      title: 'Wishlist',
+      items: _items,
+      onItemTap: _navigateToDetail,
     );
-  }
-}
-
-// WISHLIST CARD
-class _WishlistCard extends StatelessWidget {
-  final WishlistItem item;
-  final VoidCallback onToggleWishlist;
-
-  const _WishlistCard({required this.item, required this.onToggleWishlist});
-
-  @override
-  Widget build(BuildContext context) {
-    const double cardHeight = 102.0;
-    const double imageWidth = 157.0;
-
-    return Container(
-      height: cardHeight,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x3F000000),
-            blurRadius: 20,
-            offset: Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          // ── IMAGE + overlaid icons ────────────────────────────────────────
-          SizedBox(
-            width: imageWidth,
-            height: cardHeight,
-            child: Stack(
-              children: [
-                // Image — rounded only on left side
-                ClipRRect(
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(20),
-                    bottomLeft: Radius.circular(20),
-                  ),
-                  child: _ItemImage(
-                    item: item,
-                    width: imageWidth,
-                    height: cardHeight,
-                  ),
-                ),
-
-                // % Percentage — top LEFT corner
-                Positioned(
-                  top: 8,
-                  left: 8,
-                  child: GestureDetector(
-                    onTap: () {},
-                    child: Container(
-                      width: 26,
-                      height: 26,
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.82),
-                        shape: BoxShape.circle,
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(5),
-                        child: SvgPicture.asset(
-                          'assets/icons/percentage.svg',
-                          fit: BoxFit.contain,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-
-                // ♡ Heart — top RIGHT corner
-                Positioned(
-                  top: 8,
-                  right: 8,
-                  child: _CircleIcon(
-                    icon: item.isWishlisted
-                        ? Icons.favorite
-                        : Icons.favorite_border,
-                    iconColor: item.isWishlisted ? Colors.red : Colors.black54,
-                    onTap: onToggleWishlist,
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          // ── TEXT CONTENT ─────────────────────────────────────────────────
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(12, 14, 12, 10),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  // Title
-                  Text(
-                    item.title,
-                    style: const TextStyle(
-                      fontFamily: 'Poppins',
-                      fontWeight:
-                          FontWeight.w400, // updated from w600 per Figma
-                      fontSize: 13,
-                      color: Colors.black,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-
-                  const SizedBox(height: 2),
-
-                  // Rating: number + star icon
-                  Row(
-                    children: [
-                      Text(
-                        '${item.rating.toInt()}',
-                        style: const TextStyle(
-                          fontFamily: 'Poppins',
-                          fontWeight: FontWeight.w400, // updated per Figma
-                          fontSize: 12,
-                          color: Colors.black,
-                        ),
-                      ),
-                      const SizedBox(width: 2),
-                      const Icon(Icons.star, size: 13, color: Colors.amber),
-                    ],
-                  ),
-
-                  const SizedBox(height: 4),
-
-                  // Description
-                  Text(
-                    item.description,
-                    style: const TextStyle(
-                      fontFamily: 'Poppins',
-                      fontWeight: FontWeight.w400, // updated per Figma
-                      fontSize: 10,
-                      color: Colors.black54,
-                      height: 1.6,
-                    ),
-                    maxLines: 3,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// CIRCLE ICON BUTTON  (semi-transparent white background)
-// ─────────────────────────────────────────────────────────────────────────────
-
-class _CircleIcon extends StatelessWidget {
-  final IconData icon;
-  final Color iconColor;
-  final VoidCallback onTap;
-
-  const _CircleIcon({
-    required this.icon,
-    this.iconColor = Colors.black54,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: 26,
-        height: 26,
-        decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.82),
-          shape: BoxShape.circle,
-        ),
-        child: Icon(icon, size: 14, color: iconColor),
-      ),
-    );
-  }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// IMAGE RESOLVER  — URL dulu, fallback ke asset lokal
-// ─────────────────────────────────────────────────────────────────────────────
-
-class _ItemImage extends StatelessWidget {
-  final WishlistItem item;
-  final double width;
-  final double height;
-
-  const _ItemImage({
-    required this.item,
-    required this.width,
-    required this.height,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final fallback = Container(
-      width: width,
-      height: height,
-      color: Colors.blueGrey.shade100,
-      child: Icon(
-        Icons.image_outlined,
-        color: Colors.blueGrey.shade300,
-        size: 32,
-      ),
-    );
-
-    if (item.imageUrl != null && item.imageUrl!.isNotEmpty) {
-      return Image.network(
-        item.imageUrl!,
-        width: width,
-        height: height,
-        fit: BoxFit.cover,
-        errorBuilder: (_, __, ___) => fallback,
-      );
-    }
-
-    if (item.imageAsset != null && item.imageAsset!.isNotEmpty) {
-      return Image.asset(
-        item.imageAsset!,
-        width: width,
-        height: height,
-        fit: BoxFit.cover,
-        errorBuilder: (_, __, ___) => fallback,
-      );
-    }
-
-    return fallback;
   }
 }
