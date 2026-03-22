@@ -5,6 +5,13 @@ import '../../widgets/top_bar.dart';
 import 'onboarding.dart';
 import 'main_page.dart';
 import 'your_ticket.dart';
+import 'models/cs_request.dart';
+import 'widgets/cs_search_bar.dart';
+import 'widgets/cs_dropdown_field.dart';
+import 'widgets/cs_input_field.dart';
+import 'widgets/cs_upload_field.dart';
+import 'widgets/cs_section_label.dart';
+import 'services/customer_service_service.dart';
 
 class AddRequestPage extends StatefulWidget {
   const AddRequestPage({super.key});
@@ -21,28 +28,16 @@ class _AddRequestPageState extends State<AddRequestPage>
   final TextEditingController _searchController = TextEditingController();
   final TextEditingController _headerController = TextEditingController();
   final TextEditingController _statementController = TextEditingController();
+  final CustomerServiceService _service = CustomerServiceService();
 
   String? _selectedProblemType;
   String? _selectedLocation;
   String? _selectedPublishType;
   String? _uploadedFileName;
 
-  // TODO: Fetch these options from backend
-  final List<String> _problemTypes = [
-    'Bugs',
-    'Text Error',
-    'Button Malfunctions',
-    'Design Error',
-    'Others',
-  ];
-  final List<String> _locations = [
-    'Home',
-    'Chat AI',
-    'Keranjang',
-    'Pembayaran',
-    'Others',
-  ];
-  final List<String> _publishTypes = ['Public', 'Private'];
+  List<String> _problemTypes = [];
+  List<String> _locations = [];
+  List<String> _publishTypes = [];
 
   @override
   void initState() {
@@ -55,6 +50,21 @@ class _AddRequestPageState extends State<AddRequestPage>
       begin: const Offset(1.5, 0),
       end: Offset.zero,
     ).animate(CurvedAnimation(parent: _notifController, curve: Curves.easeOut));
+
+    _loadOptions();
+  }
+
+  Future<void> _loadOptions() async {
+    final types = await _service.getProblemTypes();
+    final locs = await _service.getLocations();
+    final pubTypes = await _service.getPublishTypes();
+    if (mounted) {
+      setState(() {
+        _problemTypes = types;
+        _locations = locs;
+        _publishTypes = pubTypes;
+      });
+    }
   }
 
   @override
@@ -76,9 +86,18 @@ class _AddRequestPageState extends State<AddRequestPage>
     }
   }
 
-  void _handleSendRequest() {
+  Future<void> _handleSendRequest() async {
     // TODO: Validate all fields before submitting
-    // TODO: POST request body to backend
+    final request = CsRequest(
+      problemType: _selectedProblemType,
+      location: _selectedLocation,
+      publishType: _selectedPublishType,
+      header: _headerController.text,
+      statement: _statementController.text,
+      uploadedFileName: _uploadedFileName,
+    );
+
+    await _service.postRequest(request);
     _showNotificationThenNavigate();
   }
 
@@ -122,9 +141,10 @@ class _AddRequestPageState extends State<AddRequestPage>
                       const SizedBox(height: 12),
 
                       // ── Search Bar ─────────────────────────────────────────────
-                      _SearchBar(
+                      CsSearchBar(
                         controller: _searchController,
                         onChanged: (_) => setState(() {}),
+                        readOnly: true,
                         onTap: () {
                           Navigator.pushReplacement(
                             context,
@@ -150,7 +170,6 @@ class _AddRequestPageState extends State<AddRequestPage>
                             ),
                           ),
                           GestureDetector(
-                            // TODO: Navigate to user's ticket page
                             onTap: () {
                               Navigator.push(
                                 context,
@@ -174,7 +193,7 @@ class _AddRequestPageState extends State<AddRequestPage>
                       const SizedBox(height: 16),
 
                       // ── Dropdowns ──────────────────────────────────────────────
-                      _DropdownField(
+                      CsDropdownField(
                         hint: 'Problem Type?',
                         value: _selectedProblemType,
                         items: _problemTypes,
@@ -182,7 +201,7 @@ class _AddRequestPageState extends State<AddRequestPage>
                             setState(() => _selectedProblemType = val),
                       ),
                       const SizedBox(height: 10),
-                      _DropdownField(
+                      CsDropdownField(
                         hint: 'Where Is It Located?',
                         value: _selectedLocation,
                         items: _locations,
@@ -190,7 +209,7 @@ class _AddRequestPageState extends State<AddRequestPage>
                             setState(() => _selectedLocation = val),
                       ),
                       const SizedBox(height: 10),
-                      _DropdownField(
+                      CsDropdownField(
                         hint: 'Publish Type?',
                         value: _selectedPublishType,
                         items: _publishTypes,
@@ -202,9 +221,9 @@ class _AddRequestPageState extends State<AddRequestPage>
                       const Divider(color: Color(0x4D000000), thickness: 1),
 
                       // ── Header Field ───────────────────────────────────────────
-                      const _SectionLabel(text: 'Header'),
+                      const CsSectionLabel(text: 'Header'),
                       const SizedBox(height: 8),
-                      _InputField(
+                      CsInputField(
                         controller: _headerController,
                         hint: 'Type Here',
                         minLines: 1,
@@ -214,9 +233,9 @@ class _AddRequestPageState extends State<AddRequestPage>
                       const SizedBox(height: 16),
 
                       // ── Main Statements Field ──────────────────────────────────
-                      const _SectionLabel(text: 'Main Statements'),
+                      const CsSectionLabel(text: 'Main Statements'),
                       const SizedBox(height: 8),
-                      _InputField(
+                      CsInputField(
                         controller: _statementController,
                         hint: 'Type Here',
                         minLines: 5,
@@ -226,9 +245,9 @@ class _AddRequestPageState extends State<AddRequestPage>
                       const SizedBox(height: 16),
 
                       // ── Upload Evidence ────────────────────────────────────────
-                      const _SectionLabel(text: 'Upload Evidence'),
+                      const CsSectionLabel(text: 'Upload Evidence'),
                       const SizedBox(height: 8),
-                      _UploadField(
+                      CsUploadField(
                         fileName: _uploadedFileName,
                         onImport: _handleImportFile,
                       ),
@@ -343,373 +362,6 @@ class _AddRequestPageState extends State<AddRequestPage>
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// SEARCH BAR
-// ─────────────────────────────────────────────────────────────────────────────
-
-class _SearchBar extends StatelessWidget {
-  final TextEditingController controller;
-  final ValueChanged<String> onChanged;
-  final VoidCallback? onTap;
-
-  const _SearchBar({
-    required this.controller,
-    required this.onChanged,
-    this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        height: 44,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        decoration: ShapeDecoration(
-          color: Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          shadows: const [
-            BoxShadow(
-              color: Color(0x26000000),
-              blurRadius: 20,
-              offset: Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              child: TextField(
-                controller: controller,
-                onChanged: onChanged,
-                readOnly: true,
-                style: const TextStyle(fontFamily: 'Poppins', fontSize: 13),
-                decoration: InputDecoration(
-                  hintText: 'Let Us Help Answering Your Question',
-                  hintStyle: TextStyle(
-                    fontFamily: 'Poppins',
-                    fontSize: 12,
-                    color: Colors.black.withOpacity(0.4),
-                  ),
-                  border: InputBorder.none,
-                  isDense: true,
-                  contentPadding: EdgeInsets.zero,
-                ),
-              ),
-            ),
-            const Icon(Icons.search, size: 20, color: Colors.black54),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// DROPDOWN FIELD
-// ─────────────────────────────────────────────────────────────────────────────
-
-class _DropdownField extends StatefulWidget {
-  final String hint;
-  final String? value;
-  final List<String> items;
-  final ValueChanged<String?> onChanged;
-
-  const _DropdownField({
-    required this.hint,
-    required this.value,
-    required this.items,
-    required this.onChanged,
-  });
-
-  @override
-  State<_DropdownField> createState() => _DropdownFieldState();
-}
-
-class _DropdownFieldState extends State<_DropdownField> {
-  bool _open = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        // ── Header (always visible) ───────────────────────────────────────
-        GestureDetector(
-          onTap: () => setState(() => _open = !_open),
-          child: Container(
-            height: 36,
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            decoration: ShapeDecoration(
-              color: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
-              ),
-              shadows: const [
-                BoxShadow(
-                  color: Color(0x26000000),
-                  blurRadius: 20,
-                  offset: Offset(0, 4),
-                ),
-              ],
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    widget.value ?? widget.hint,
-                    style: const TextStyle(
-                      fontFamily: 'Poppins',
-                      fontWeight: FontWeight.w400,
-                      fontSize: 12,
-                      height: 1.67,
-                      color: Colors.black,
-                    ),
-                  ),
-                ),
-                Icon(
-                  _open ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
-                  size: 22,
-                  color: Colors.black,
-                ),
-              ],
-            ),
-          ),
-        ),
-
-        // ── Dropdown Body ─────────────────────────────────────────────────
-        AnimatedSize(
-          duration: const Duration(milliseconds: 250),
-          curve: Curves.easeInOut,
-          child: _open
-              ? Container(
-                  width: double.infinity,
-                  margin: const EdgeInsets.only(top: 4),
-                  decoration: ShapeDecoration(
-                    color: const Color(0xFFE6E6E6),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    shadows: const [
-                      BoxShadow(
-                        color: Color(0x26000000),
-                        blurRadius: 20,
-                        offset: Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: widget.items.map((item) {
-                      final isSelected = item == widget.value;
-                      return GestureDetector(
-                        onTap: () {
-                          widget.onChanged(item);
-                          setState(() => _open = false);
-                        },
-                        child: Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 10,
-                          ),
-                          child: Text(
-                            item,
-                            style: TextStyle(
-                              fontFamily: 'Poppins',
-                              fontWeight: FontWeight.w400,
-                              fontSize: 12,
-                              height: 1.67,
-                              color: isSelected
-                                  ? const Color(0xFF2B99E3)
-                                  : Colors.black,
-                            ),
-                          ),
-                        ),
-                      );
-                    }).toList(),
-                  ),
-                )
-              : const SizedBox.shrink(),
-        ),
-      ],
-    );
-  }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// SECTION LABEL
-// ─────────────────────────────────────────────────────────────────────────────
-
-class _SectionLabel extends StatelessWidget {
-  final String text;
-
-  const _SectionLabel({required this.text});
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      text,
-      style: const TextStyle(
-        fontFamily: 'Poppins',
-        fontWeight: FontWeight.w600,
-        fontSize: 16,
-        height: 2.19,
-        color: Color(0xFFA0A0A0),
-      ),
-    );
-  }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// INPUT FIELD  (single-line for Header, multi-line for Main Statements)
-// ─────────────────────────────────────────────────────────────────────────────
-
-class _InputField extends StatelessWidget {
-  final TextEditingController controller;
-  final String hint;
-  final int minLines;
-  final int maxLines;
-  final double height;
-
-  const _InputField({
-    required this.controller,
-    required this.hint,
-    required this.minLines,
-    required this.maxLines,
-    required this.height,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      height: height,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      clipBehavior: Clip.antiAlias,
-      decoration: ShapeDecoration(
-        color: const Color(0xFFF6F6F6),
-        shape: RoundedRectangleBorder(
-          side: const BorderSide(width: 1, color: Color(0xFFF6F6F6)),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        shadows: const [
-          BoxShadow(
-            color: Color(0x26000000),
-            blurRadius: 20,
-            offset: Offset(0, 4),
-          ),
-        ],
-      ),
-      child: TextField(
-        controller: controller,
-        textAlignVertical: TextAlignVertical.center,
-        minLines: minLines,
-        maxLines: maxLines,
-        style: const TextStyle(
-          fontFamily: 'Poppins',
-          fontWeight: FontWeight.w400,
-          fontSize: 12,
-          color: Colors.black,
-        ),
-        decoration: InputDecoration(
-          hintText: hint,
-          hintStyle: const TextStyle(
-            fontFamily: 'Poppins',
-            fontWeight: FontWeight.w400,
-            fontSize: 12,
-            height: 1.2,
-            color: Color(0xFFA0A0A0),
-          ),
-          border: InputBorder.none,
-          isDense: true,
-          contentPadding: EdgeInsets.zero,
-        ),
-      ),
-    );
-  }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// UPLOAD EVIDENCE FIELD
-// ─────────────────────────────────────────────────────────────────────────────
-
-class _UploadField extends StatelessWidget {
-  final String? fileName;
-  final VoidCallback onImport;
-
-  const _UploadField({required this.fileName, required this.onImport});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onImport,
-      child: Container(
-        width: double.infinity,
-        height: 42,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        decoration: ShapeDecoration(
-          color: const Color(0xFFF6F6F6),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-          shadows: const [
-            BoxShadow(
-              color: Color(0x3F000000),
-              blurRadius: 20,
-              offset: Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              child: Text(
-                fileName ?? 'Upload File Here',
-                style: const TextStyle(
-                  fontFamily: 'Poppins',
-                  fontWeight: FontWeight.w400,
-                  fontSize: 12,
-                  height: 2,
-                  color: Color(0xFFA0A0A0),
-                ),
-              ),
-            ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
-              decoration: ShapeDecoration(
-                color: const Color(0xFFD9D9D9),
-                shape: RoundedRectangleBorder(
-                  side: const BorderSide(width: 0.5),
-                  borderRadius: BorderRadius.circular(5),
-                ),
-                shadows: const [
-                  BoxShadow(
-                    color: Color(0x3F000000),
-                    blurRadius: 20,
-                    offset: Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: const Text(
-                'Import file',
-                style: TextStyle(
-                  fontFamily: 'Poppins',
-                  fontWeight: FontWeight.w400,
-                  fontSize: 8,
-                  height: 3,
-                  color: Colors.black,
-                ),
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }
