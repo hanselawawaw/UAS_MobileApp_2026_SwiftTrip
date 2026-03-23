@@ -4,6 +4,9 @@ import 'package:swifttrip_frontend/screens/cart/widgets/ticket_card.dart';
 import '../../widgets/top_bar.dart';
 import '../cart/cart.dart';
 import '../main/main_screen.dart';
+import 'services/next_trip_service.dart';
+import 'models/purchase_detail.dart';
+import 'widgets/purchase_details_card.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // PAGE
@@ -17,29 +20,28 @@ class NextTripPage extends StatefulWidget {
 }
 
 class _NextTripPageState extends State<NextTripPage> {
-  // TODO: Replace with data fetched from backend API (e.g. GET /user/next-trip)
-  final CartTicket _ticket = const CartTicket(
-    type: 'Train Ticket',
-    bookingId: 'ID-1231KADASMASDKAASD',
-    classLabel: 'ECONOMY CLASS',
-    from: 'Jakarta',
-    to: 'Ngawi Barat',
-    date: '19/2/2026',
-    departure: '9:00',
-    arrive: '11:00',
-    train: '1234',
-    carriage: '01',
-    seat: 'A12',
-    priceRp: 100000,
-  );
+  final _nextTripService = NextTripService();
+  CartTicket? _ticket;
+  List<PurchaseDetail> _purchaseDetails = [];
+  bool _isLoading = true;
 
-  // TODO: Replace with dynamic purchase details from backend
-  final List<_DetailRow> _purchaseDetails = const [
-    _DetailRow(label: 'Tiket Kereta', amount: 'Rp 14.000.000'),
-    _DetailRow(label: 'Voucher', amount: '-Rp 300.000'),
-    _DetailRow(label: 'Diskon liburan', amount: '-Rp 1.800.000'),
-    _DetailRow(label: 'PPN 10%', amount: 'Rp 110.700'),
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _fetchData();
+  }
+
+  Future<void> _fetchData() async {
+    final ticket = await _nextTripService.getNextTrip();
+    final details = await _nextTripService.getPurchaseDetails();
+    if (mounted) {
+      setState(() {
+        _ticket = ticket;
+        _purchaseDetails = details;
+        _isLoading = false;
+      });
+    }
+  }
 
   String _formatRp(int amount) {
     final str = amount.toString();
@@ -196,7 +198,7 @@ class _NextTripPageState extends State<NextTripPage> {
           const TopBar(showBackButton: true, showHamburger: false),
 
           Expanded(
-            child: SingleChildScrollView(
+            child: _isLoading ? const Center(child: CircularProgressIndicator()) : SingleChildScrollView(
               padding: const EdgeInsets.fromLTRB(20, 16, 20, 40),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -209,8 +211,8 @@ class _NextTripPageState extends State<NextTripPage> {
                   const SizedBox(height: 12),
 
                   // ── Ticket Card ─────────────────────────────────────────
-                  TicketCard(
-                    ticket: _ticket,
+                  if (_ticket != null) TicketCard(
+                    ticket: _ticket!,
                     formatRp: _formatRp,
                     onDelete: _removeTicket,
                   ),
@@ -220,7 +222,7 @@ class _NextTripPageState extends State<NextTripPage> {
                   const SizedBox(height: 12),
 
                   // ── Purchase Details Card ───────────────────────────────
-                  _PurchaseDetailsCard(
+                  PurchaseDetailsCard(
                     details: _purchaseDetails,
                     // TODO: Replace with dynamic total from backend
                     total: 'Rp 12.000.000',
@@ -271,117 +273,6 @@ class _MapPlaceholder extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// PURCHASE DETAILS CARD
-// ─────────────────────────────────────────────────────────────────────────────
-
-class _DetailRow {
-  final String label;
-  final String amount;
-
-  const _DetailRow({required this.label, required this.amount});
-}
-
-class _PurchaseDetailsCard extends StatelessWidget {
-  final List<_DetailRow> details;
-  final String total;
-
-  const _PurchaseDetailsCard({required this.details, required this.total});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(20),
-      decoration: ShapeDecoration(
-        color: Colors.white,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        shadows: const [
-          BoxShadow(
-            color: Color(0x26000000),
-            blurRadius: 20,
-            offset: Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Rincian Pembelian:',
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 16,
-              fontFamily: 'Poppins',
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(height: 8),
-          const Divider(color: Colors.black12, thickness: 1),
-          const SizedBox(height: 8),
-
-          ...details.map(
-            (row) => Padding(
-              padding: const EdgeInsets.only(bottom: 6),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    row.label,
-                    style: const TextStyle(
-                      color: Colors.black87,
-                      fontSize: 14,
-                      fontFamily: 'Poppins',
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                  Text(
-                    row.amount,
-                    style: const TextStyle(
-                      color: Colors.black87,
-                      fontSize: 14,
-                      fontFamily: 'Poppins',
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-
-          const SizedBox(height: 8),
-          const Divider(color: Colors.black12, thickness: 1),
-          const SizedBox(height: 8),
-
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text(
-                'Total:',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 16,
-                  fontFamily: 'Poppins',
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              Text(
-                total,
-                style: const TextStyle(
-                  color: Colors.black,
-                  fontSize: 16,
-                  fontFamily: 'Poppins',
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
-        ],
       ),
     );
   }

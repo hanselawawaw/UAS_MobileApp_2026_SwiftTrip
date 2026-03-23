@@ -5,6 +5,8 @@ import '../../widgets/top_bar.dart';
 import '../cart/cart.dart';
 import '../cart/checkout/checkout.dart';
 import '../main/main_screen.dart';
+import 'services/ticket_service.dart';
+import 'widgets/bottom_action_bar.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // PAGE
@@ -18,51 +20,25 @@ class OrderTicketPage extends StatefulWidget {
 }
 
 class _OrderTicketPageState extends State<OrderTicketPage> {
-  // TODO: Replace with data fetched from backend (e.g. GET /tickets/search-results)
-  final List<CartTicket> _tickets = [
-    const CartTicket(
-      type: 'Train Ticket',
-      bookingId: 'ID-1231KADASMASDKAASD',
-      classLabel: 'ECONOMY CLASS',
-      from: 'Jakarta',
-      to: 'Ngawi Barat',
-      date: '19/2/2026',
-      departure: '9:00',
-      arrive: '11:00',
-      train: '1234',
-      carriage: '01',
-      seat: 'A12',
-      priceRp: 100000,
-    ),
-    const CartTicket(
-      type: 'Train Ticket',
-      bookingId: 'ID-1231KADASMASDKAASD',
-      classLabel: 'ECONOMY CLASS',
-      from: 'Ngawati Barat',
-      to: 'Solo',
-      date: '19/2/2026',
-      departure: '9:00',
-      arrive: '11:00',
-      train: '1234',
-      carriage: '01',
-      seat: 'A12',
-      priceRp: 100000,
-    ),
-    const CartTicket(
-      type: 'Train Ticket',
-      bookingId: 'ID-1231KADASMASDKAASD',
-      classLabel: 'ECONOMY CLASS',
-      from: 'Jakarta',
-      to: 'Ngawi Barat',
-      date: '19/2/2026',
-      departure: '9:00',
-      arrive: '11:00',
-      train: '1234',
-      carriage: '01',
-      seat: 'A12',
-      priceRp: 100000,
-    ),
-  ];
+  final _ticketService = TicketService();
+  List<CartTicket> _tickets = [];
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchData();
+  }
+
+  Future<void> _fetchData() async {
+    final tickets = await _ticketService.getTickets();
+    if (mounted) {
+      setState(() {
+        _tickets = List.from(tickets);
+        _isLoading = false;
+      });
+    }
+  }
 
   // TODO: Track which tickets are selected for cart/checkout
   final Set<int> _selectedIndices = {};
@@ -242,7 +218,7 @@ class _OrderTicketPageState extends State<OrderTicketPage> {
           const TopBar(showBackButton: true, showHamburger: false),
 
           // ── Ticket List ────────────────────────────────────────────────
-          Expanded(
+          _isLoading ? const Expanded(child: Center(child: CircularProgressIndicator())) : Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.fromLTRB(20, 16, 20, 100),
               child: Column(
@@ -273,7 +249,7 @@ class _OrderTicketPageState extends State<OrderTicketPage> {
           ),
 
           // ── Bottom Action Bar ──────────────────────────────────────────
-          _BottomActionBar(
+          BottomActionBar(
             totalLabel: _totalPrice > 0
                 ? _formatRp(_totalPrice)
                 : 'Rp. 300.000', // TODO: Remove fallback once selection is wired
@@ -283,157 +259,6 @@ class _OrderTicketPageState extends State<OrderTicketPage> {
 
           SizedBox(height: MediaQuery.of(context).padding.bottom + 30),
         ],
-      ),
-    );
-  }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// BOTTOM ACTION BAR
-// ─────────────────────────────────────────────────────────────────────────────
-
-class _BottomActionBar extends StatelessWidget {
-  final String totalLabel;
-  final VoidCallback onAddToCart;
-  final VoidCallback onConfirm;
-
-  const _BottomActionBar({
-    required this.totalLabel,
-    required this.onAddToCart,
-    required this.onConfirm,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Container(
-        width: double.infinity,
-        height: 59,
-        decoration: ShapeDecoration(
-          color: Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          shadows: const [
-            BoxShadow(
-              color: Color(0x3F000000),
-              blurRadius: 20,
-              offset: Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 15),
-          child: Row(
-            children: [
-              // ── Total Price ─────────────────────────────────────────────
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Total:',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 16,
-                      fontFamily: 'Poppins',
-                      fontWeight: FontWeight.w400,
-                      height: 1.25,
-                    ),
-                  ),
-                  Text(
-                    totalLabel,
-                    style: const TextStyle(
-                      color: Colors.black,
-                      fontSize: 13,
-                      fontFamily: 'Poppins',
-                      fontWeight: FontWeight.w300,
-                      height: 1.54,
-                    ),
-                  ),
-                ],
-              ),
-
-              const Spacer(),
-
-              // ── Add To Cart Button ──────────────────────────────────────
-              GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const MainScreen(initialIndex: 1),
-                    ),
-                  );
-                },
-                child: Container(
-                  width: 103,
-                  height: 29,
-                  decoration: ShapeDecoration(
-                    color: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    shadows: const [
-                      BoxShadow(
-                        color: Color(0x26000000),
-                        blurRadius: 20,
-                        offset: Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  alignment: Alignment.center,
-                  child: const Text(
-                    'Add To Cart',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Color(0xFF999999),
-                      fontSize: 12,
-                      fontFamily: 'Poppins',
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                ),
-              ),
-
-              const SizedBox(width: 8),
-
-              // ── Confirm Button ──────────────────────────────────────────
-              GestureDetector(
-                onTap: onConfirm,
-                child: Container(
-                  width: 103,
-                  height: 29,
-                  decoration: ShapeDecoration(
-                    color: const Color(0xFF2B99E3),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    shadows: const [
-                      BoxShadow(
-                        color: Color(0x26000000),
-                        blurRadius: 20,
-                        offset: Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  alignment: Alignment.center,
-                  child: const Text(
-                    'Confirm',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Color(0xFFE5E5E5),
-                      fontSize: 12,
-                      fontFamily: 'Poppins',
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }
