@@ -23,9 +23,7 @@ class _PesanButton extends StatelessWidget {
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(
-            builder: (context) => const CheckoutPage(),
-          ),
+          MaterialPageRoute(builder: (context) => const CheckoutPage()),
         );
       },
       child: SizedBox(
@@ -123,7 +121,7 @@ class _FlightSearchCardState extends State<FlightSearchCard>
   bool _isSwapped = false;
   bool _isMultiCity = false;
   bool _isSearching = false;
-  bool? _ticketFound; 
+  bool? _ticketFound;
   late final AnimationController _toastController;
   late final Animation<Offset> _toastSlide;
 

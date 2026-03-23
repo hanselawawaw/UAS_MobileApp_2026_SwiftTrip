@@ -37,13 +37,11 @@ class SearchInputField extends StatelessWidget {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: Colors.black.withValues(alpha: 0.1),
-            ),
+            border: Border.all(color: Colors.black.withValues(alpha: 0.1)),
           ),
           child: Row(
             children: [
-              Icon(icon, size: 20, color: const Color(0xFF2B99E3)),
+              Icon(icon, size: 20, color: Colors.black),
               const SizedBox(width: 12),
               Expanded(
                 child: Container(
@@ -59,10 +57,7 @@ class SearchInputField extends StatelessWidget {
                   ),
                 ),
               ),
-              if (trailing != null) ...[
-                const SizedBox(width: 8),
-                trailing!,
-              ],
+              if (trailing != null) ...[const SizedBox(width: 8), trailing!],
             ],
           ),
         ),
