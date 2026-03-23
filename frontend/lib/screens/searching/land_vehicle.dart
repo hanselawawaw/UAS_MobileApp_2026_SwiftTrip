@@ -4,7 +4,7 @@ import 'package:swifttrip_frontend/screens/cart/promotions.dart';
 
 import '../../widgets/top_bar.dart';
 import '../customer_service/onboarding.dart';
-import '../cart/checkout/checkout.dart';
+import '../checkout/checkout.dart';
 import 'models/detail_row.dart';
 import 'models/ride_option.dart';
 import 'utils/rp_format.dart';

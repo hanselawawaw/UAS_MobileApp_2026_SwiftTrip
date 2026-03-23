@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../models/promotion_models.dart';
-import '../checkout/checkout.dart';
+import '../../checkout/checkout.dart';
 
 class ApplyPromotionsRow extends StatelessWidget {
   final Promotion? appliedPromo;

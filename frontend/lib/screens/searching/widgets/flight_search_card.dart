@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import '../land_vehicle.dart';
 import '../../main/main_screen.dart';
-import '../../cart/checkout/checkout.dart';
+import '../../checkout/checkout.dart';
 import '../models/flight_leg.dart';
 import '../services/searching_service.dart';
 import 'search_input_field.dart';

@@ -3,7 +3,7 @@ import 'package:swifttrip_frontend/screens/cart/models/cart_models.dart';
 import 'package:swifttrip_frontend/screens/cart/widgets/ticket_card.dart';
 import '../../widgets/top_bar.dart';
 import '../cart/cart.dart';
-import '../cart/checkout/checkout.dart';
+import '../checkout/checkout.dart';
 import '../main/main_screen.dart';
 import 'services/ticket_service.dart';
 import 'widgets/bottom_action_bar.dart';
@@ -218,35 +218,39 @@ class _OrderTicketPageState extends State<OrderTicketPage> {
           const TopBar(showBackButton: true, showHamburger: false),
 
           // ── Ticket List ────────────────────────────────────────────────
-          _isLoading ? const Expanded(child: Center(child: CircularProgressIndicator())) : Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(20, 16, 20, 100),
-              child: Column(
-                children: List.generate(
-                  _tickets.length,
-                  (i) => Padding(
-                    padding: const EdgeInsets.only(bottom: 16),
-                    child: GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          if (_selectedIndices.contains(i)) {
-                            _selectedIndices.remove(i);
-                          } else {
-                            _selectedIndices.add(i);
-                          }
-                        });
-                      },
-                      child: TicketCard(
-                        ticket: _tickets[i],
-                        formatRp: _formatRp,
-                        onDelete: () => _removeTicket(i),
+          _isLoading
+              ? const Expanded(
+                  child: Center(child: CircularProgressIndicator()),
+                )
+              : Expanded(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.fromLTRB(20, 16, 20, 100),
+                    child: Column(
+                      children: List.generate(
+                        _tickets.length,
+                        (i) => Padding(
+                          padding: const EdgeInsets.only(bottom: 16),
+                          child: GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                if (_selectedIndices.contains(i)) {
+                                  _selectedIndices.remove(i);
+                                } else {
+                                  _selectedIndices.add(i);
+                                }
+                              });
+                            },
+                            child: TicketCard(
+                              ticket: _tickets[i],
+                              formatRp: _formatRp,
+                              onDelete: () => _removeTicket(i),
+                            ),
+                          ),
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            ),
-          ),
 
           // ── Bottom Action Bar ──────────────────────────────────────────
           BottomActionBar(
