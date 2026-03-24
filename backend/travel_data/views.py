@@ -57,13 +57,34 @@ class DestinationViewSet(viewsets.ReadOnlyModelViewSet):
         
         return Response({'isFavorite': True}, status=status.HTTP_201_CREATED)
 
+from .services.amadeus_service import AmadeusService
+
 class SearchView(views.APIView):
     """
-    Returns search-related data: ride options and coupons.
+    Returns search-related data: ride options, coupons, and structured flight search.
     """
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def get(self, request):
+        origin = request.query_params.get('origin')
+        destination = request.query_params.get('destination')
+        date = request.query_params.get('date')
+        
+        if origin and destination and date:
+            if len(origin) != 3 or len(destination) != 3:
+                return Response(
+                    {'error': 'origin and destination must be 3-letter IATA codes'}, 
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+                
+            passengers = request.query_params.get('passengers', 1)
+            travel_class = request.query_params.get('class', 'ECONOMY')
+            
+            amadeus = AmadeusService()
+            flights = amadeus.search_flights(origin, destination, date, passengers, travel_class)
+            return Response({'flights': flights})
+
+        # Base behavior
         rides = RideOption.objects.all()
         coupons = Coupon.objects.all()
         

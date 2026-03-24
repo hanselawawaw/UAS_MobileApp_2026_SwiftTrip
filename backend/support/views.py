@@ -65,3 +65,65 @@ class MetadataView(APIView):
             "locations": [choice[0] for choice in SupportTicket.LOCATIONS],
             "publish_types": [choice[0] for choice in SupportTicket.PUBLISH_TYPES]
         })
+
+import os
+import json
+import google.generativeai as genai
+from travel_data.services.amadeus_service import AmadeusService
+
+class AIChatView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        message = request.data.get('message', '')
+        if not message:
+            return Response({"error": "Message is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        language = request.headers.get('Accept-Language', 'en-US')
+        genai.configure(api_key=os.environ.get("GEMINI_API_KEY"))
+        
+        # We use gemini-1.5-flash as the standard fast model
+        model = genai.GenerativeModel("gemini-1.5-flash")
+        
+        extraction_prompt = f"""
+        Extract the origin IATA code, destination IATA code, and the departure date (YYYY-MM-DD) from this message.
+        Message: "{message}"
+        Return ONLY a JSON object with keys "origin", "destination", "date". Return empty strings if not found.
+        """
+        
+        try:
+            extraction_response = model.generate_content(extraction_prompt)
+            json_text = extraction_response.text.strip().replace('```json', '').replace('```', '').strip()
+            params = json.loads(json_text)
+            origin = params.get('origin', '')
+            destination = params.get('destination', '')
+            date = params.get('date', '')
+        except Exception as e:
+            text_val = getattr(extraction_response, 'text', 'No text') if 'extraction_response' in locals() else 'No response'
+            print("EXTRACTION ERROR:", e, text_val)
+            return Response({"error": "Failed to parse query", "details": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            
+        flights = []
+        if len(origin) == 3 and len(destination) == 3 and date:
+            amadeus = AmadeusService()
+            flights = amadeus.search_flights(origin, destination, date) or []
+
+        summary_prompt = f"""
+        User asked: "{message}"
+        Flight search results: {len(flights)} flights found.
+        If flights > 0, summarize the best option briefly.
+        If flights == 0, politely state no flights were found.
+        Respond in language matching: {language}.
+        Keep it friendly and very concise.
+        """
+        
+        try:
+            summary_response = model.generate_content(summary_prompt)
+            final_message = summary_response.text.strip()
+        except Exception:
+            final_message = "Here are the flights we found for you." if flights else "Sorry, we couldn't find any flights."
+
+        return Response({
+            "message": final_message,
+            "flights": flights
+        })

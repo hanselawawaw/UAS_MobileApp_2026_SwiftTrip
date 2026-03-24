@@ -58,3 +58,13 @@ class RideOption(models.Model):
 
     def __str__(self):
         return self.name
+
+class TransportRoute(models.Model):
+    origin_code = models.CharField(max_length=10)
+    destination_code = models.CharField(max_length=10)
+    departure_time = models.DateTimeField()
+    vehicle_type = models.CharField(max_length=50) # Flight, Train, Bus
+    price_rp = models.IntegerField()
+
+    def __str__(self):
+        return f"{self.vehicle_type} from {self.origin_code} to {self.destination_code}"
