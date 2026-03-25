@@ -16,8 +16,10 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
   late TextEditingController _firstNameController;
   late TextEditingController _lastNameController;
   late TextEditingController _emailController;
+  late TextEditingController _otpController;
   
   bool _isLoading = false;
+  bool _showOtpField = false;
 
   @override
   void initState() {
@@ -26,6 +28,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
     _firstNameController = TextEditingController(text: user?.firstName ?? '');
     _lastNameController = TextEditingController(text: user?.lastName ?? '');
     _emailController = TextEditingController(text: user?.email ?? '');
+    _otpController = TextEditingController();
   }
 
   @override
@@ -33,6 +36,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
     _firstNameController.dispose();
     _lastNameController.dispose();
     _emailController.dispose();
+    _otpController.dispose();
     super.dispose();
   }
 
@@ -41,16 +45,69 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
 
     setState(() => _isLoading = true);
     try {
-      final success = await _authRepo.updateUserProfile({
+      final response = await _authRepo.updateUserProfile({
         'first_name': _firstNameController.text.trim(),
         'last_name': _lastNameController.text.trim(),
         'email': _emailController.text.trim(),
       });
 
+      if (mounted) {
+        if (response['step'] == 'completed') {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Profile updated successfully!'),
+              backgroundColor: Constants.popupSuccess,
+            ),
+          );
+          Navigator.pop(context, true);
+        } else if (response['step'] == 'verify_otp') {
+          setState(() => _showOtpField = true);
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Please verify your new email address.'),
+              backgroundColor: Constants.popupWarning,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.toString().replaceAll('Exception: ', '')),
+            backgroundColor: Constants.popupError,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
+  }
+
+  Future<void> _verifyOtp() async {
+    if (_otpController.text.length != 6) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please enter a 6-digit OTP.'),
+          backgroundColor: Constants.popupError,
+        ),
+      );
+      return;
+    }
+
+    setState(() => _isLoading = true);
+    try {
+      final success = await _authRepo.verifyOtpProfile(
+        _emailController.text.trim(),
+        _otpController.text.trim(),
+      );
+
       if (success && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Profile updated successfully!'),
+            content: Text('Email verified and profile updated!'),
             backgroundColor: Constants.popupSuccess,
           ),
         );
@@ -148,12 +205,32 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                   return null;
                 },
               ),
+              if (_showOtpField) ...[
+                const SizedBox(height: 24),
+                const Text(
+                  'Email Verification',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Poppins',
+                  ),
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _otpController,
+                  decoration: _buildInputDecoration('Enter 6-digit OTP'),
+                  keyboardType: TextInputType.number,
+                  maxLength: 6,
+                ),
+              ],
               const SizedBox(height: 40),
               SizedBox(
                 width: double.infinity,
                 height: 50,
                 child: ElevatedButton(
-                  onPressed: _isLoading ? null : _saveProfile,
+                  onPressed: _isLoading
+                      ? null
+                      : (_showOtpField ? _verifyOtp : _saveProfile),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Constants.primaryBlue,
                     shape: RoundedRectangleBorder(
@@ -162,9 +239,9 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                   ),
                   child: _isLoading
                       ? const CircularProgressIndicator(color: Colors.white)
-                      : const Text(
-                          'Save Changes',
-                          style: TextStyle(
+                      : Text(
+                          _showOtpField ? 'Verify & Save' : 'Save Changes',
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 16,
                             fontWeight: FontWeight.w600,

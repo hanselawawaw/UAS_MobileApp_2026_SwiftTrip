@@ -61,11 +61,7 @@ class ProfileUpdateSerializer(serializers.ModelSerializer):
 
     def validate_email(self, value):
         user = self.context['request'].user
+        # Ensure the email isn't already taken by someone else
         if User.objects.exclude(pk=user.pk).filter(email=value).exists():
             raise serializers.ValidationError("This email is already in use.")
         return value
-
-class ProfileUpdateSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ['first_name', 'email']

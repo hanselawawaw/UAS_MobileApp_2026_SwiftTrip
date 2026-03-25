@@ -181,5 +181,17 @@ EMAIL_PORT = '2525'
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
 
-# This can be anything since it's a sandbox!
+DEFAULT_FROM_EMAIL = 'admin@swifttrip.com'
+
+# Mailtrap Shared Guest Credentials
+MAILTRAP_USER = os.getenv('MAILTRAP_USER', 'your_mailtrap_username')
+MAILTRAP_PASSWORD = os.getenv('MAILTRAP_PASSWORD', 'your_mailtrap_password')
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'sandbox.smtp.mailtrap.io'
+EMAIL_PORT = '2525'
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = MAILTRAP_USER
+EMAIL_HOST_PASSWORD = MAILTRAP_PASSWORD
+
 DEFAULT_FROM_EMAIL = 'noreply@swifttrip.com'

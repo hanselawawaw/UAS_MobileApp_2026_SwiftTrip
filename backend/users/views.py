@@ -131,6 +131,63 @@ class AuthViewSet(viewsets.GenericViewSet):
         serializer.save()
         return Response(serializer.data)
 
+    @action(detail=False, methods=['patch'], url_path='update-profile', permission_classes=[permissions.IsAuthenticated])
+    def update_profile(self, request):
+        user = request.user
+        # Use the serializer that handles first_name, last_name, and email
+        serializer = ProfileUpdateSerializer(user, data=request.data, partial=True, context={'request': request})
+        serializer.is_valid(raise_exception=True)
+
+        new_email = serializer.validated_data.get('email')
+        
+        # Update names immediately in the database
+        user.first_name = serializer.validated_data.get('first_name', user.first_name)
+        user.last_name = serializer.validated_data.get('last_name', user.last_name)
+        user.save()
+
+        # Trigger OTP only if the email is being changed
+        if new_email and new_email != user.email:
+            otp = str(random.randint(100000, 999999))
+            cache.set(f"otp_{new_email}", otp, timeout=600)
+
+            send_mail(
+                'Confirm Your Email Change',
+                f'Your SwiftTrip OTP is: {otp}',
+                None, # Uses DEFAULT_FROM_EMAIL from settings.py
+                [new_email]
+            )
+            return Response({
+                'detail': 'Names updated. Enter the OTP sent to your new email.',
+                'step': 'verify_otp',
+                'email': new_email
+            })
+
+        return Response({
+            'detail': 'Profile updated successfully.',
+            'step': 'completed',
+            'user': UserSerializer(user).data
+        })
+
+    @action(detail=False, methods=['post'], url_path='verify-otp-profile', permission_classes=[permissions.IsAuthenticated])
+    def verify_otp_profile(self, request):
+        email = request.data.get('email')
+        otp = request.data.get('otp')
+        
+        cached_otp = cache.get(f"otp_{email}")
+        if cached_otp and str(cached_otp) == str(otp):
+            # Finalize the email change in the database
+            user = request.user
+            user.email = email
+            user.save()
+            cache.delete(f"otp_{email}")
+            return Response({
+                'detail': 'Email updated successfully.',
+                'step': 'completed',
+                'user': UserSerializer(user).data
+            })
+        
+        return Response({'detail': 'Invalid or expired code.'}, status=status.HTTP_400_BAD_REQUEST)
+
     @action(detail=False, methods=['delete'], url_path='delete-account', permission_classes=[permissions.IsAuthenticated])
     def delete_account(self, request):
         request.user.delete()

@@ -64,23 +64,49 @@ class AuthRepository {
     }
   }
 
-  Future<bool> updateUserProfile(Map<String, dynamic> data) async {
+  Future<Map<String, dynamic>> updateUserProfile(Map<String, dynamic> data) async {
     try {
       final token = await getToken();
       final response = await _dio.patch(
-        'user/',
+        'update-profile/',
         data: data,
         options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
 
       if (response.statusCode == 200) {
-        _currentUser = User.fromJson(response.data);
+        if (response.data['step'] == 'completed') {
+          _currentUser = User.fromJson(response.data['user']);
+        }
+        return response.data;
+      }
+      throw Exception('Failed to update profile.');
+    } on DioException catch (e) {
+      final data = e.response?.data;
+      String message = 'Failed to update profile.';
+      if (data is Map && data.containsKey('detail')) {
+        message = data['detail'];
+      }
+      throw Exception(message);
+    }
+  }
+
+  Future<bool> verifyOtpProfile(String email, String otp) async {
+    try {
+      final token = await getToken();
+      final response = await _dio.post(
+        'verify-otp-profile/',
+        data: {'email': email, 'otp': otp},
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+
+      if (response.statusCode == 200) {
+        _currentUser = User.fromJson(response.data['user']);
         return true;
       }
       return false;
     } on DioException catch (e) {
       final data = e.response?.data;
-      String message = 'Failed to update profile.';
+      String message = 'Invalid or expired code.';
       if (data is Map && data.containsKey('detail')) {
         message = data['detail'];
       }
