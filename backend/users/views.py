@@ -4,6 +4,8 @@ from django.core.cache import cache
 from django.contrib.auth import get_user_model, authenticate
 from django.core.mail import send_mail
 from rest_framework import viewsets, status, permissions
+from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -134,3 +136,32 @@ class AuthViewSet(viewsets.GenericViewSet):
         request.user.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+class RequestProfileUpdateView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        new_name = request.data.get('full_name')
+        new_email = request.data.get('email')
+        user = request.user
+
+        # 1. Update Name Immediately
+        if new_name:
+            user.first_name = new_name
+            user.save()
+
+        # 2. Check if Email is actually different
+        if new_email and new_email != user.email:
+            otp = str(random.randint(100000, 999999))
+            # Store in cache for 10 mins: { 'user_1_pending_email': 'new@mail.com', 'user_1_otp': '123456' }
+            cache.set(f"user_{user.id}_pending_email", new_email, timeout=600)
+            cache.set(f"user_{user.id}_otp", otp, timeout=600)
+
+            send_mail(
+                'Verify Your New Email',
+                f'Your SwiftTrip OTP is: {otp}',
+                None,
+                [new_email]
+            )
+            return Response({"message": "OTP sent to new email", "step": "verify_otp"})
+
+        return Response({"message": "Profile updated successfully", "step": "completed"})

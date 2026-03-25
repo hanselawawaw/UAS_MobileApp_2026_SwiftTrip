@@ -9,9 +9,17 @@ import 'language.dart';
 import 'clear_cache.dart';
 import 'wishlist.dart';
 import 'subscription_plan.dart';
+import 'profile_edit_screen.dart';
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
+
+  @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
+  final GlobalKey<ProfileCardState> _profileCardKey = GlobalKey<ProfileCardState>();
 
   @override
   Widget build(BuildContext context) {
@@ -36,12 +44,27 @@ class ProfilePage extends StatelessWidget {
                 children: [
                   // ── User card ────────────────────────────────────────────
                   const SizedBox(height: 30),
-                  const ProfileCard(),
+                  ProfileCard(key: _profileCardKey),
                   const SizedBox(height: 50),
 
-                  // ── Wishlist ─────────────────────────────────────────────
+                  // ── Edit pProfile / Wishlist ─────────────────────────────────────────────
                   MenuSection(
                     items: [
+                      MenuItem(
+                        icon: Icons.edit,
+                        label: 'Edit Profile',
+                        onTap: () async {
+                          final result = await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const ProfileEditScreen(),
+                            ),
+                          );
+                          if (result == true) {
+                            _profileCardKey.currentState?.refresh();
+                          }
+                        },
+                      ),
                       MenuItem(
                         icon: Icons.favorite_border,
                         label: 'Wishlist',

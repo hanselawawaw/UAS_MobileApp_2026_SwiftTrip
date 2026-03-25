@@ -20,15 +20,40 @@ class _UserInfoPageState extends State<UserInfoPage> {
   String _selectedMonth = 'January';
   int _selectedYear = DateTime.now().year;
 
-  final List<int> _days = List.generate(31, (index) => index + 1);
+  List<int> _days = List.generate(31, (index) => index + 1);
   final List<String> _months = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December',
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
   ];
   final List<int> _years = List.generate(
     100,
     (index) => DateTime.now().year - index,
   );
+
+  @override
+  void initState() {
+    super.initState();
+    _updateDays();
+  }
+
+  void _updateDays() {
+    final monthIndex = _months.indexOf(_selectedMonth) + 1;
+    final lastDay = DateTime(_selectedYear, monthIndex + 1, 0).day;
+    _days = List.generate(lastDay, (index) => index + 1);
+    if (_selectedDay > lastDay) {
+      _selectedDay = lastDay;
+    }
+  }
 
   @override
   void dispose() {
@@ -42,16 +67,19 @@ class _UserInfoPageState extends State<UserInfoPage> {
     final lastName = _lastNameController.text.trim();
 
     if (firstName.isEmpty || lastName.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill all fields')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Please fill all fields')));
       return;
     }
+
+    final month = (_months.indexOf(_selectedMonth) + 1).toString().padLeft(2, '0');
+    final day = _selectedDay.toString().padLeft(2, '0');
 
     final profile = UserProfile(
       firstName: firstName,
       lastName: lastName,
-      dateOfBirth: '$_selectedYear-${_months.indexOf(_selectedMonth) + 1}-$_selectedDay',
+      dateOfBirth: '$_selectedYear-$month-$day',
     );
 
     try {
@@ -130,8 +158,18 @@ class _UserInfoPageState extends State<UserInfoPage> {
                   months: _months,
                   years: _years,
                   onDayChanged: (val) => setState(() => _selectedDay = val),
-                  onMonthChanged: (val) => setState(() => _selectedMonth = val),
-                  onYearChanged: (val) => setState(() => _selectedYear = val),
+                  onMonthChanged: (val) {
+                    setState(() {
+                      _selectedMonth = val;
+                      _updateDays();
+                    });
+                  },
+                  onYearChanged: (val) {
+                    setState(() {
+                      _selectedYear = val;
+                      _updateDays();
+                    });
+                  },
                 ),
                 const SizedBox(height: 32),
 

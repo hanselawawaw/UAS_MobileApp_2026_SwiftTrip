@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import User
 from django.utils import timezone
 from datetime import timedelta
 
@@ -63,3 +64,8 @@ class ProfileUpdateSerializer(serializers.ModelSerializer):
         if User.objects.exclude(pk=user.pk).filter(email=value).exists():
             raise serializers.ValidationError("This email is already in use.")
         return value
+
+class ProfileUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['first_name', 'email']

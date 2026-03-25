@@ -5,10 +5,10 @@ class ProfileCard extends StatefulWidget {
   const ProfileCard({super.key});
 
   @override
-  State<ProfileCard> createState() => _ProfileCardState();
+  State<ProfileCard> createState() => ProfileCardState();
 }
 
-class _ProfileCardState extends State<ProfileCard> {
+class ProfileCardState extends State<ProfileCard> {
   final AuthRepository _authRepo = AuthRepository();
   bool _isLoading = false;
 
@@ -18,6 +18,10 @@ class _ProfileCardState extends State<ProfileCard> {
     if (_authRepo.currentUser == null) {
       _fetchUser();
     }
+  }
+
+  void refresh() {
+    _fetchUser();
   }
 
   Future<void> _fetchUser() async {
