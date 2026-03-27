@@ -7,6 +7,7 @@ import '../models/flight_leg.dart';
 import '../services/searching_service.dart';
 import 'search_input_field.dart';
 import 'airport_picker_sheet.dart';
+import 'pickers.dart';
 
 class FlightSearchCard extends StatefulWidget {
   const FlightSearchCard({super.key});
@@ -118,9 +119,15 @@ class _FlightSearchCardState extends State<FlightSearchCard>
   String _fromCode = 'CGK';
   String _toLabel = 'Malang (MLG)';
   String _toCode = 'MLG';
-  final String _dateLabel = 'Friday, 20 Feb 2026';
-  final String _passengerLabel = '1 Passenger';
-  final String _classLabel = 'Economy';
+
+  DateTime _departureDate = DateTime.now().add(const Duration(days: 7));
+  PassengerCount _passengers = const PassengerCount();
+  String _flightClassDisplay = 'Economy';
+  String _flightClassApi = 'ECONOMY';
+
+  String get _dateDisplayLabel => formatDisplayDate(_departureDate);
+  String get _dateApiValue => formatApiDate(_departureDate);
+
   bool _isSwapped = false;
   bool _isMultiCity = false;
   bool _isSearching = false;
@@ -151,11 +158,11 @@ class _FlightSearchCardState extends State<FlightSearchCard>
     setState(() => _isSearching = true);
     final bool found = await const SearchingService().searchFlights(
       multiCityLegs: _multiCityLegs,
-      from: _fromLabel,
-      to: _toLabel,
-      date: _dateLabel,
-      passengers: _passengerLabel,
-      flightClass: _classLabel,
+      from: _fromCode,
+      to: _toCode,
+      date: _dateApiValue,
+      passengers: _passengers.total.toString(),
+      flightClass: _flightClassApi,
       isMultiCity: _isMultiCity,
     );
     if (!mounted) return;
@@ -168,10 +175,30 @@ class _FlightSearchCardState extends State<FlightSearchCard>
     if (mounted) await _toastController.reverse();
   }
 
+  Future<void> _pickDate() async {
+    final picked = await showFlightDatePicker(context, _departureDate);
+    if (picked != null && mounted) setState(() => _departureDate = picked);
+  }
+
+  Future<void> _pickPassengers() async {
+    final result = await showPassengerPicker(context, _passengers);
+    if (result != null && mounted) setState(() => _passengers = result);
+  }
+
+  Future<void> _pickFlightClass() async {
+    final result = await showFlightClassPicker(context, _flightClassApi);
+    if (result != null && mounted) {
+      setState(() {
+        _flightClassDisplay = result.$1;
+        _flightClassApi = result.$2;
+      });
+    }
+  }
+
   final List<FlightLeg> _multiCityLegs = [
     const FlightLeg(
-      from: 'Malang (MLA)',
-      to: 'Malang (MLA)',
+      from: 'Jakarta (CGK)',
+      to: 'Denpasar (DPS)',
       date: 'Friday, 20 Feb 2026',
     ),
   ];
@@ -182,8 +209,8 @@ class _FlightSearchCardState extends State<FlightSearchCard>
       _multiCityLegs.add(
         FlightLeg(
           from: lastTo,
-          to: 'Malang (MLA)',
-          date: 'Friday, 20 Feb 2026',
+          to: 'Singapore (SIN)',
+          date: 'Monday, 23 Feb 2026',
         ),
       );
     });
@@ -403,26 +430,38 @@ class _FlightSearchCardState extends State<FlightSearchCard>
                     ),
                   ],
                 ),
-                SearchInputField(
-                  label: 'Date',
-                  icon: Icons.calendar_today_outlined,
-                  value: _dateLabel,
+                GestureDetector(
+                  onTap: _pickDate,
+                  child: SearchInputField(
+                    label: 'Date',
+                    icon: Icons.calendar_today_outlined,
+                    value: _dateDisplayLabel,
+                    trailing: const Icon(Icons.keyboard_arrow_down, size: 18, color: Colors.black38),
+                  ),
                 ),
                 Row(
                   children: [
                     Expanded(
-                      child: SearchInputField(
-                        label: 'Penumpang',
-                        icon: Icons.person_outline,
-                        value: _passengerLabel,
+                      child: GestureDetector(
+                        onTap: _pickPassengers,
+                        child: SearchInputField(
+                          label: 'Penumpang',
+                          icon: Icons.person_outline,
+                          value: _passengers.displayLabel,
+                          trailing: const Icon(Icons.keyboard_arrow_down, size: 18, color: Colors.black38),
+                        ),
                       ),
                     ),
                     const SizedBox(width: 16),
                     Expanded(
-                      child: SearchInputField(
-                        label: 'Flight Class',
-                        icon: Icons.airline_seat_recline_normal,
-                        value: _classLabel,
+                      child: GestureDetector(
+                        onTap: _pickFlightClass,
+                        child: SearchInputField(
+                          label: 'Flight Class',
+                          icon: Icons.airline_seat_recline_normal,
+                          value: _flightClassDisplay,
+                          trailing: const Icon(Icons.keyboard_arrow_down, size: 18, color: Colors.black38),
+                        ),
                       ),
                     ),
                   ],
@@ -508,26 +547,38 @@ class _FlightSearchCardState extends State<FlightSearchCard>
                     ),
                   ),
                 ),
-                SearchInputField(
-                  label: 'Date',
-                  icon: Icons.calendar_today_outlined,
-                  value: _dateLabel,
+                GestureDetector(
+                  onTap: _pickDate,
+                  child: SearchInputField(
+                    label: 'Date',
+                    icon: Icons.calendar_today_outlined,
+                    value: _dateDisplayLabel,
+                    trailing: const Icon(Icons.keyboard_arrow_down, size: 18, color: Colors.black38),
+                  ),
                 ),
                 Row(
                   children: [
                     Expanded(
-                      child: SearchInputField(
-                        label: 'Penumpang',
-                        icon: Icons.person_outline,
-                        value: _passengerLabel,
+                      child: GestureDetector(
+                        onTap: _pickPassengers,
+                        child: SearchInputField(
+                          label: 'Penumpang',
+                          icon: Icons.person_outline,
+                          value: _passengers.displayLabel,
+                          trailing: const Icon(Icons.keyboard_arrow_down, size: 18, color: Colors.black38),
+                        ),
                       ),
                     ),
                     const SizedBox(width: 16),
                     Expanded(
-                      child: SearchInputField(
-                        label: 'Flight Class',
-                        icon: Icons.airline_seat_recline_normal,
-                        value: _classLabel,
+                      child: GestureDetector(
+                        onTap: _pickFlightClass,
+                        child: SearchInputField(
+                          label: 'Flight Class',
+                          icon: Icons.airline_seat_recline_normal,
+                          value: _flightClassDisplay,
+                          trailing: const Icon(Icons.keyboard_arrow_down, size: 18, color: Colors.black38),
+                        ),
                       ),
                     ),
                   ],
