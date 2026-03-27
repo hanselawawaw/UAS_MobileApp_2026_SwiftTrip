@@ -1,23 +1,31 @@
 import os
 import requests
+import logging
 from datetime import datetime
+from django.core.cache import cache
 from travel_data.models import TransportRoute
+
+logger = logging.getLogger(__name__)
 
 class AmadeusService:
     BASE_URL = "https://test.api.amadeus.com"
+    TOKEN_CACHE_KEY = "amadeus_access_token"
 
     def __init__(self):
         self.api_key = os.environ.get("AMADEUS_API_KEY")
         self.api_secret = os.environ.get("AMADEUS_API_SECRET")
-        self._token = None
 
     def _get_token(self):
-        if self._token:
-            return self._token
+        # Try to get token from cache first
+        token = cache.get(self.TOKEN_CACHE_KEY)
+        if token:
+            return token
 
         if not self.api_key or not self.api_secret:
+            logger.error("Amadeus API credentials missing in .env")
             return None
 
+        logger.info("Fetching new Amadeus access token...")
         url = f"{self.BASE_URL}/v1/security/oauth2/token"
         data = {
             "grant_type": "client_credentials",
@@ -27,10 +35,14 @@ class AmadeusService:
         try:
             response = requests.post(url, data=data, timeout=5)
             if response.status_code == 200:
-                self._token = response.json().get("access_token")
-                return self._token
-        except requests.RequestException:
-            pass
+                token_data = response.json()
+                token = token_data.get("access_token")
+                # Store in cache for 29 minutes (1740 seconds)
+                cache.set(self.TOKEN_CACHE_KEY, token, timeout=1740)
+                logger.info("Amadeus token cached successfully")
+                return token
+        except requests.RequestException as e:
+            logger.error(f"Error fetching Amadeus token: {e}")
         return None
 
     def search_flights(self, origin, destination, date, passengers=1, travel_class="ECONOMY"):

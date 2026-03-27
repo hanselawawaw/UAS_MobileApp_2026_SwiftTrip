@@ -66,22 +66,57 @@ class SearchView(views.APIView):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def get(self, request):
-        origin = request.query_params.get('origin')
-        destination = request.query_params.get('destination')
-        date = request.query_params.get('date')
+        origin = request.query_params.get('origin', '').upper()
+        destination = request.query_params.get('destination', '').upper()
+        date_str = request.query_params.get('date')
         
-        if origin and destination and date:
+        if origin and destination and date_str:
+            # 1. Validate codes are not the same
+            if origin == destination:
+                return Response(
+                    {'error': 'Origin and destination cannot be the same'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            # 2. Validate IATA format
             if len(origin) != 3 or len(destination) != 3:
                 return Response(
-                    {'error': 'origin and destination must be 3-letter IATA codes'}, 
+                    {'error': 'Origin and destination must be 3-letter IATA codes'}, 
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            # 3. Validate Date (not in the past)
+            try:
+                search_date = datetime.strptime(date_str, "%Y-%m-%d").date()
+                if search_date < datetime.now().date():
+                    return Response(
+                        {'error': 'Departure date cannot be in the past'},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+            except ValueError:
+                return Response(
+                    {'error': 'Invalid date format. Use YYYY-MM-DD'},
                     status=status.HTTP_400_BAD_REQUEST
                 )
                 
-            passengers = request.query_params.get('passengers', 1)
+            # 4. Validate Passengers (min 1 adult)
+            try:
+                passengers = int(request.query_params.get('passengers', 1))
+                if passengers < 1:
+                    return Response(
+                        {'error': 'At least 1 adult passenger is required'},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+            except ValueError:
+                return Response(
+                    {'error': 'Passenger count must be an integer'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
             travel_class = request.query_params.get('class', 'ECONOMY')
             
             amadeus = AmadeusService()
-            flights = amadeus.search_flights(origin, destination, date, passengers, travel_class)
+            flights = amadeus.search_flights(origin, destination, date_str, passengers, travel_class)
             return Response({'flights': flights})
 
         # Base behavior
