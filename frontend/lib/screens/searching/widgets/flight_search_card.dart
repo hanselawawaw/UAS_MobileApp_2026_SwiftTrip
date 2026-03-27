@@ -117,8 +117,8 @@ class _FlightSearchCardState extends State<FlightSearchCard>
     with SingleTickerProviderStateMixin {
   String _fromLabel = 'Jakarta (CGK)';
   String _fromCode = 'CGK';
-  String _toLabel = 'Malang (MLG)';
-  String _toCode = 'MLG';
+  String _toLabel = 'Denpasar (DPS)';
+  String _toCode = 'DPS';
 
   DateTime _departureDate = DateTime.now().add(const Duration(days: 7));
   PassengerCount _passengers = const PassengerCount();
@@ -436,7 +436,11 @@ class _FlightSearchCardState extends State<FlightSearchCard>
                     label: 'Date',
                     icon: Icons.calendar_today_outlined,
                     value: _dateDisplayLabel,
-                    trailing: const Icon(Icons.keyboard_arrow_down, size: 18, color: Colors.black38),
+                    trailing: const Icon(
+                      Icons.keyboard_arrow_down,
+                      size: 18,
+                      color: Colors.black38,
+                    ),
                   ),
                 ),
                 Row(
@@ -448,7 +452,11 @@ class _FlightSearchCardState extends State<FlightSearchCard>
                           label: 'Penumpang',
                           icon: Icons.person_outline,
                           value: _passengers.displayLabel,
-                          trailing: const Icon(Icons.keyboard_arrow_down, size: 18, color: Colors.black38),
+                          trailing: const Icon(
+                            Icons.keyboard_arrow_down,
+                            size: 18,
+                            color: Colors.black38,
+                          ),
                         ),
                       ),
                     ),
@@ -460,7 +468,11 @@ class _FlightSearchCardState extends State<FlightSearchCard>
                           label: 'Flight Class',
                           icon: Icons.airline_seat_recline_normal,
                           value: _flightClassDisplay,
-                          trailing: const Icon(Icons.keyboard_arrow_down, size: 18, color: Colors.black38),
+                          trailing: const Icon(
+                            Icons.keyboard_arrow_down,
+                            size: 18,
+                            color: Colors.black38,
+                          ),
                         ),
                       ),
                     ),
@@ -553,7 +565,11 @@ class _FlightSearchCardState extends State<FlightSearchCard>
                     label: 'Date',
                     icon: Icons.calendar_today_outlined,
                     value: _dateDisplayLabel,
-                    trailing: const Icon(Icons.keyboard_arrow_down, size: 18, color: Colors.black38),
+                    trailing: const Icon(
+                      Icons.keyboard_arrow_down,
+                      size: 18,
+                      color: Colors.black38,
+                    ),
                   ),
                 ),
                 Row(
@@ -565,7 +581,11 @@ class _FlightSearchCardState extends State<FlightSearchCard>
                           label: 'Penumpang',
                           icon: Icons.person_outline,
                           value: _passengers.displayLabel,
-                          trailing: const Icon(Icons.keyboard_arrow_down, size: 18, color: Colors.black38),
+                          trailing: const Icon(
+                            Icons.keyboard_arrow_down,
+                            size: 18,
+                            color: Colors.black38,
+                          ),
                         ),
                       ),
                     ),
@@ -577,7 +597,11 @@ class _FlightSearchCardState extends State<FlightSearchCard>
                           label: 'Flight Class',
                           icon: Icons.airline_seat_recline_normal,
                           value: _flightClassDisplay,
-                          trailing: const Icon(Icons.keyboard_arrow_down, size: 18, color: Colors.black38),
+                          trailing: const Icon(
+                            Icons.keyboard_arrow_down,
+                            size: 18,
+                            color: Colors.black38,
+                          ),
                         ),
                       ),
                     ),
