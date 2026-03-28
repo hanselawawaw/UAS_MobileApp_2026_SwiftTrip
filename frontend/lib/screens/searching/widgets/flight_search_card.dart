@@ -120,7 +120,7 @@ class _FlightSearchCardState extends State<FlightSearchCard>
   String _toLabel = 'Denpasar (DPS)';
   String _toCode = 'DPS';
 
-  DateTime _departureDate = DateTime.now().add(const Duration(days: 7));
+  DateTime _departureDate = DateTime.now();
   PassengerCount _passengers = const PassengerCount();
   String _flightClassDisplay = 'Economy';
   String _flightClassApi = 'ECONOMY';
@@ -240,6 +240,23 @@ class _FlightSearchCardState extends State<FlightSearchCard>
     }
   }
 
+  Future<void> _pickDateForLeg(int index) async {
+    final leg = _multiCityLegs[index];
+    final currentDate = DateTime.tryParse(leg.departureDate) ?? DateTime.now();
+    final picked = await showFlightDatePicker(context, currentDate);
+    if (picked == null || !mounted) return;
+    setState(() {
+      _multiCityLegs[index] = FlightLeg(
+        originLocationCode: leg.originLocationCode,
+        originLabel: leg.originLabel,
+        destinationLocationCode: leg.destinationLocationCode,
+        destinationLabel: leg.destinationLabel,
+        departureDate: formatApiDate(picked),
+      );
+      _resetSearchState();
+    });
+  }
+
   Future<void> _pickPassengers() async {
     final result = await showPassengerPicker(context, _passengers);
     if (result != null && mounted) {
@@ -307,12 +324,12 @@ class _FlightSearchCardState extends State<FlightSearchCard>
   }
 
   final List<FlightLeg> _multiCityLegs = [
-    const FlightLeg(
+    FlightLeg(
       originLocationCode: 'CGK',
       originLabel: 'Jakarta (CGK)',
       destinationLocationCode: 'DPS',
       destinationLabel: 'Denpasar (DPS)',
-      departureDate: '2026-02-20',
+      departureDate: formatApiDate(DateTime.now()),
     ),
   ];
 
@@ -325,7 +342,7 @@ class _FlightSearchCardState extends State<FlightSearchCard>
           originLabel: lastLeg.destinationLabel,
           destinationLocationCode: 'SIN',
           destinationLabel: 'Singapore (SIN)',
-          departureDate: '2026-02-23',
+          departureDate: formatApiDate(DateTime.now()),
         ),
       );
     });
@@ -689,11 +706,15 @@ class _FlightSearchCardState extends State<FlightSearchCard>
                   ),
                 ),
                 GestureDetector(
-                  onTap: _pickDate,
+                  onTap: () => _pickDateForLeg(0),
                   child: SearchInputField(
                     label: 'Date',
                     icon: Icons.calendar_today_outlined,
-                    value: _dateDisplayLabel,
+                    value: _multiCityLegs.isNotEmpty
+                        ? formatDisplayDate(
+                            DateTime.tryParse(_multiCityLegs.first.departureDate) ??
+                                DateTime.now())
+                        : _dateDisplayLabel,
                     trailing: const Icon(
                       Icons.keyboard_arrow_down,
                       size: 18,
