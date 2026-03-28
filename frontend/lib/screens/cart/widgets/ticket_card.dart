@@ -149,13 +149,17 @@ class TicketCard extends StatelessWidget {
             // ── FROM / TO (shared) ───────────────────────────────────
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-              child: Row(
-                children: [
-                  LabelValue(label: 'FROM', value: ticket.from ?? '-'),
-                  const SizedBox(width: 100),
-                  LabelValue(label: 'TO', value: ticket.to ?? '-'),
-                ],
-              ),
+              child: (ticket.type == 'Plane Ticket' &&
+                      ticket.flightRoute != null &&
+                      ticket.flightRoute!.isNotEmpty)
+                  ? _FlightBreadcrumb(codes: ticket.flightRoute!)
+                  : Row(
+                      children: [
+                        LabelValue(label: 'FROM', value: ticket.from ?? '-'),
+                        const SizedBox(width: 100),
+                        LabelValue(label: 'TO', value: ticket.to ?? '-'),
+                      ],
+                    ),
             ),
 
             const TicketDivider(),
@@ -327,6 +331,54 @@ class LabelValue extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class _FlightBreadcrumb extends StatelessWidget {
+  final List<String> codes;
+  const _FlightBreadcrumb({required this.codes});
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        mainAxisAlignment: codes.length >= 6
+            ? MainAxisAlignment.spaceBetween
+            : MainAxisAlignment.start,
+        children: [
+          for (int i = 0; i < codes.length; i++) ...[
+            Text(
+              codes[i],
+              style: const TextStyle(
+                color: Colors.black,
+                fontSize: 14,
+                fontFamily: 'Cairo',
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            if (i < codes.length - 1)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+                child: Row(
+                  children: [
+                    Container(
+                        width: 4, height: 1, color: Colors.black.withOpacity(0.2)),
+                    const SizedBox(width: 2),
+                    Transform.rotate(
+                        angle: 1.57,
+                        child: Icon(Icons.airplanemode_active,
+                            size: 10, color: Colors.black.withOpacity(0.3))),
+                    const SizedBox(width: 2),
+                    Container(
+                        width: 4, height: 1, color: Colors.black.withOpacity(0.2)),
+                  ],
+                ),
+              ),
+          ],
+        ],
+      ),
     );
   }
 }

@@ -22,11 +22,13 @@ class FlightSearchCard extends StatefulWidget {
 class _PesanButton extends StatelessWidget {
   final FlightOffer? selectedFlight;
   final String flightClassApi;
+  final List<String>? flightRoute;
 
   const _PesanButton({
     super.key,
     required this.selectedFlight,
     required this.flightClassApi,
+    this.flightRoute,
   });
 
   @override
@@ -98,6 +100,7 @@ class _PesanButton extends StatelessWidget {
                       flightNumber: selectedFlight!.flightNumber,
                       flightClass: displayClass,
                       priceRp: selectedFlight!.price.toInt(),
+                      flightRoute: flightRoute,
                     );
                     CartService().addTicket(ticket);
 
@@ -490,6 +493,13 @@ class _FlightSearchCardState extends State<FlightSearchCard>
 
   @override
   Widget build(BuildContext context) {
+    final List<String>? flightRoute = _isMultiCity
+        ? [
+            _multiCityLegs.first.originLocationCode,
+            ..._multiCityLegs.map((e) => e.destinationLocationCode),
+          ]
+        : null;
+
     return Stack(
       clipBehavior: Clip.none,
       children: [
@@ -865,6 +875,7 @@ class _FlightSearchCardState extends State<FlightSearchCard>
                         key: const ValueKey('pesan'),
                         selectedFlight: _selectedFlight,
                         flightClassApi: _flightClassApi,
+                        flightRoute: flightRoute,
                       )
                     : Row(
                         key: const ValueKey('search'),

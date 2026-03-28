@@ -35,6 +35,9 @@ class CartTicket {
   final String? carPlate;
   final String? driverName;
 
+  // Flight-specific route path (e.g. ['CGK', 'DPS', 'JFK'])
+  final List<String>? flightRoute;
+
   // Accommodation fields
   final String? imageUrl;
   final String? stayDate;
@@ -67,6 +70,7 @@ class CartTicket {
     this.stayDuration,
     this.bedType,
     this.location,
+    this.flightRoute,
   });
 
   factory CartTicket.fromJson(Map<String, dynamic> json) {
@@ -95,6 +99,9 @@ class CartTicket {
       stayDuration: json['stay_duration'] as String?,
       bedType: json['bed_type'] as String?,
       location: json['location'] as String?,
+      flightRoute: (json['flight_route'] as List<dynamic>?)
+          ?.map((e) => e.toString())
+          .toList(),
     );
   }
 
@@ -124,6 +131,7 @@ class CartTicket {
       'stay_duration': stayDuration,
       'bed_type': bedType,
       'location': location,
+      'flight_route': flightRoute,
     };
   }
 
@@ -152,6 +160,7 @@ class CartTicket {
     String? stayDuration,
     String? bedType,
     String? location,
+    List<String>? flightRoute,
   }) {
     return CartTicket(
       type: type ?? this.type,
@@ -178,6 +187,7 @@ class CartTicket {
       stayDuration: stayDuration ?? this.stayDuration,
       bedType: bedType ?? this.bedType,
       location: location ?? this.location,
+      flightRoute: flightRoute ?? this.flightRoute,
     );
   }
 }
