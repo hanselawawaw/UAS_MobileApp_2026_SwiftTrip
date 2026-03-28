@@ -154,7 +154,7 @@ class SearchingService {
           final flights = response.data['flights'] as List<dynamic>? ?? [];
           final Set<String> airlines = {};
           for (var item in flights) {
-            final al = item['airline']?.toString();
+            final al = (item['airlineName'] ?? item['airline'])?.toString();
             if (al != null && al.isNotEmpty) {
               airlines.add(al);
             }
@@ -175,7 +175,7 @@ class SearchingService {
           final flights = response.data['flights'] as List<dynamic>? ?? [];
           final Set<String> airlines = {};
           for (var item in flights) {
-            final al = item['airline']?.toString();
+            final al = (item['airlineName'] ?? item['airline'])?.toString();
             if (al != null && al.isNotEmpty) {
               airlines.add(al);
             }

@@ -65,15 +65,18 @@ class AmadeusService:
             try:
                 res = requests.get(url, headers=headers, params=params, timeout=10)
                 if res.status_code == 200:
-                    data = res.json().get("data", [])
+                    json_res = res.json()
+                    data = json_res.get("data", [])
+                    carriers = json_res.get("dictionaries", {}).get("carriers", {})
                     if data:
-                        return self._format_amadeus_response(data)
+                        return self._format_amadeus_response(data, carriers)
             except requests.RequestException:
                 pass
 
         return self._fallback_search(origin, destination, date)
 
-    def _format_amadeus_response(self, data):
+    def _format_amadeus_response(self, data, carriers=None):
+        carriers = carriers or {}
         results = []
         for offer in data:
             itineraries = offer.get("itineraries", [])
@@ -82,9 +85,11 @@ class AmadeusService:
             
             segment = itineraries[0].get("segments", [])[0]
             price_info = offer.get("price", {})
+            carrier_code = segment.get("carrierCode")
             
             results.append({
-                "airline": segment.get("carrierCode"),
+                "airline": carrier_code,
+                "airlineName": carriers.get(carrier_code, carrier_code),
                 "origin": segment.get("departure", {}).get("iataCode"),
                 "destination": segment.get("arrival", {}).get("iataCode"),
                 "departure_time": segment.get("departure", {}).get("at"),
