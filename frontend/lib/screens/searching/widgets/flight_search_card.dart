@@ -9,6 +9,8 @@ import 'search_input_field.dart';
 import 'airport_picker_sheet.dart';
 import 'pickers.dart';
 import '../models/flight_offer.dart';
+import '../../cart/models/cart_models.dart';
+import '../../cart/services/cart_service.dart';
 
 class FlightSearchCard extends StatefulWidget {
   const FlightSearchCard({super.key});
@@ -18,7 +20,14 @@ class FlightSearchCard extends StatefulWidget {
 }
 
 class _PesanButton extends StatelessWidget {
-  const _PesanButton({super.key});
+  final FlightOffer? selectedFlight;
+  final String flightClassApi;
+
+  const _PesanButton({
+    super.key,
+    required this.selectedFlight,
+    required this.flightClassApi,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -71,12 +80,38 @@ class _PesanButton extends StatelessWidget {
               top: 3,
               child: GestureDetector(
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const MainScreen(initialIndex: 1),
-                    ),
-                  );
+                  if (selectedFlight != null) {
+                    final displayClass = flightClassApi.toUpperCase() == 'FIRST' 
+                        ? 'First Class' 
+                        : flightClassApi;
+
+                    final ticket = CartTicket(
+                      type: 'Plane Ticket',
+                      bookingId: 'ID-${DateTime.now().millisecondsSinceEpoch}',
+                      classLabel: displayClass,
+                      from: selectedFlight!.origin,
+                      to: selectedFlight!.destination,
+                      date: selectedFlight!.departureTime.split('T').first,
+                      departure: selectedFlight!.departureTime.split('T').last.substring(0, 5),
+                      arrive: selectedFlight!.arrivalTime.split('T').last.substring(0, 5),
+                      operator: selectedFlight!.airlineName,
+                      flightNumber: selectedFlight!.flightNumber,
+                      flightClass: displayClass,
+                      priceRp: selectedFlight!.price.toInt(),
+                    );
+                    CartService().addTicket(ticket);
+
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const MainScreen(initialIndex: 1),
+                      ),
+                    );
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Silakan pilih penerbangan terlebih dahulu.')),
+                    );
+                  }
                 },
                 child: Container(
                   width: 34,
@@ -826,7 +861,11 @@ class _FlightSearchCardState extends State<FlightSearchCard>
               AnimatedSwitcher(
                 duration: const Duration(milliseconds: 350),
                 child: _searchPerformed && _foundFlights.isNotEmpty
-                    ? _PesanButton(key: const ValueKey('pesan'))
+                    ? _PesanButton(
+                        key: const ValueKey('pesan'),
+                        selectedFlight: _selectedFlight,
+                        flightClassApi: _flightClassApi,
+                      )
                     : Row(
                         key: const ValueKey('search'),
                         children: [

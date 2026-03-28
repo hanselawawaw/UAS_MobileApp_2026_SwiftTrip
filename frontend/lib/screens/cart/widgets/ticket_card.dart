@@ -278,13 +278,17 @@ class CardHeader extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 16),
-          Text(
-            bookingId,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 12,
-              fontFamily: 'Cairo',
-              fontWeight: FontWeight.w400,
+          Expanded(
+            child: Text(
+              bookingId,
+              textAlign: TextAlign.end,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 12,
+                fontFamily: 'Cairo',
+                fontWeight: FontWeight.w400,
+              ),
             ),
           ),
         ],

@@ -108,8 +108,9 @@ class AmadeusService:
                 "airline": carrier_code,
                 "airlineName": carriers.get(carrier_code, carrier_code),
                 "all_airlines": list(all_carriers),
+                "flight_number": f"{carrier_code} {lead_segment.get('number')}",
                 "origin": lead_segment.get("departure", {}).get("iataCode"),
-                "destination": lead_segment.get("arrival", {}).get("iataCode"),
+                "destination": segments[-1].get("arrival", {}).get("iataCode"),
                 "departure_time": lead_segment.get("departure", {}).get("at"),
                 "arrival_time": segments[-1].get("arrival", {}).get("at"), # arrival of the last segment in the first itinerary
                 "price": price,

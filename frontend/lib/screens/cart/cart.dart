@@ -53,6 +53,7 @@ class _CartPageState extends State<CartPage> {
     );
 
     if (confirmed == true && mounted) {
+      _cartService.removeTicket(index);
       setState(() => _tickets.removeAt(index));
     }
   }
@@ -87,33 +88,46 @@ class _CartPageState extends State<CartPage> {
           Expanded(
             child: _isLoading
                 ? const Center(child: CircularProgressIndicator())
-                : SingleChildScrollView(
-                    padding: const EdgeInsets.only(
-                      top: 20,
-                      left: 20,
-                      right: 20,
-                      bottom: 40,
-                    ),
-                    child: Column(
-                      children: List.generate(
-                        _tickets.length,
-                        (i) => Padding(
-                          padding: const EdgeInsets.only(bottom: 16),
-                          child: TicketCard(
-                            ticket: _tickets[i],
-                            formatRp: _formatRp,
-                            onDelete: () => _removeTicket(i),
+                : _tickets.isEmpty
+                    ? const Center(
+                        child: Text(
+                          'No tickets in cart',
+                          style: TextStyle(
+                            fontFamily: 'Poppins',
+                            fontSize: 16,
+                            color: Colors.grey,
                           ),
                         ),
+                      )
+                    : SingleChildScrollView(
+                        padding: const EdgeInsets.only(
+                          top: 20,
+                          left: 20,
+                          right: 20,
+                          bottom: 40,
+                        ),
+                        child: Column(
+                          children: [
+                            ...List.generate(
+                              _tickets.length,
+                              (i) => Padding(
+                                padding: const EdgeInsets.only(bottom: 16),
+                                child: TicketCard(
+                                  ticket: _tickets[i],
+                                  formatRp: _formatRp,
+                                  onDelete: () => _removeTicket(i),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ),
           ),
 
           const SizedBox(height: 10),
 
           // ── Pinned Bottom Section ─────────────────────────────────────
-          if (!_isLoading)
+          if (!_isLoading && _tickets.isNotEmpty)
             Padding(
               padding: const EdgeInsets.only(left: 20, right: 20, bottom: 110),
               child: Column(
