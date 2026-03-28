@@ -83,22 +83,98 @@ class AmadeusService:
             if not itineraries:
                 continue
             
-            segment = itineraries[0].get("segments", [])[0]
+            # Use the first segment of the first itinerary as lead info
+            segments = itineraries[0].get("segments", [])
+            if not segments:
+                continue
+                
+            lead_segment = segments[0]
             price_info = offer.get("price", {})
-            carrier_code = segment.get("carrierCode")
+            carrier_code = lead_segment.get("carrierCode")
             
+            # For multi-city or round-trip, we might have multiple carriers.
+            # We add all carriers found in this offer to help the frontend identify available airlines.
+            all_carriers = set()
+            for iti in itineraries:
+                for seg in iti.get("segments", []):
+                    c_code = seg.get("carrierCode")
+                    if c_code:
+                        all_carriers.add(c_code)
+
             results.append({
                 "airline": carrier_code,
                 "airlineName": carriers.get(carrier_code, carrier_code),
-                "origin": segment.get("departure", {}).get("iataCode"),
-                "destination": segment.get("arrival", {}).get("iataCode"),
-                "departure_time": segment.get("departure", {}).get("at"),
-                "arrival_time": segment.get("arrival", {}).get("at"),
+                "all_airlines": list(all_carriers),
+                "origin": lead_segment.get("departure", {}).get("iataCode"),
+                "destination": lead_segment.get("arrival", {}).get("iataCode"),
+                "departure_time": lead_segment.get("departure", {}).get("at"),
+                "arrival_time": segments[-1].get("arrival", {}).get("at"), # arrival of the last segment in the first itinerary
                 "price": float(price_info.get("total", "0")),
                 "currency": price_info.get("currency", "EUR"),
                 "source": "amadeus"
             })
         return results
+
+    def search_flights_multi_city(self, legs, passengers=1, travel_class="ECONOMY"):
+        """
+        Supports multiple segments using POST /v2/shopping/flight-offers
+        legs: list of {'origin': '...', 'destination': '...', 'date': '...'}
+        """
+        token = self._get_token()
+        if not token:
+            return []
+
+        url = f"{self.BASE_URL}/v2/shopping/flight-offers"
+        headers = {
+            "Authorization": f"Bearer {token}",
+            "Content-Type": "application/json"
+        }
+
+        origin_destinations = []
+        for i, leg in enumerate(legs):
+            origin_destinations.append({
+                "id": str(i + 1),
+                "originLocationCode": leg.get("origin", "").upper(),
+                "destinationLocationCode": leg.get("destination", "").upper(),
+                "departureDateTimeRange": {
+                    "date": leg.get("date", "")
+                }
+            })
+
+        travelers = []
+        num_passengers = max(1, int(passengers))
+        for i in range(num_passengers):
+            travelers.append({
+                "id": str(i + 1),
+                "travelerType": "ADULT"
+            })
+
+        payload = {
+            "currencyCode": "EUR",
+            "originDestinations": origin_destinations,
+            "travelers": travelers,
+            "sources": ["GDS"],
+            "searchCriteria": {
+                "maxFlightOffers": 5,
+                "flightFilters": {
+                    "cabin": travel_class.upper()
+                }
+            }
+        }
+
+        try:
+            res = requests.post(url, headers=headers, json=payload, timeout=15)
+            if res.status_code == 200:
+                json_res = res.json()
+                data = json_res.get("data", [])
+                dictionaries = json_res.get("dictionaries", {})
+                carriers = dictionaries.get("carriers", {})
+                if data:
+                    return self._format_amadeus_response(data, carriers)
+        except requests.RequestException:
+            pass
+
+        return []
 
     def search_airports(self, keyword):
         """

@@ -159,14 +159,30 @@ class _FlightSearchCardState extends State<FlightSearchCard>
   }
 
   Future<void> _handleSearch() async {
-    if (_fromCode == _toCode) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Origin and destination cannot be the same.'),
-        ),
-      );
-      return;
+    if (!_isMultiCity) {
+      if (_fromCode == _toCode) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Origin and destination cannot be the same.'),
+          ),
+        );
+        return;
+      }
+    } else {
+      for (final leg in _multiCityLegs) {
+        if (leg.originLocationCode == leg.destinationLocationCode) {
+          if (!mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                'Origin and destination cannot be the same for all legs.',
+              ),
+            ),
+          );
+          return;
+        }
+      }
     }
 
     final today = DateTime.now();
@@ -334,14 +350,24 @@ class _FlightSearchCardState extends State<FlightSearchCard>
   ];
 
   void _addLeg() {
+    if (_multiCityLegs.length >= 5) return;
     setState(() {
       final lastLeg = _multiCityLegs.last;
+      final newOriginCode = lastLeg.destinationLocationCode;
+      final newOriginLabel = lastLeg.destinationLabel;
+
+      // Default next destination to something different than the origin
+      final String nextDestCode = newOriginCode == 'SIN' ? 'BKK' : 'SIN';
+      final String nextDestLabel = newOriginCode == 'SIN'
+          ? 'Bangkok (BKK)'
+          : 'Singapore (SIN)';
+
       _multiCityLegs.add(
         FlightLeg(
-          originLocationCode: lastLeg.destinationLocationCode,
-          originLabel: lastLeg.destinationLabel,
-          destinationLocationCode: 'SIN',
-          destinationLabel: 'Singapore (SIN)',
+          originLocationCode: newOriginCode,
+          originLabel: newOriginLabel,
+          destinationLocationCode: nextDestCode,
+          destinationLabel: nextDestLabel,
           departureDate: formatApiDate(DateTime.now()),
         ),
       );
@@ -391,14 +417,28 @@ class _FlightSearchCardState extends State<FlightSearchCard>
       label: isTo ? 'To' : 'From',
     );
     if (result == null || !mounted) return;
+
+    final leg = _multiCityLegs[index];
+    final targetOrigin = isTo ? leg.originLocationCode : result.iataCode;
+    final targetDestination = isTo
+        ? result.iataCode
+        : leg.destinationLocationCode;
+
+    if (targetOrigin == targetDestination) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Origin and destination cannot be the same.'),
+        ),
+      );
+      return;
+    }
+
     setState(() {
-      final leg = _multiCityLegs[index];
       _multiCityLegs[index] = FlightLeg(
-        originLocationCode: isTo ? leg.originLocationCode : result.iataCode,
+        originLocationCode: targetOrigin,
         originLabel: isTo ? leg.originLabel : result.displayLabel,
-        destinationLocationCode: isTo
-            ? result.iataCode
-            : leg.destinationLocationCode,
+        destinationLocationCode: targetDestination,
         destinationLabel: isTo ? result.displayLabel : leg.destinationLabel,
         departureDate: leg.departureDate,
       );
@@ -689,22 +729,22 @@ class _FlightSearchCardState extends State<FlightSearchCard>
                     ],
                   );
                 }),
-                GestureDetector(
-                  onTap: _addLeg,
-                  child: const Padding(
-                    padding: EdgeInsets.only(bottom: 12),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.add_circle_outline,
-                          size: 20,
-                          color: Colors.black54,
-                        ),
-                        SizedBox(width: 8),
-                      ],
+                if (_multiCityLegs.length < 5)
+                  GestureDetector(
+                    onTap: _addLeg,
+                    child: const Padding(
+                      padding: EdgeInsets.only(bottom: 12),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.add_circle_outline,
+                            size: 20,
+                            color: Colors.black54,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
                 GestureDetector(
                   onTap: () => _pickDateForLeg(0),
                   child: SearchInputField(
@@ -712,8 +752,11 @@ class _FlightSearchCardState extends State<FlightSearchCard>
                     icon: Icons.calendar_today_outlined,
                     value: _multiCityLegs.isNotEmpty
                         ? formatDisplayDate(
-                            DateTime.tryParse(_multiCityLegs.first.departureDate) ??
-                                DateTime.now())
+                            DateTime.tryParse(
+                                  _multiCityLegs.first.departureDate,
+                                ) ??
+                                DateTime.now(),
+                          )
                         : _dateDisplayLabel,
                     trailing: const Icon(
                       Icons.keyboard_arrow_down,

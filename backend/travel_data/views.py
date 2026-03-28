@@ -64,7 +64,7 @@ class SearchView(views.APIView):
     """
     Returns search-related data: ride options, coupons, and structured flight search.
     """
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [permissions.AllowAny]
 
     def get(self, request):
         origin = request.query_params.get('origin', '').upper()
@@ -128,6 +128,33 @@ class SearchView(views.APIView):
             'rideOptions': RideOptionSerializer(rides, many=True).data,
             'coupons': CouponSerializer(coupons, many=True).data
         })
+
+    def post(self, request):
+        legs = request.data.get('legs', [])
+        passengers = request.data.get('passengers', 1)
+        travel_class = request.data.get('class', 'ECONOMY')
+
+        if not legs:
+            return Response({'error': 'No legs provided for multi-city search'}, status=status.HTTP_400_BAD_REQUEST)
+
+        if len(legs) > 5:
+            return Response({'error': 'Maximum 5 legs (6 destinations) allowed for multi-city search'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Basic validation for each leg
+        for leg in legs:
+            origin = leg.get('origin', '').upper()
+            destination = leg.get('destination', '').upper()
+            date_str = leg.get('date')
+
+            if not (origin and destination and date_str):
+                return Response({'error': 'Each leg must have origin, destination, and date'}, status=status.HTTP_400_BAD_REQUEST)
+            
+            if len(origin) != 3 or len(destination) != 3:
+                return Response({'error': 'Origin and destination must be 3-letter IATA codes'}, status=status.HTTP_400_BAD_REQUEST)
+
+        amadeus = AmadeusService()
+        flights = amadeus.search_flights_multi_city(legs, passengers, travel_class)
+        return Response({'flights': flights})
 
 
 class AirportSearchView(views.APIView):

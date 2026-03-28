@@ -136,19 +136,17 @@ class SearchingService {
 
     try {
       if (isMultiCity) {
-        // NOTE: The current backend `/api/travel/search/` with Amadeus integration
-        // only supports one origin and destination right now via query params.
-        // We will execute a search for the first leg to demonstrate capability.
-        if (multiCityLegs.isEmpty) return [];
-        final leg = multiCityLegs.first;
-        
-        final response = await dio.get('search/', queryParameters: {
-          'origin': leg.originLocationCode,
-          'destination': leg.destinationLocationCode,
-          'date': leg.departureDate,
+        final body = {
+          'legs': multiCityLegs.map((leg) => {
+            'origin': leg.originLocationCode,
+            'destination': leg.destinationLocationCode,
+            'date': leg.departureDate,
+          }).toList(),
           'passengers': passengers,
           'class': flightClass,
-        });
+        };
+        
+        final response = await dio.post('search/', data: body);
 
         if (response.statusCode == 200) {
           final flights = response.data['flights'] as List<dynamic>? ?? [];
