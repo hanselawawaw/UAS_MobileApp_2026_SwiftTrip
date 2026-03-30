@@ -48,15 +48,14 @@ class CartService {
     if (promo == null) return 0;
     final baseTotal = tickets.fold(0, (sum, t) => sum + t.priceRp);
 
-    if (promo.id == 'promo_1' && baseTotal >= 1000000) {
-      return (baseTotal * 0.10).toInt();
+    if (baseTotal < promo.minPurchase) return 0;
+
+    if (promo.promotionType == 'PERCENTAGE') {
+      return (baseTotal * (promo.discountValue / 100)).toInt();
+    } else if (promo.promotionType == 'CASHBACK') {
+      return promo.discountValue.toInt();
     }
-    if (promo.id == 'promo_2') {
-      return (baseTotal * 0.15).toInt();
-    }
-    if (promo.id == 'promo_3') {
-      return 50000;
-    }
+    
     return 0;
   }
 }
