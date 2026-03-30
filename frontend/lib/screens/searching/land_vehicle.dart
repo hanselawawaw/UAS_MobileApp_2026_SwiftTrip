@@ -36,6 +36,7 @@ class _LandVehicleSearchState extends State<LandVehicleSearch> {
   VehiclePin? _selectedVehicle;
 
   List<RideOption> _rideOptions = [];
+  List<VehiclePin> _currentPins = [];
   bool _isLoading = true;
 
   @override
@@ -53,6 +54,10 @@ class _LandVehicleSearchState extends State<LandVehicleSearch> {
         _rideOptions = options;
         _selectedRideIndex = 0;
         _isLoading = false;
+        if (_selectedRideIndex != null) {
+          final type = _rideOptions[_selectedRideIndex!].name;
+          _currentPins = _vehicleService.getPinsForType(type);
+        }
       });
     }
   }
@@ -64,8 +69,7 @@ class _LandVehicleSearchState extends State<LandVehicleSearch> {
     return _rideOptions[_selectedRideIndex!].name;
   }
 
-  List<VehiclePin> get _currentPins =>
-      _vehicleService.getPinsForType(_activeType);
+
 
   int get _total {
     if (_selectedVehicle != null) return _selectedVehicle!.ticket.priceRp;
@@ -104,11 +108,23 @@ class _LandVehicleSearchState extends State<LandVehicleSearch> {
     setState(() {
       _selectedRideIndex = _selectedRideIndex == index ? null : index;
       _selectedVehicle = null;
+      if (_selectedRideIndex != null) {
+        final type = _rideOptions[_selectedRideIndex!].name;
+        _currentPins = _vehicleService.getPinsForType(type);
+      } else {
+        _currentPins = [];
+      }
     });
   }
 
   void _onPinSelected(VehiclePin pin) {
-    setState(() => _selectedVehicle = pin);
+    setState(() {
+      // Find the stable reference from our current list for this pin
+      _selectedVehicle = _currentPins.firstWhere(
+        (p) => p.ticket.bookingId == pin.ticket.bookingId,
+        orElse: () => pin,
+      );
+    });
   }
 
   @override
@@ -143,6 +159,9 @@ class _LandVehicleSearchState extends State<LandVehicleSearch> {
                     pins: _currentPins,
                     selectedPin: _selectedVehicle,
                     onPinTap: _onPinSelected,
+                    onMapTap: () {
+                      setState(() => _selectedVehicle = null);
+                    },
                   ),
                   const SizedBox(height: 30),
 

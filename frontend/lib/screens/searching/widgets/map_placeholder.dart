@@ -9,12 +9,14 @@ class VehicleMapWidget extends StatefulWidget {
   final List<VehiclePin> pins;
   final VehiclePin? selectedPin;
   final ValueChanged<VehiclePin> onPinTap;
+  final VoidCallback? onMapTap;
 
   const VehicleMapWidget({
     super.key,
     required this.pins,
     required this.onPinTap,
     this.selectedPin,
+    this.onMapTap,
   });
 
   @override
@@ -38,7 +40,9 @@ class _VehicleMapWidgetState extends State<VehicleMapWidget> {
   void didUpdateWidget(VehicleMapWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
     // Re-fit if pins change (e.g. switching Car -> Bus)
-    if (oldWidget.pins != widget.pins || oldWidget.selectedPin != widget.selectedPin) {
+    if (oldWidget.pins != widget.pins ||
+        oldWidget.selectedPin?.ticket.bookingId !=
+            widget.selectedPin?.ticket.bookingId) {
       _fitMapToPins();
     }
   }
@@ -59,10 +63,7 @@ class _VehicleMapWidgetState extends State<VehicleMapWidget> {
 
     // Smoothly animate the camera to fit all points with some padding
     _mapController.fitCamera(
-      CameraFit.bounds(
-        bounds: bounds,
-        padding: const EdgeInsets.all(40),
-      ),
+      CameraFit.bounds(bounds: bounds, padding: const EdgeInsets.all(40)),
     );
   }
 
@@ -75,9 +76,10 @@ class _VehicleMapWidgetState extends State<VehicleMapWidget> {
         height: 220,
         child: FlutterMap(
           mapController: _mapController,
-          options: const MapOptions(
+          options: MapOptions(
             initialCenter: _myLocation,
             initialZoom: 14.0,
+            onTap: (_, __) => widget.onMapTap?.call(),
           ),
           children: [
             // ── OSM Tile Layer ───────────────────────────────────────────
@@ -99,7 +101,8 @@ class _VehicleMapWidgetState extends State<VehicleMapWidget> {
 
                 // Vehicle pins
                 ...widget.pins.map((pin) {
-                  final isSelected = widget.selectedPin == pin;
+                  final isSelected =
+                      widget.selectedPin?.ticket.bookingId == pin.ticket.bookingId;
                   return Marker(
                     point: LatLng(pin.latitude, pin.longitude),
                     width: isSelected ? 48 : 38,
@@ -161,7 +164,9 @@ class _VehiclePinIcon extends StatelessWidget {
         border: Border.all(color: Colors.white, width: isSelected ? 3 : 2),
         boxShadow: [
           BoxShadow(
-            color: isSelected ? const Color(0x662B99E3) : const Color(0x40000000),
+            color: isSelected
+                ? const Color(0x662B99E3)
+                : const Color(0x40000000),
             blurRadius: isSelected ? 12 : 6,
             spreadRadius: isSelected ? 2 : 0,
           ),
