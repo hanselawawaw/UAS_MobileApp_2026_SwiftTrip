@@ -4,6 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../../main/main_screen.dart';
 import '../order_ticket.dart';
 import '../models/chat_message.dart';
+import 'package:swifttrip_frontend/screens/cart/models/cart_models.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // TOP BAR
@@ -128,7 +129,7 @@ class ChatBubbleWidget extends StatelessWidget {
 // ─────────────────────────────────────────────────────────────────────────────
 
 class ChatTicketCard extends StatefulWidget {
-  final TicketData ticket;
+  final CartTicket ticket;
 
   const ChatTicketCard({super.key, required this.ticket});
 
@@ -141,6 +142,19 @@ class _ChatTicketCardState extends State<ChatTicketCard> {
 
   @override
   Widget build(BuildContext context) {
+    final String typeLabel = widget.ticket.type.contains('Plane') || widget.ticket.type.contains('Flight')
+        ? 'FLIGHT'
+        : widget.ticket.type.contains('Car')
+            ? 'CAR'
+            : widget.ticket.type.contains('Bus')
+                ? 'BUS'
+                : 'TRAIN';
+                
+    final String typeValue = widget.ticket.flightNumber ??
+        widget.ticket.busNumber ??
+        widget.ticket.operator ??
+        '--';
+
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8),
       padding: const EdgeInsets.all(16),
@@ -163,11 +177,11 @@ class _ChatTicketCardState extends State<ChatTicketCard> {
             children: [
               TicketCol(
                 label: 'FROM',
-                value: widget.ticket.from,
+                value: widget.ticket.from ?? '--',
                 valueBig: true,
               ),
               const SizedBox(width: 40),
-              TicketCol(label: 'TO', value: widget.ticket.to, valueBig: true),
+              TicketCol(label: 'TO', value: widget.ticket.to ?? '--', valueBig: true),
             ],
           ),
           const Divider(height: 20, color: Color(0xFFE0E0E0)),
@@ -175,23 +189,21 @@ class _ChatTicketCardState extends State<ChatTicketCard> {
           // ── DATE / DEPARTURE / ARRIVE ───────────────────────────────────
           Row(
             children: [
-              TicketCol(label: 'DATE', value: widget.ticket.date),
+              TicketCol(label: 'DATE', value: widget.ticket.date ?? '--'),
               const SizedBox(width: 20),
-              TicketCol(label: 'DEPARTURE', value: widget.ticket.departure),
+              TicketCol(label: 'DEPARTURE', value: widget.ticket.departure ?? '--'),
               const SizedBox(width: 20),
-              TicketCol(label: 'ARRIVE', value: widget.ticket.arrive),
+              TicketCol(label: 'ARRIVE', value: widget.ticket.arrive ?? '--'),
             ],
           ),
           const SizedBox(height: 10),
 
-          // ── TRAIN / CARRIAGE / SEAT + TAMBAH button ─────────────────────
+          // ── TICKET INFO + TAMBAH button ─────────────────────
           Row(
             children: [
-              TicketCol(label: 'TRAIN', value: widget.ticket.train),
+              TicketCol(label: typeLabel, value: typeValue),
               const SizedBox(width: 20),
-              TicketCol(label: 'CARRIAGE', value: widget.ticket.carriage),
-              const SizedBox(width: 20),
-              TicketCol(label: 'SEAT', value: widget.ticket.seat),
+              TicketCol(label: 'CLASS', value: widget.ticket.classLabel),
               const Spacer(),
               // Tambah button
               GestureDetector(
@@ -365,7 +377,11 @@ class ChatInputBar extends StatelessWidget {
   final TextEditingController controller;
   final VoidCallback onSend;
 
-  const ChatInputBar({super.key, required this.controller, required this.onSend});
+  const ChatInputBar({
+    super.key,
+    required this.controller,
+    required this.onSend,
+  });
 
   @override
   Widget build(BuildContext context) {

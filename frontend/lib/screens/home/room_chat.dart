@@ -26,7 +26,7 @@ class _RoomChatPageState extends State<RoomChatPage> {
   }
 
   Future<void> _fetchMessages() async {
-    final msgs = await _chatService.getInitialMessages();
+    final msgs = await _chatService.getInitialMessages('home');
     if (mounted) {
       setState(() {
         _messages = msgs;
@@ -67,7 +67,7 @@ class _RoomChatPageState extends State<RoomChatPage> {
 
     _scrollToBottom();
 
-    final response = await _chatService.sendMessage(text);
+    final response = await _chatService.sendMessage(text, 'home');
     if (!mounted) return;
 
     setState(() {
@@ -85,23 +85,23 @@ class _RoomChatPageState extends State<RoomChatPage> {
         children: [
           const ChatTopBar(),
           Expanded(
-            child: _isLoading 
+            child: _isLoading
                 ? const Center(child: CircularProgressIndicator())
                 : ListView.builder(
-              controller: _scrollController,
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
-              itemCount: _messages.length + (_isBotTyping ? 1 : 0),
-              itemBuilder: (_, i) {
-                if (_isBotTyping && i == _messages.length) {
-                  return const TypingIndicator();
-                }
-                final msg = _messages[i];
-                if (msg.type ==MsgType.ticket) {
-                  return ChatTicketCard(ticket: msg.ticket!);
-                }
-                return ChatBubbleWidget(message: msg);
-              },
-            ),
+                    controller: _scrollController,
+                    padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+                    itemCount: _messages.length + (_isBotTyping ? 1 : 0),
+                    itemBuilder: (_, i) {
+                      if (_isBotTyping && i == _messages.length) {
+                        return const TypingIndicator();
+                      }
+                      final msg = _messages[i];
+                      if (msg.type == MsgType.ticket) {
+                        return ChatTicketCard(ticket: msg.ticket!);
+                      }
+                      return ChatBubbleWidget(message: msg);
+                    },
+                  ),
           ),
           ChatInputBar(controller: _inputController, onSend: _sendMessage),
           const SizedBox(height: 30),

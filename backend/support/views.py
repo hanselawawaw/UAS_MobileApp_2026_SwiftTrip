@@ -71,59 +71,67 @@ import json
 import google.generativeai as genai
 from travel_data.services.amadeus_service import AmadeusService
 
-class AIChatView(APIView):
+class GeminiChatView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
         message = request.data.get('message', '')
+        context = request.data.get('context', 'home')  # 'home' or 'support'
+        
         if not message:
             return Response({"error": "Message is required"}, status=status.HTTP_400_BAD_REQUEST)
 
-        language = request.headers.get('Accept-Language', 'en-US')
         genai.configure(api_key=os.environ.get("GEMINI_API_KEY"))
+        model = genai.GenerativeModel("gemini-3-flash")
         
-        # We use gemini-1.5-flash as the standard fast model
-        model = genai.GenerativeModel("gemini-1.5-flash")
-        
-        extraction_prompt = f"""
-        Extract the origin IATA code, destination IATA code, and the departure date (YYYY-MM-DD) from this message.
-        Message: "{message}"
-        Return ONLY a JSON object with keys "origin", "destination", "date". Return empty strings if not found.
+        system_instruction = f"""
+        You are the SwiftTrip Assistant.
+        Context: The user is messaging from the '{context}' screen. Prioritize your responses accordingly.
+        If the user asks for travel (flight, car, bus, train), return ONLY a valid JSON: {{"intent": "SEARCH", "origin": "IATA Code or City", "destination": "IATA Code or City", "date": "YYYY-MM-DD", "type": "flight", "car", "bus", or "train"}}. Use standard 3-letter IATA for flights. For dates, default to future dates if implied.
+        If the user asks for advice/consultation on trips, return ONLY JSON: {{"intent": "CONSULT", "message": "Your helpful advice here matching the user language", "needs_data": true}}.
+        If the user reports a bug or explicitly needs customer support, return ONLY JSON: {{"intent": "SUPPORT", "message": "Your polite response acknowledging the report", "action": "CREATE_TICKET"}}.
+        Do not include ANY markdown block quotes (e.g. ```json). Your entire output must be raw valid JSON.
         """
         
+        # We pass system_instruction into generate_content explicitly as part of generation_config or model initialization.
+        # However, to be perfectly safe with various SDK versions, we prepend it as a system block.
+        prompt = f"System: {system_instruction}\n\nUser: {message}"
+        
         try:
-            extraction_response = model.generate_content(extraction_prompt)
-            json_text = extraction_response.text.strip().replace('```json', '').replace('```', '').strip()
-            params = json.loads(json_text)
-            origin = params.get('origin', '')
-            destination = params.get('destination', '')
-            date = params.get('date', '')
-        except Exception as e:
-            text_val = getattr(extraction_response, 'text', 'No text') if 'extraction_response' in locals() else 'No response'
-            print("EXTRACTION ERROR:", e, text_val)
-            return Response({"error": "Failed to parse query", "details": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            response = model.generate_content(prompt)
+            json_text = response.text.strip()
             
-        flights = []
-        if len(origin) == 3 and len(destination) == 3 and date:
-            amadeus = AmadeusService()
-            flights = amadeus.search_flights(origin, destination, date) or []
-
-        summary_prompt = f"""
-        User asked: "{message}"
-        Flight search results: {len(flights)} flights found.
-        If flights > 0, summarize the best option briefly.
-        If flights == 0, politely state no flights were found.
-        Respond in language matching: {language}.
-        Keep it friendly and very concise.
-        """
+            # Failsafe string parsing
+            if json_text.startswith("```json"):
+                json_text = json_text[7:]
+            if json_text.endswith("```"):
+                json_text = json_text[:-3]
+            json_text = json_text.strip()
+                
+            intent_data = json.loads(json_text)
+            intent = intent_data.get('intent', 'UNKNOWN')
+            
+            # If SEARCH and flight, do backend Amadeus search. 
+            if intent == 'SEARCH' and intent_data.get('type', '').lower() == 'flight':
+                origin = intent_data.get('origin', '')
+                destination = intent_data.get('destination', '')
+                date = intent_data.get('date', '')
+                
+                flights = []
+                if len(origin) == 3 and len(destination) == 3 and date:
+                    amadeus = AmadeusService()
+                    flights = amadeus.search_flights(origin, destination, date) or []
+                
+                intent_data['flights'] = flights
+                
+            return Response(intent_data)
         
-        try:
-            summary_response = model.generate_content(summary_prompt)
-            final_message = summary_response.text.strip()
-        except Exception:
-            final_message = "Here are the flights we found for you." if flights else "Sorry, we couldn't find any flights."
+        except Exception as e:
+            text_val = getattr(response, 'text', 'No text') if 'response' in locals() else 'No response'
+            print("GEMINI ERROR:", e, text_val)
+            return Response({
+                "intent": "SUPPORT", 
+                "message": "Sorry, I didn't quite catch that. Could you describe your query or issue more clearly?",
+                "action": "CREATE_TICKET"
+            })
 
-        return Response({
-            "message": final_message,
-            "flights": flights
-        })

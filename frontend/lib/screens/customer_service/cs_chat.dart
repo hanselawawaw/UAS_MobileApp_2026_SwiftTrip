@@ -1,18 +1,16 @@
 import 'package:flutter/material.dart';
 import '../../widgets/top_bar.dart';
 import 'onboarding.dart';
-import 'models/cs_chat_models.dart';
-import 'widgets/cs_question_card.dart';
-import 'widgets/cs_feedback_card.dart';
-import 'widgets/cs_reply_bar.dart';
-import 'services/customer_service_service.dart';
+import '../home/models/chat_message.dart';
+import '../home/widgets/chat_widgets.dart';
+import '../home/services/chat_service.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // CS CHAT PAGE
 // ─────────────────────────────────────────────────────────────────────────────
 
 class CsChatPage extends StatefulWidget {
-  final String ticketId;
+  final String ticketId; // Kept to avoid breaking references
 
   const CsChatPage({super.key, required this.ticketId});
 
@@ -22,45 +20,69 @@ class CsChatPage extends StatefulWidget {
 
 class _CsChatPageState extends State<CsChatPage> {
   final TextEditingController _replyController = TextEditingController();
-  final CustomerServiceService _service = CustomerServiceService();
+  final ScrollController _scrollController = ScrollController();
+  final ChatService _chatService = ChatService();
 
-  CsQuestion? _question;
-  List<CsFeedbackEntry> _feedbackThread = [];
+  List<ChatMessage> _messages = [];
+  bool _isBotTyping = false;
   bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _loadChatData();
+    _fetchMessages();
   }
 
-  Future<void> _loadChatData() async {
-    final question = await _service.getQuestionDetail(widget.ticketId);
-    final thread = await _service.getFeedbackThread(widget.ticketId);
+  Future<void> _fetchMessages() async {
+    final msgs = await _chatService.getInitialMessages('support');
     if (mounted) {
       setState(() {
-        _question = question;
-        _feedbackThread = thread;
+        _messages = msgs;
         _isLoading = false;
       });
+      _scrollToBottom();
     }
   }
 
   @override
   void dispose() {
     _replyController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
-  Future<void> _handleSendReply() async {
-    final body = _replyController.text.trim();
-    if (body.isEmpty) return;
+  void _scrollToBottom() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
+    });
+  }
 
-    await _service.postReply(widget.ticketId, body);
-    
-    _replyController.clear();
-    // Re-fetch to show new reply
-    await _loadChatData(); 
+  void _handleSendReply() async {
+    final text = _replyController.text.trim();
+    if (text.isEmpty) return;
+
+    setState(() {
+      _messages.add(ChatMessage.text(type: MsgType.user, text: text));
+      _replyController.clear();
+      _isBotTyping = true;
+    });
+
+    _scrollToBottom();
+
+    final response = await _chatService.sendMessage(text, 'support');
+    if (!mounted) return;
+
+    setState(() {
+      _isBotTyping = false;
+      _messages.add(response);
+    });
+    _scrollToBottom();
   }
 
   @override
@@ -85,55 +107,23 @@ class _CsChatPageState extends State<CsChatPage> {
           Expanded(
             child: _isLoading
                 ? const Center(child: CircularProgressIndicator())
-                : Stack(
-                    children: [
-                      SingleChildScrollView(
-                        padding: const EdgeInsets.fromLTRB(20, 16, 20, 100),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const SizedBox(height: 10),
-                            if (_question != null)
-                              CsQuestionCard(question: _question!),
-                            
-                            const SizedBox(height: 16),
-                            const Divider(color: Color(0x4D000000), thickness: 1),
-                            const SizedBox(height: 8),
-
-                            const Text(
-                              'Feedback:',
-                              style: TextStyle(
-                                fontFamily: 'Poppins',
-                                fontWeight: FontWeight.w600,
-                                fontSize: 16,
-                                height: 2.19,
-                                color: Color(0xFF2B99E3),
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-
-                            ..._feedbackThread.map((entry) => Padding(
-                                  padding: const EdgeInsets.only(bottom: 12),
-                                  child: CsFeedbackCard(entry: entry),
-                                )),
-                          ],
-                        ),
-                      ),
-
-                      // ── Reply Bar at Bottom ─────────────────────────────────
-                      Positioned(
-                        bottom: 20,
-                        left: 0,
-                        right: 0,
-                        child: CsReplyBar(
-                          controller: _replyController,
-                          onSend: _handleSendReply,
-                        ),
-                      ),
-                    ],
+                : ListView.builder(
+                    controller: _scrollController,
+                    padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+                    itemCount: _messages.length + (_isBotTyping ? 1 : 0),
+                    itemBuilder: (_, i) {
+                      if (_isBotTyping && i == _messages.length) {
+                        return const TypingIndicator();
+                      }
+                      final msg = _messages[i];
+                      if (msg.type == MsgType.ticket) {
+                        return ChatTicketCard(ticket: msg.ticket!);
+                      }
+                      return ChatBubbleWidget(message: msg);
+                    },
                   ),
           ),
-          SizedBox(height: MediaQuery.of(context).padding.bottom + 10),
+          ChatInputBar(controller: _replyController, onSend: _handleSendReply),
           const SizedBox(height: 30),
         ],
       ),
