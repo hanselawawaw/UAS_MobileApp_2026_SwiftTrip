@@ -44,9 +44,8 @@ class CartService {
     }
   }
 
-  int calculateDiscount(List<CartTicket> tickets, Promotion? promo) {
+  int calculateDiscount(int baseTotal, Promotion? promo) {
     if (promo == null) return 0;
-    final baseTotal = tickets.fold(0, (sum, t) => sum + t.priceRp);
 
     if (baseTotal < promo.minPurchase) return 0;
 

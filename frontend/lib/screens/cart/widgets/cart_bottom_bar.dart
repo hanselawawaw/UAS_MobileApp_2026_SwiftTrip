@@ -44,7 +44,9 @@ class ApplyPromotionsRow extends StatelessWidget {
             const SizedBox(width: 14),
             Expanded(
               child: Text(
-                appliedPromo?.title ?? 'Apply Promotions',
+                appliedPromo != null
+                    ? 'Applied: ${appliedPromo!.title}'
+                    : 'Apply Promotions',
                 style: TextStyle(
                   color: appliedPromo != null
                       ? const Color(0xFF5997F7)

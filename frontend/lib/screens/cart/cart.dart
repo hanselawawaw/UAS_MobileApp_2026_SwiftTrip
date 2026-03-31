@@ -43,7 +43,7 @@ class _CartPageState extends State<CartPage> {
 
   int get _baseTotal => _tickets.fold(0, (sum, t) => sum + t.priceRp);
   int get _discountAmount =>
-      _cartService.calculateDiscount(_tickets, _appliedPromo);
+      _cartService.calculateDiscount(_baseTotal, _appliedPromo);
   int get _finalTotal => _baseTotal - _discountAmount;
 
   Future<void> _removeTicket(int index) async {

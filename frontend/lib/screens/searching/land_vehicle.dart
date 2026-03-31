@@ -16,6 +16,7 @@ import 'widgets/total_confirm_bar.dart';
 import 'widgets/apply_promotions_row.dart';
 import 'services/searching_service.dart';
 import 'services/mock_vehicle_service.dart';
+import '../cart/services/cart_service.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // PAGE
@@ -30,6 +31,7 @@ class LandVehicleSearch extends StatefulWidget {
 
 class _LandVehicleSearchState extends State<LandVehicleSearch> {
   final _vehicleService = const MockVehicleService();
+  final _cartService = CartService();
 
   int? _selectedRideIndex;
   Promotion? _appliedPromo;
@@ -69,9 +71,7 @@ class _LandVehicleSearchState extends State<LandVehicleSearch> {
     return _rideOptions[_selectedRideIndex!].name;
   }
 
-
-
-  int get _total {
+  int get _baseTotal {
     if (_selectedVehicle != null) return _selectedVehicle!.ticket.priceRp;
     if (_selectedRideIndex != null && _rideOptions.isNotEmpty) {
       return _rideOptions[_selectedRideIndex!].priceRp;
@@ -79,13 +79,18 @@ class _LandVehicleSearchState extends State<LandVehicleSearch> {
     return 0;
   }
 
+  int get _discountAmount =>
+      _cartService.calculateDiscount(_baseTotal, _appliedPromo);
+
+  int get _finalTotal => _baseTotal - _discountAmount;
+
   List<DetailRow> get _dynamicDetails {
     if (_selectedVehicle == null) {
       return const [DetailRow(label: 'Select a vehicle', amount: '-')];
     }
 
     final ticket = _selectedVehicle!.ticket;
-    return [
+    final rows = [
       DetailRow(label: ticket.type, amount: formatRp(ticket.priceRp)),
       if (ticket.operator != null)
         DetailRow(label: 'Operator', amount: ticket.operator!),
@@ -100,6 +105,14 @@ class _LandVehicleSearchState extends State<LandVehicleSearch> {
       if (ticket.classLabel.isNotEmpty)
         DetailRow(label: 'Class', amount: ticket.classLabel),
     ];
+
+    if (_discountAmount > 0) {
+      rows.add(
+        DetailRow(label: 'Discount', amount: '- ${formatRp(_discountAmount)}'),
+      );
+    }
+
+    return rows;
   }
 
   // ── Event handlers ────────────────────────────────────────────────────────
@@ -235,7 +248,7 @@ class _LandVehicleSearchState extends State<LandVehicleSearch> {
                             // ── Payment Detail ──────────────────────────
                             PurchaseDetailsCard(
                               details: _dynamicDetails,
-                              total: formatRp(_total),
+                              total: formatRp(_finalTotal),
                             ),
                           ],
                         ),
@@ -280,7 +293,8 @@ class _LandVehicleSearchState extends State<LandVehicleSearch> {
             // ── Total + Confirm ─────────────────────────────────────────
             TotalConfirmBar(
               totalLabel: 'Total:',
-              totalAmount: formatRp(_total),
+              totalAmount: formatRp(_finalTotal),
+              discountAmount: _discountAmount,
               onConfirm: () {
                 Navigator.push(
                   context,
@@ -365,7 +379,7 @@ class _VehicleCard extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
-            const SizedBox(height: 4), // Reduced from 6
+            const SizedBox(height: 4),
             Text(
               formatRp(ticket.priceRp),
               style: TextStyle(

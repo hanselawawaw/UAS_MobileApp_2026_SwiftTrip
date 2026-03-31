@@ -4,12 +4,14 @@ import '../../main/main_screen.dart';
 class TotalConfirmBar extends StatelessWidget {
   final String totalLabel;
   final String totalAmount;
+  final int discountAmount;
   final VoidCallback onConfirm;
 
   const TotalConfirmBar({
     super.key,
     required this.totalLabel,
     required this.totalAmount,
+    this.discountAmount = 0,
     required this.onConfirm,
   });
 
@@ -38,7 +40,7 @@ class TotalConfirmBar extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                totalLabel,
+                discountAmount > 0 ? 'Total (Discounted):' : totalLabel,
                 style: const TextStyle(
                   color: Colors.black,
                   fontSize: 14,
