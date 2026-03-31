@@ -17,6 +17,7 @@ import 'widgets/apply_promotions_row.dart';
 import 'services/searching_service.dart';
 import 'services/mock_vehicle_service.dart';
 import '../cart/services/cart_service.dart';
+import '../main/main_screen.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // PAGE
@@ -140,6 +141,35 @@ class _LandVehicleSearchState extends State<LandVehicleSearch> {
     });
   }
 
+  void _onAddToCart() {
+    if (_selectedVehicle == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please select a vehicle first'),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      return;
+    }
+
+    // Since VehiclePin already contains a CartTicket, we can use it directly
+    // and just apply any transient UI-only modifications if needed.
+    final baseTicket = _selectedVehicle!.ticket;
+    
+    final cartTicket = baseTicket.copyWith(
+      imageUrl: baseTicket.imageUrl ?? 'assets/images/train_vector.png',
+    );
+
+    _cartService.addTicket(cartTicket);
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const MainScreen(initialIndex: 1),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -212,11 +242,14 @@ class _LandVehicleSearchState extends State<LandVehicleSearch> {
                                   if (_selectedVehicle != null &&
                                       _selectedVehicle!.ticket.type
                                           .toLowerCase()
-                                          .contains(option.name.toLowerCase())) {
-                                    duration = MockVehicleService.calculateDuration(
-                                      _selectedVehicle!.ticket.departure,
-                                      _selectedVehicle!.ticket.arrive,
-                                    );
+                                          .contains(
+                                            option.name.toLowerCase(),
+                                          )) {
+                                    duration =
+                                        MockVehicleService.calculateDuration(
+                                          _selectedVehicle!.ticket.departure,
+                                          _selectedVehicle!.ticket.arrive,
+                                        );
                                   }
 
                                   return RideCard(
@@ -312,6 +345,7 @@ class _LandVehicleSearchState extends State<LandVehicleSearch> {
               totalLabel: 'Total:',
               totalAmount: formatRp(_finalTotal),
               discountAmount: _discountAmount,
+              onCartTap: _onAddToCart,
               onConfirm: () {
                 Navigator.push(
                   context,

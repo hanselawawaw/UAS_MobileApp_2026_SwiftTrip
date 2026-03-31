@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import '../../main/main_screen.dart';
 
 class TotalConfirmBar extends StatelessWidget {
   final String totalLabel;
   final String totalAmount;
   final int discountAmount;
   final VoidCallback onConfirm;
+  final VoidCallback onCartTap;
 
   const TotalConfirmBar({
     super.key,
@@ -13,6 +13,7 @@ class TotalConfirmBar extends StatelessWidget {
     required this.totalAmount,
     this.discountAmount = 0,
     required this.onConfirm,
+    required this.onCartTap,
   });
 
   @override
@@ -62,14 +63,7 @@ class TotalConfirmBar extends StatelessWidget {
           const Spacer(),
 
           GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => const MainScreen(initialIndex: 1),
-                ),
-              );
-            },
+            onTap: onCartTap,
             child: Container(
               padding: const EdgeInsets.all(8),
               decoration: const ShapeDecoration(
