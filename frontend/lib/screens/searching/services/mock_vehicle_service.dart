@@ -224,7 +224,7 @@ class MockVehicleService {
           busNumber: 'S21',
         ),
         latitude: -6.296500,
-        longitude: 106.639200, // North, near BSD City bus shelter
+        longitude: 106.639200,
       ),
 
       // BUS-002 · PO Haryanto — East, along AEON access road

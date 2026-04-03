@@ -71,6 +71,7 @@ import json
 from google import genai
 from google.genai import types
 from travel_data.services.amadeus_service import AmadeusService
+from travel_data.services.mock_land_service import MockLandService
 
 class GeminiChatView(APIView):
     permission_classes = [AllowAny]
@@ -108,7 +109,7 @@ Classify the user's input and return ONLY raw JSON with an "intent" field.
 
 Categories:
 - SEARCH: User wants to find flights or transport. 
-  Return: {{"intent": "SEARCH", "origin": "...", "destination": "...", "date": "YYYY-MM-DD", "type": "flight|land"}}
+  Return: {{"intent": "SEARCH", "origin": "...", "destination": "...", "date": "YYYY-MM-DD", "type": "flight|car|bus|train"}}
 - CONSULTATION: User wants travel advice or comparisons.
   Return: {{"intent": "CONSULTATION", "message": "your helpful response here"}}
 - SUPPORT: User has an app problem or bug.
@@ -173,12 +174,12 @@ Return ONLY raw JSON. No markdown, no backticks.
                         flights = amadeus.search_flights(origin, destination, date) or []
                     intent_data['flights'] = flights
 
-                elif search_type == 'land':
-                    intent_data['land_options'] = []
-                    intent_data['message'] = 'Land search coming soon.'
+                elif search_type in ['car', 'bus', 'train']:
+                    mock_land = MockLandService()
+                    intent_data['land_options'] = mock_land.search_land_tickets(search_type, origin, destination)
 
                 else:
-                    intent_data['message'] = 'Search type not recognized.'
+                    intent_data['message'] = f"Search type '{search_type}' not recognized."
 
             return Response(intent_data)
         

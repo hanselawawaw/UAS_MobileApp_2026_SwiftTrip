@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:swifttrip_frontend/core/constants.dart';
 import 'package:swifttrip_frontend/screens/cart/models/cart_models.dart';
-import 'package:swifttrip_frontend/screens/searching/services/mock_vehicle_service.dart';
 import '../models/chat_message.dart';
 
 class ChatService {
@@ -63,11 +62,31 @@ class ChatService {
             return ChatMessage.ticket(ticket: ticket);
             
           } else {
-             final pins = const MockVehicleService().getPinsForType(type);
-             if (pins.isEmpty) {
-                return ChatMessage.text(type: MsgType.ai, text: 'No vehicles found currently for $type.');
-             }
-             return ChatMessage.ticket(ticket: pins.first.ticket);
+            final landOptions = data['land_options'] as List<dynamic>? ?? [];
+            if (landOptions.isEmpty) {
+              return ChatMessage.text(type: MsgType.ai, text: 'No vehicles found currently for $type.');
+            }
+            
+            final f = landOptions.first;
+            final ticket = CartTicket(
+              type: f['type'] ?? 'Ticket',
+              bookingId: f['bookingId'] ?? 'ID-\${DateTime.now().millisecondsSinceEpoch}',
+              classLabel: f['classLabel'] ?? 'Regular',
+              priceRp: (f['priceRp'] ?? 0).toInt(),
+              operator: f['operator'],
+              from: f['from'] ?? '--',
+              to: f['to'] ?? '--',
+              date: f['date'] ?? '--',
+              departure: f['departure'] ?? '--',
+              arrive: f['arrive'] ?? '--',
+              busClass: f['busClass'],
+              busNumber: f['busNumber'],
+              carPlate: f['carPlate'],
+              driverName: f['driverName'],
+              carriage: f['carriage'],
+              seat: f['seat'],
+            );
+            return ChatMessage.ticket(ticket: ticket);
           }
         } 
         
