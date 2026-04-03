@@ -67,6 +67,10 @@ class _CsChatPageState extends State<CsChatPage> {
     final text = _replyController.text.trim();
     if (text.isEmpty) return;
 
+    _scrollToBottom();
+    
+    final history = List<ChatMessage>.from(_messages); // Captures context before new message
+
     setState(() {
       _messages.add(ChatMessage.text(type: MsgType.user, text: text));
       _replyController.clear();
@@ -75,7 +79,7 @@ class _CsChatPageState extends State<CsChatPage> {
 
     _scrollToBottom();
 
-    final response = await _chatService.sendMessage(text, 'support');
+    final response = await _chatService.sendMessage(text, history, 'support');
     if (!mounted) return;
 
     setState(() {

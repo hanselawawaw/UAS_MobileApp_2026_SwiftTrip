@@ -16,7 +16,7 @@ class ChatService {
     ];
   }
 
-  Future<ChatMessage> sendMessage(String text, [String context = 'home']) async {
+  Future<ChatMessage> sendMessage(String text, List<ChatMessage> history, [String context = 'home']) async {
     try {
       final baseUrlClean = Constants.baseUrl.replaceAll('/api/auth/', '');
       final url = Uri.parse('$baseUrlClean/api/support/ai-chat/');
@@ -25,6 +25,7 @@ class ChatService {
         headers: {'Content-Type': 'application/json', 'Accept-Language': 'en-US'},
         body: jsonEncode({
           'message': text,
+          'history': history.map((m) => m.toJson()).toList(),
           'context': context,
         }),
       );

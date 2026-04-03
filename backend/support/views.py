@@ -4,6 +4,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from .models import FAQ, SupportTicket, TicketReply
 from .serializers import FAQSerializer, SupportTicketSerializer, TicketReplySerializer
 from rest_framework.views import APIView
+from rest_framework.throttling import AnonRateThrottle, UserRateThrottle
 
 class FAQViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = FAQ.objects.all()
@@ -16,7 +17,6 @@ class SupportTicketViewSet(viewsets.ModelViewSet):
     serializer_class = SupportTicketSerializer
 
     def get_queryset(self):
-        # Users should only see their own tickets unless viewed through 'public'
         return self.queryset.filter(user=self.request.user)
 
     def perform_create(self, serializer):
@@ -24,7 +24,6 @@ class SupportTicketViewSet(viewsets.ModelViewSet):
 
     @decorators.action(detail=False, methods=['get'], permission_classes=[AllowAny])
     def public(self, request):
-        # Mapping to 'Recent Questions' in Flutter
         public_tickets = self.queryset.filter(publish_type='Public')[:10]
         serializer = self.get_serializer(public_tickets, many=True)
         return Response(serializer.data)
@@ -48,7 +47,6 @@ class SupportTicketViewSet(viewsets.ModelViewSet):
             user=request.user,
             body=body
         )
-        # Update ticket status to replied if user is not the owner (e.g. CSR)
         if request.user != ticket.user:
             ticket.status = 'replied'
             ticket.save()
@@ -75,10 +73,12 @@ from travel_data.services.mock_land_service import MockLandService
 
 class GeminiChatView(APIView):
     permission_classes = [AllowAny]
+    throttle_classes = [AnonRateThrottle, UserRateThrottle]
 
     def post(self, request):
         message = request.data.get('message', '')
-        context = request.data.get('context', 'home')  # 'home' or 'support'
+        history_raw = request.data.get('history', [])
+        context = request.data.get('context', 'home')
         
         if not message:
             greetings = {
@@ -92,10 +92,8 @@ class GeminiChatView(APIView):
             http_options={'api_version': 'v1beta'}
         )
         
-        # Choosing gemini-2.5-flash as it's the latest available model in 2026-standard list
         model_id = "gemini-2.5-flash"
 
-        # Dynamic Persona Assignment
         if context == 'support':
             persona_rules = 'Focus on app troubleshooting, FAQ, and bug reporting. If a user reports a bug, suggest creating a SupportTicket.'
         else:
@@ -122,12 +120,24 @@ Categories:
 Return ONLY raw JSON. No markdown, no backticks.
 """
         
+        # Efficiency Guardrail: Limit history to last 10 messages
+        history_limited = history_raw[-10:]
+        
+        # Format history for Gemini contents
+        contents = []
+        for h in history_limited:
+            role = "user" if h.get('type') == 'user' else "model"
+            text = h.get('text', '')
+            if text:
+                contents.append({"role": role, "parts": [{"text": text}]})
+        
+        # Add the newest message
+        contents.append({"role": "user", "parts": [{"text": message}]})
+        
         try:
-            # Fix: Using system_instruction inside GenerateContentConfig as per Python SDK standard
-            # We explicitly pass it here to avoid the camelCase conversion error in some environments
             response = client.models.generate_content(
                 model=model_id,
-                contents=message,
+                contents=contents,
                 config=types.GenerateContentConfig(
                     system_instruction=system_instruction,
                     temperature=0.1
@@ -136,7 +146,6 @@ Return ONLY raw JSON. No markdown, no backticks.
             
             json_text = response.text.strip()
             
-            # Failsafe string parsing
             if json_text.startswith("```json"):
                 json_text = json_text[7:]
             if json_text.endswith("```"):
@@ -146,22 +155,18 @@ Return ONLY raw JSON. No markdown, no backticks.
             intent_data = json.loads(json_text)
             intent = intent_data.get('intent', 'UNKNOWN')
             
-            # Task 3: Refuse OOT - Do not call external services
             if intent == 'OOT':
                 return Response(intent_data)
             
-            # Handle CHITCHAT
             if intent == 'CHITCHAT':
                 return Response(intent_data)
 
-            # If SEARCH and flight, do backend Amadeus search. 
             if intent == 'SEARCH':
                 search_type = intent_data.get('type', '').lower()
                 origin = intent_data.get('origin', '')
                 destination = intent_data.get('destination', '')
                 date = intent_data.get('date', '')
 
-                # Normalize missing values
                 has_required = all(
                     v and v.upper() != 'UNKNOWN'
                     for v in [origin, destination, date]
@@ -186,6 +191,14 @@ Return ONLY raw JSON. No markdown, no backticks.
         except Exception as e:
             text_val = getattr(response, 'text', 'No response') if 'response' in locals() else 'No response'
             print("GEMINI ERROR:", e, text_val)
+            
+            if "429" in str(e) or "RESOURCE_EXHAUSTED" in str(e).upper():
+                return Response({
+                    "intent": "SUPPORT", 
+                    "message": "I'm a bit overwhelmed right now! Please try asking me again in a few minutes.",
+                    "action": "WAIT"
+                })
+                
             return Response({
                 "intent": "SUPPORT", 
                 "message": "Sorry, I didn't quite catch that. Could you describe your query or issue more clearly?",

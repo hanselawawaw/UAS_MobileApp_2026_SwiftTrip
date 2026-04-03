@@ -59,6 +59,10 @@ class _RoomChatPageState extends State<RoomChatPage> {
     final text = _inputController.text.trim();
     if (text.isEmpty) return;
 
+    _scrollToBottom();
+    
+    final history = List<ChatMessage>.from(_messages); // Captures context before new message
+
     setState(() {
       _messages.add(ChatMessage.text(type: MsgType.user, text: text));
       _inputController.clear();
@@ -67,7 +71,7 @@ class _RoomChatPageState extends State<RoomChatPage> {
 
     _scrollToBottom();
 
-    final response = await _chatService.sendMessage(text, 'home');
+    final response = await _chatService.sendMessage(text, history, 'home');
     if (!mounted) return;
 
     setState(() {
