@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 class DestinationModel {
   final String id;
   final String name;
@@ -7,7 +9,7 @@ class DestinationModel {
   final double price;
   final List<String> features;
   final bool hasDiscount;
-  final bool isFavorite;
+  final ValueNotifier<bool> isFavoriteNotifier;
 
   DestinationModel({
     required this.id,
@@ -18,8 +20,11 @@ class DestinationModel {
     this.price = 0.0,
     this.features = const [],
     this.hasDiscount = false,
-    this.isFavorite = false,
-  });
+    bool isFavorite = false,
+  }) : isFavoriteNotifier = ValueNotifier<bool>(isFavorite);
+
+  bool get isFavorite => isFavoriteNotifier.value;
+  set isFavorite(bool value) => isFavoriteNotifier.value = value;
 
   factory DestinationModel.fromJson(Map<String, dynamic> json) {
     return DestinationModel(
@@ -46,3 +51,4 @@ class DestinationModel {
     };
   }
 }
+

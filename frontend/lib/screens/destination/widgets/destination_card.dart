@@ -55,14 +55,23 @@ class DestinationCard extends StatelessWidget {
                 Positioned(
                   top: 8,
                   right: 8,
-                  child: Icon(
-                    destination.isFavorite
-                        ? Icons.favorite
-                        : Icons.favorite_border,
-                    color: Colors.white,
-                    size: 20,
+                  child: ValueListenableBuilder<bool>(
+                    valueListenable: destination.isFavoriteNotifier,
+                    builder: (context, isFavorite, child) {
+                      return GestureDetector(
+                        onTap: () {
+                          destination.isFavorite = !isFavorite;
+                        },
+                        child: Icon(
+                          isFavorite ? Icons.favorite : Icons.favorite_border,
+                          color: isFavorite ? Colors.red : Colors.white,
+                          size: 20,
+                        ),
+                      );
+                    },
                   ),
                 ),
+
               ],
             ),
             const SizedBox(height: 6),

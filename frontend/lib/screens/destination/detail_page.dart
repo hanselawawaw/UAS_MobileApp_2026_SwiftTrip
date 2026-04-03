@@ -26,6 +26,22 @@ class _DestinationDetailPageState extends State<DestinationDetailPage> {
   void initState() {
     super.initState();
     _isFavorite = widget.destination.isFavorite;
+    // Sync with model updates
+    widget.destination.isFavoriteNotifier.addListener(_syncFavorite);
+  }
+
+  @override
+  void dispose() {
+    widget.destination.isFavoriteNotifier.removeListener(_syncFavorite);
+    super.dispose();
+  }
+
+  void _syncFavorite() {
+    if (mounted) {
+      setState(() {
+        _isFavorite = widget.destination.isFavorite;
+      });
+    }
   }
 
   String get _formattedPrice {
@@ -59,8 +75,9 @@ class _DestinationDetailPageState extends State<DestinationDetailPage> {
                   _HeroImage(
                     destination: widget.destination,
                     isFavorite: _isFavorite,
-                    onToggleFavorite: () =>
-                        setState(() => _isFavorite = !_isFavorite),
+                    onToggleFavorite: () {
+                      widget.destination.isFavorite = !_isFavorite;
+                    },
                   ),
 
                   const Divider(
