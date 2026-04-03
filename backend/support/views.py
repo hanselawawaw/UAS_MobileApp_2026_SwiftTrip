@@ -82,10 +82,9 @@ class GeminiChatView(APIView):
         if not message:
             return Response({"error": "Message is required"}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Initialize client with V1 API version as requested
         client = genai.Client(
             api_key=os.environ.get("GEMINI_API_KEY"),
-            http_options={'api_version': 'v1'}
+            http_options={'api_version': 'v1beta'}
         )
         
         # Choosing gemini-2.5-flash as it's the latest available model in 2026-standard list
