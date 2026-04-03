@@ -15,9 +15,8 @@ class DestinationCard extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => DestinationDetailPage(
-              destination: destination,
-            ),
+            builder: (context) =>
+                DestinationDetailPage(destination: destination),
           ),
         );
       },
@@ -32,17 +31,18 @@ class DestinationCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8),
                   child: Image.network(
                     destination.imageUrl,
-                    height: 110,
+                    height: 90,
                     width: double.infinity,
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) => Container(
-                      height: 110,
+                      height: 90,
                       color: Colors.grey.shade300,
                       child: const Icon(Icons.image, color: Colors.grey),
                     ),
                   ),
                 ),
-                if (destination.hasDiscount || destination.discountPercentage > 0)
+                if (destination.hasDiscount ||
+                    destination.discountPercentage > 0)
                   const Positioned(
                     top: 8,
                     left: 8,
@@ -71,7 +71,6 @@ class DestinationCard extends StatelessWidget {
                     },
                   ),
                 ),
-
               ],
             ),
             const SizedBox(height: 6),
