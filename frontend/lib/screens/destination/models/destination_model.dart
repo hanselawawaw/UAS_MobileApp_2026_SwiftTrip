@@ -9,6 +9,7 @@ class DestinationModel {
   final double price;
   final List<String> features;
   final bool hasDiscount;
+  final double? discount;
   final ValueNotifier<bool> isFavoriteNotifier;
 
   DestinationModel({
@@ -20,6 +21,7 @@ class DestinationModel {
     this.price = 0.0,
     this.features = const [],
     this.hasDiscount = false,
+    this.discount = 0.0,
     bool isFavorite = false,
   }) : isFavoriteNotifier = ValueNotifier<bool>(isFavorite);
 
@@ -36,6 +38,7 @@ class DestinationModel {
       price: (json['price'] as num?)?.toDouble() ?? 0.0,
       features: (json['features'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? [],
       hasDiscount: json['hasDiscount'] as bool? ?? false,
+      discount: (json['discount'] as num?)?.toDouble() ?? 0.0,
       isFavorite: json['isFavorite'] as bool? ?? false,
     );
   }
@@ -47,6 +50,7 @@ class DestinationModel {
       'imageUrl': imageUrl,
       'rating': rating,
       'hasDiscount': hasDiscount,
+      'discount': discount,
       'isFavorite': isFavorite,
     };
   }

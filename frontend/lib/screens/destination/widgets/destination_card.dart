@@ -42,7 +42,7 @@ class DestinationCard extends StatelessWidget {
                     ),
                   ),
                 ),
-                if (destination.hasDiscount)
+                if (destination.hasDiscount || (destination.discount ?? 0) > 0)
                   const Positioned(
                     top: 8,
                     left: 8,
