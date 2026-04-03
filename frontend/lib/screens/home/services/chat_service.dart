@@ -10,8 +10,8 @@ class ChatService {
       ChatMessage.text(
         type: MsgType.ai,
         text: context == 'home'
-            ? 'Hello! Where would you like to travel today?'
-            : 'Hello! How can I help you with your issue today?',
+            ? 'Hello! Where would you like to travel today?\n\nI can help you with:\n• Finding Flights, Cars, Buses, or Trains\n• Travel advice and destination comparisons\n• Planning your perfect journey'
+            : 'Hello! How can I help you today?\n\nI can assist you with:\n• App troubleshooting and FAQs\n• Bug reporting and technical issues\n• Creating support tickets if needed',
       ),
     ];
   }
