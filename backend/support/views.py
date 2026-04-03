@@ -66,6 +66,7 @@ class MetadataView(APIView):
 
 import os
 import json
+import datetime
 from google import genai
 from google.genai import types
 from travel_data.services.amadeus_service import AmadeusService
@@ -99,6 +100,8 @@ class GeminiChatView(APIView):
         else:
             persona_rules = 'Focus on travel discovery, flight/land vehicle searches, and trip advice (Consultation).'
         
+        today_date = datetime.date.today().strftime("%Y-%m-%d")
+        
         system_instruction = f"""
 You are a travel and support assistant.
 Role: {persona_rules}
@@ -107,7 +110,10 @@ Classify the user's input and return ONLY raw JSON with an "intent" field.
 
 Categories:
 - SEARCH: User wants to find flights or transport. 
-  Return: {{"intent": "SEARCH", "origin": "...", "destination": "...", "date": "YYYY-MM-DD", "type": "flight|car|bus|train"}}
+  - Flight searches: You MUST provide the 3-letter IATA code for the origin and destination (e.g., CGK for Jakarta, SIN for Singapore). If the city is unknown, use your best guess for the nearest major airport.
+  - Date field: The date field MUST be in YYYY-MM-DD format. Today is {today_date}. If the user says 'tomorrow' or 'next week,' calculate the date relative to today and return only the string.
+  - Return: {{"intent": "SEARCH", "origin": "...", "destination": "...", "date": "YYYY-MM-DD", "type": "flight|car|bus|train"}}
+
 - CONSULTATION: User wants travel advice or comparisons.
   Return: {{"intent": "CONSULTATION", "message": "your helpful response here"}}
 - SUPPORT: User has an app problem or bug.
@@ -170,14 +176,17 @@ Return ONLY raw JSON. No markdown, no backticks.
                 has_required = all(
                     v and v.upper() != 'UNKNOWN'
                     for v in [origin, destination, date]
-                )   
+                ) and len(origin) == 3 and len(destination) == 3
 
                 if search_type == 'flight':
                     flights = []
                     if has_required:
                         amadeus = AmadeusService()
                         flights = amadeus.search_flights(origin, destination, date) or []
+                    
                     intent_data['flights'] = flights
+                    if not flights:
+                        intent_data['message'] = f"I couldn't find a direct flight from {origin} to {destination} for {date} in the sandbox, but I can check for land vehicle options like Bus or Train instead."
 
                 elif search_type in ['car', 'bus', 'train']:
                     mock_land = MockLandService()
