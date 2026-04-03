@@ -80,7 +80,11 @@ class GeminiChatView(APIView):
         context = request.data.get('context', 'home')  # 'home' or 'support'
         
         if not message:
-            return Response({"error": "Message is required"}, status=status.HTTP_400_BAD_REQUEST)
+            greetings = {
+                'support': {"intent": "CHITCHAT", "message": "Hi! I can help with app issues, FAQs, or file a support ticket. What's going on?"},
+                'home': {"intent": "CHITCHAT", "message": "Hi! I can search flights, compare destinations, or give travel advice. What are you planning?"},
+            }
+            return Response(greetings.get(context, greetings['home']))
 
         client = genai.Client(
             api_key=os.environ.get("GEMINI_API_KEY"),
@@ -89,24 +93,33 @@ class GeminiChatView(APIView):
         
         # Choosing gemini-2.5-flash as it's the latest available model in 2026-standard list
         model_id = "gemini-2.5-flash"
+
+        # Dynamic Persona Assignment
+        if context == 'support':
+            persona_rules = 'Focus on app troubleshooting, FAQ, and bug reporting. If a user reports a bug, suggest creating a SupportTicket.'
+        else:
+            persona_rules = 'Focus on travel discovery, flight/land vehicle searches, and trip advice (Consultation).'
         
         system_instruction = f"""
-        You are the SwiftTrip Assistant, a professional travel and app support bot.
-        
-        Your task is to classify the user input into one of three categories:
-        1. GREETING: If the user says hi, hello, or asks how you are. 
-           Return JSON: {{"intent": "GREETING", "message": "A friendly travel-themed greeting"}}
-        2. COMPLEX_TRAVEL: If the user asks for flights, buses, trains, or car rentals.
-           Return JSON: {{"intent": "SEARCH", "origin": "IATA/City", "destination": "IATA/City", "date": "YYYY-MM-DD", "type": "flight"|"bus"|"train"|"car"}}
-        3. OOT (Out-of-Topic): If the user asks about personal life, politics, jokes, or anything non-travel/app related.
-           Return JSON: {{"intent": "OOT", "message": "I can only assist with travel bookings and app-related support. How can I help you with your trip today?"}}
-        
-        Context: User is on '{context}' screen.
-        Rules: 
-        - Return ONLY raw JSON. 
-        - No markdown blocks.
-        - For COMPLEX_TRAVEL searches, if parameters are missing, use "UNKNOWN".
-        """
+You are a travel and support assistant.
+Role: {persona_rules}
+
+Classify the user's input and return ONLY raw JSON with an "intent" field.
+
+Categories:
+- SEARCH: User wants to find flights or transport. 
+  Return: {{"intent": "SEARCH", "origin": "...", "destination": "...", "date": "YYYY-MM-DD", "type": "flight|land"}}
+- CONSULTATION: User wants travel advice or comparisons.
+  Return: {{"intent": "CONSULTATION", "message": "your helpful response here"}}
+- SUPPORT: User has an app problem or bug.
+  Return: {{"intent": "SUPPORT", "message": "...", "action": "CREATE_TICKET"}}
+- CHITCHAT: Greetings or general talk.
+  Return: {{"intent": "CHITCHAT", "message": "your friendly response + briefly mention your capabilities"}}
+- OOT: Off-topic. Refuse politely.
+  Return: {{"intent": "OOT", "message": "polite refusal"}}
+
+Return ONLY raw JSON. No markdown, no backticks.
+"""
         
         try:
             # Fix: Using system_instruction inside GenerateContentConfig as per Python SDK standard
@@ -116,7 +129,7 @@ class GeminiChatView(APIView):
                 contents=message,
                 config=types.GenerateContentConfig(
                     system_instruction=system_instruction,
-                    temperature=0.1 # Low temperature for consistent JSON output
+                    temperature=0.1
                 )
             )
             
@@ -136,23 +149,37 @@ class GeminiChatView(APIView):
             if intent == 'OOT':
                 return Response(intent_data)
             
-            # Handle GREETING
-            if intent == 'GREETING':
+            # Handle CHITCHAT
+            if intent == 'CHITCHAT':
                 return Response(intent_data)
 
             # If SEARCH and flight, do backend Amadeus search. 
-            if intent == 'SEARCH' and intent_data.get('type', '').lower() == 'flight':
+            if intent == 'SEARCH':
+                search_type = intent_data.get('type', '').lower()
                 origin = intent_data.get('origin', '')
                 destination = intent_data.get('destination', '')
                 date = intent_data.get('date', '')
-                
-                flights = []
-                if origin != 'UNKNOWN' and destination != 'UNKNOWN' and date != 'UNKNOWN':
-                    amadeus = AmadeusService()
-                    flights = amadeus.search_flights(origin, destination, date) or []
-                
-                intent_data['flights'] = flights
-                
+
+                # Normalize missing values
+                has_required = all(
+                    v and v.upper() != 'UNKNOWN'
+                    for v in [origin, destination, date]
+                )   
+
+                if search_type == 'flight':
+                    flights = []
+                    if has_required:
+                        amadeus = AmadeusService()
+                        flights = amadeus.search_flights(origin, destination, date) or []
+                    intent_data['flights'] = flights
+
+                elif search_type == 'land':
+                    intent_data['land_options'] = []
+                    intent_data['message'] = 'Land search coming soon.'
+
+                else:
+                    intent_data['message'] = 'Search type not recognized.'
+
             return Response(intent_data)
         
         except Exception as e:

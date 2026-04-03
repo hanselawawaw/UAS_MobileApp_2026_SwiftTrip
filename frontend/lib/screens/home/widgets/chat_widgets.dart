@@ -142,15 +142,18 @@ class _ChatTicketCardState extends State<ChatTicketCard> {
 
   @override
   Widget build(BuildContext context) {
-    final String typeLabel = widget.ticket.type.contains('Plane') || widget.ticket.type.contains('Flight')
+    final String typeLabel =
+        widget.ticket.type.contains('Plane') ||
+            widget.ticket.type.contains('Flight')
         ? 'FLIGHT'
         : widget.ticket.type.contains('Car')
-            ? 'CAR'
-            : widget.ticket.type.contains('Bus')
-                ? 'BUS'
-                : 'TRAIN';
-                
-    final String typeValue = widget.ticket.flightNumber ??
+        ? 'CAR'
+        : widget.ticket.type.contains('Bus')
+        ? 'BUS'
+        : 'TRAIN';
+
+    final String typeValue =
+        widget.ticket.flightNumber ??
         widget.ticket.busNumber ??
         widget.ticket.operator ??
         '--';
@@ -181,7 +184,11 @@ class _ChatTicketCardState extends State<ChatTicketCard> {
                 valueBig: true,
               ),
               const SizedBox(width: 40),
-              TicketCol(label: 'TO', value: widget.ticket.to ?? '--', valueBig: true),
+              TicketCol(
+                label: 'TO',
+                value: widget.ticket.to ?? '--',
+                valueBig: true,
+              ),
             ],
           ),
           const Divider(height: 20, color: Color(0xFFE0E0E0)),
@@ -191,7 +198,10 @@ class _ChatTicketCardState extends State<ChatTicketCard> {
             children: [
               TicketCol(label: 'DATE', value: widget.ticket.date ?? '--'),
               const SizedBox(width: 20),
-              TicketCol(label: 'DEPARTURE', value: widget.ticket.departure ?? '--'),
+              TicketCol(
+                label: 'DEPARTURE',
+                value: widget.ticket.departure ?? '--',
+              ),
               const SizedBox(width: 20),
               TicketCol(label: 'ARRIVE', value: widget.ticket.arrive ?? '--'),
             ],
