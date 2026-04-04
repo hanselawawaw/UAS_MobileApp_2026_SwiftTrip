@@ -73,18 +73,18 @@ class Command(BaseCommand):
         tag_pool = ["Cozy", "Airy", "Sleek", "Moody"]
         advantage_pool = ["Private Pool", "High-Speed Wi-Fi", "Gym Access", "City View", "Ocean Front", "Mountain View", "Breakfast Included", "Free Parking", "Jacuzzi", "Spa Access", "Smart Home System", "Kitchenette"]
 
-        # Category to LoremFlickr Keyword Mapping
+        # Category to LoremFlickr Keyword Mapping - Broadened to prevent fallback
         CATEGORY_KEYWORDS = {
             'Villa': 'villa,tropical',
             'Hotel': 'hotel,luxury',
-            'Apartment': 'apartment,interior',
-            'Condo': 'skyscraper,city'
+            'Apartment': 'building,modern,city',
+            'Condo': 'skyscraper,architecture,luxury'
         }
 
         for i, prop in enumerate(REAL_PROPERTIES):
-            # Deterministic Proxy URL logic
+            # Deterministic Proxy URL logic - Removed /all to broaden match space
             keyword = CATEGORY_KEYWORDS.get(prop['cat'], 'travel')
-            img_url = f'https://loremflickr.com/800/600/{keyword},indonesia/all?lock={i}'
+            img_url = f'https://loremflickr.com/800/600/{keyword}?lock={i}'
             
             original_price = Decimal(random.randint(500000, 10000000))
             
