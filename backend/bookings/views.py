@@ -100,7 +100,7 @@ class DestinationViewSet(viewsets.ReadOnlyModelViewSet):
     def home_sections(self, request):
         destinations = self.get_queryset()
         
-        discount = destinations.filter(section_tag='Discount')
+        discount = destinations.filter(section_tag='Discount', discount_percentage__gt=0)
         favorite = destinations.filter(section_tag='Favorite')
         hot = destinations.filter(section_tag='Hot')
 
