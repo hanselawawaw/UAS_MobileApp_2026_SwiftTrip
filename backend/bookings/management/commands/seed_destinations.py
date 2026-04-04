@@ -95,7 +95,7 @@ class Command(BaseCommand):
                 location=prop['loc'],
                 rating=Decimal(random.uniform(4.0, 5.0)).quantize(Decimal('0.1')),
                 original_price=original_price,
-                discount_percentage=random.randint(0, 40),
+                discount_percentage=random.randint(1, 40) if random.random() > 0.5 else 0,
                 description=f"Stay at {prop['name']}, located in {prop['loc']}. This {prop['cat'].lower()} is designed for premium comfort and features a {random.choice(tag_pool).lower()} vibe with authentic Indonesian charm.",
                 advantages=random.sample(advantage_pool, random.randint(3, 4)),
                 tags=random.sample(tag_pool, random.randint(1, 2)),
