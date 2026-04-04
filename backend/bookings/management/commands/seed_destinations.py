@@ -4,7 +4,6 @@ from django.core.management.base import BaseCommand
 from bookings.models import Destination
 from decimal import Decimal
 
-# // TODO: Manually fill these with verified Unsplash IDs (e.g., 'vY2Yy3M_Y94')
 VILLA_IDS = [
     '1582268611958-ebfd161ef9cf',
     '1571896349842-33c89424de2d',
