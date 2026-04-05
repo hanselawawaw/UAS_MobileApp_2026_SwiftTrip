@@ -146,6 +146,13 @@ class DestinationViewSet(viewsets.ReadOnlyModelViewSet):
         })
 
     @decorators.action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
+    def wishlist(self, request):
+        wishlist, created = Wishlist.objects.get_or_create(user=request.user)
+        queryset = wishlist.destinations.all()
+        serializer = DestinationSerializer(queryset, many=True)
+        return Response(serializer.data)
+
+    @decorators.action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
     def my_wishlist_ids(self, request):
         wishlist, created = Wishlist.objects.get_or_create(user=request.user)
         ids = wishlist.destinations.values_list('id', flat=True)

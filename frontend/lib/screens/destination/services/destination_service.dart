@@ -162,6 +162,21 @@ class DestinationService {
     }
   }
 
+  Future<List<DestinationModel>> fetchWishlist() async {
+    try {
+      final options = await _getOptions();
+      final response = await _dio.get('wishlist/', options: options);
+      if (response.statusCode == 200) {
+        final List<dynamic> data = response.data;
+        return data.map((json) => DestinationModel.fromJson(json)).toList();
+      }
+      return [];
+    } catch (e) {
+      print('Error fetching full wishlist: $e');
+      return [];
+    }
+  }
+
   // --- Realized Methods (Replacing Mock Stubs) ---
   Future<List<DestinationModel>> getVillaDestinations() => fetchDestinations(category: 'Villa');
   Future<List<DestinationModel>> getHotelDestinations() => fetchDestinations(category: 'Hotel');
