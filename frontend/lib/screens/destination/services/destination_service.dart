@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'package:dio/dio.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:swifttrip_frontend/repositories/auth_repository.dart';
 import '../models/destination_model.dart';
 import '../models/category_model.dart';
@@ -168,12 +170,57 @@ class DestinationService {
   
   Future<List<DestinationModel>> getTopRated() => fetchDestinations(ordering: '-rating');
   Future<List<DestinationModel>> fetchByTag(String tag) => fetchDestinations(tag: tag);
-  
+
   Future<List<DestinationModel>> searchDestinations(String query) async {
     return fetchDestinations(search: query);
   }
+  
+  // --- Recent Searches Implementation ---
+  static const String _recentSearchesKey = 'recent_destination_searches';
 
-  // Stubs for search module
-  List<DestinationModel> getRecentSearches() => [];
+  Future<void> addToRecentSearches(DestinationModel destination) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final List<String> history = prefs.getStringList(_recentSearchesKey) ?? [];
+      
+      // Remove if exists to move to top
+      history.removeWhere((item) {
+        final decoded = json.decode(item);
+        return decoded['id'].toString() == destination.id;
+      });
+
+      // Add to front
+      history.insert(0, json.encode(destination.toJson()));
+
+      // Keep only top 5
+      if (history.length > 5) {
+        history.removeRange(5, history.length);
+      }
+
+      await prefs.setStringList(_recentSearchesKey, history);
+    } catch (e) {
+      print('Error adding to recent searches: $e');
+    }
+  }
+
+  Future<List<DestinationModel>> getRecentSearches() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final List<String> history = prefs.getStringList(_recentSearchesKey) ?? [];
+      
+      return history.map((item) {
+        return DestinationModel.fromJson(json.decode(item));
+      }).toList();
+    } catch (e) {
+      print('Error getting recent searches: $e');
+      return [];
+    }
+  }
+
+  Future<void> clearRecentSearches() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_recentSearchesKey);
+  }
+
   List<String> getTrendingTags() => ['Cozy', 'Sleek', 'Airy', 'Moody'];
 }

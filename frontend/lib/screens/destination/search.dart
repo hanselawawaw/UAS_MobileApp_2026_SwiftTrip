@@ -321,6 +321,34 @@ class _DestinationSearchPageState extends State<DestinationSearchPage> {
               }),
             ),
           ),
+
+          // ── Recent Searches (Conditional) ─────────────────
+          FutureBuilder<List<DestinationModel>>(
+            future: _service.getRecentSearches(),
+            builder: (context, snapshot) {
+              final recentItems = snapshot.data ?? [];
+              if (recentItems.isEmpty) return const SizedBox.shrink();
+
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 20),
+                  const Divider(
+                    color: Color(0xFF404040),
+                    thickness: 1,
+                    indent: 20,
+                    endIndent: 20,
+                  ),
+                  const SizedBox(height: 16),
+                  DestinationSection(
+                    title: 'Recent Searches',
+                    items: recentItems,
+                  ),
+                ],
+              );
+            },
+          ),
+
           const SizedBox(height: 20),
           const Divider(
             color: Color(0xFF404040),
@@ -329,12 +357,6 @@ class _DestinationSearchPageState extends State<DestinationSearchPage> {
             endIndent: 20,
           ),
           const SizedBox(height: 16),
-
-          // ── Recent Searches ─────────────────────────────
-          DestinationSection(
-            title: 'Recent Searches',
-            items: _service.getRecentSearches(),
-          ),
 
           // ── Top Rated ───────────────────────────────────
           FutureBuilder<List<DestinationModel>>(
@@ -388,15 +410,28 @@ class _SearchResultCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final service = DestinationService();
+
     return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) =>
-                DestinationDetailPage(destination: destination),
-          ),
-        );
+      onTap: () async {
+        await service.addToRecentSearches(destination);
+        if (context.mounted) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) =>
+                  DestinationDetailPage(destination: destination),
+            ),
+          ).then((_) {
+            // Trigger refresh when coming back
+            if (context.mounted) {
+              final state = context
+                  .findAncestorStateOfType<_DestinationSearchPageState>();
+              // ignore: invalid_use_of_protected_member
+              state?.setState(() {});
+            }
+          });
+        }
       },
       child: Container(
         decoration: BoxDecoration(
