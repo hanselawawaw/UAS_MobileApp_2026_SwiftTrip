@@ -142,13 +142,23 @@ class CategoryItemCard extends StatelessWidget {
                           size: 18,
                         ),
                       ),
-                    const Positioned(
+                    Positioned(
                       top: 8,
                       right: 8,
-                      child: Icon(
-                        Icons.favorite,
-                        color: Colors.white,
-                        size: 18,
+                      child: ValueListenableBuilder<bool>(
+                        valueListenable: item.isFavoriteNotifier,
+                        builder: (context, isFavorite, child) {
+                          return GestureDetector(
+                            onTap: () {
+                              item.isFavorite = !isFavorite;
+                            },
+                            child: Icon(
+                              isFavorite ? Icons.favorite : Icons.favorite_border,
+                              color: isFavorite ? Colors.red : Colors.white,
+                              size: 18,
+                            ),
+                          );
+                        },
                       ),
                     ),
                   ],
