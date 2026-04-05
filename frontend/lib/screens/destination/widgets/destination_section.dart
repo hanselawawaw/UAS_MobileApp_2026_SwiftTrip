@@ -5,11 +5,13 @@ import 'destination_card.dart';
 class DestinationSection extends StatelessWidget {
   final String title;
   final List<DestinationModel> items;
+  final Widget? suffix;
 
   const DestinationSection({
     super.key,
     required this.title,
     required this.items,
+    this.suffix,
   });
 
   @override
@@ -19,13 +21,19 @@ class DestinationSection extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Text(
-            title,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
-            ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+              if (suffix != null) suffix!,
+            ],
           ),
         ),
         const SizedBox(height: 8),

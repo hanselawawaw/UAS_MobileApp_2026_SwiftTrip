@@ -343,19 +343,27 @@ class _DestinationSearchPageState extends State<DestinationSearchPage> {
                   DestinationSection(
                     title: 'Recent Searches',
                     items: recentItems,
+                    suffix: GestureDetector(
+                      onTap: () async {
+                        await _service.clearRecentSearches();
+                        setState(() {});
+                      },
+                      child: const Text(
+                        'Clear All',
+                        style: TextStyle(
+                          fontFamily: 'Poppins',
+                          fontSize: 12,
+                          color: Color(0xFF2B99E3),
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
                   ),
                 ],
               );
             },
           ),
 
-          const SizedBox(height: 20),
-          const Divider(
-            color: Color(0xFF404040),
-            thickness: 1,
-            indent: 20,
-            endIndent: 20,
-          ),
           const SizedBox(height: 16),
 
           // ── Top Rated ───────────────────────────────────
