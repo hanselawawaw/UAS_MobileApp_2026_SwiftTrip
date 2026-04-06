@@ -1,24 +1,22 @@
 import 'package:flutter/material.dart';
-import '../models/payment_method_model.dart';
+import 'package:flutter/services.dart';
 
 class PaymentMethodCard extends StatelessWidget {
-  final PaymentMethodModel paymentMethod;
-  final bool isExpanded;
-  final VoidCallback onTap;
+  final TextEditingController cardNumberController;
+  final TextEditingController expiryDateController;
+  final TextEditingController cvcController;
 
   const PaymentMethodCard({
     super.key,
-    required this.paymentMethod,
-    required this.isExpanded,
-    required this.onTap,
+    required this.cardNumberController,
+    required this.expiryDateController,
+    required this.cvcController,
   });
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeInOut,
-      padding: const EdgeInsets.all(16),
+    return Container(
+      padding: const EdgeInsets.all(20),
       decoration: ShapeDecoration(
         color: Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
@@ -31,96 +29,114 @@ class PaymentMethodCard extends StatelessWidget {
         ],
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          GestureDetector(
-            onTap: onTap,
-            behavior: HitTestBehavior.opaque,
-            child: Row(
-              children: [
-                const Icon(Icons.discount_outlined, color: Colors.black),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Text(
-                    paymentMethod.name,
-                    style: const TextStyle(
-                      color: Colors.black,
-                      fontSize: 16,
-                      fontFamily: 'Poppins',
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                ),
-                Icon(
-                  isExpanded
-                      ? Icons.keyboard_arrow_down_rounded
-                      : Icons.arrow_forward_ios_rounded,
-                  color: Colors.black,
-                  size: isExpanded ? 28 : 20,
-                ),
-              ],
+          const Text(
+            'Payment Method',
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 18,
+              fontFamily: 'Poppins',
+              fontWeight: FontWeight.w600,
             ),
           ),
-          if (isExpanded) ...[
-            const SizedBox(height: 20),
-            _buildInputField('Card Number', '****-****-****-****'),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(child: _buildInputField('Expire', 'DD/MM/YYYY')),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: _buildInputField(
-                    'CVC',
-                    '***',
-                    prefixIcon: Icons.credit_card_outlined,
-                  ),
+          const SizedBox(height: 20),
+          _buildInputField(
+            'Card Number',
+            '0000 0000 0000 0000',
+            cardNumberController,
+            inputFormatters: [
+              FilteringTextInputFormatter.digitsOnly,
+              _CardNumberFormatter(),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(
+                child: _buildInputField(
+                  'Expiry Date',
+                  'MM/YY',
+                  expiryDateController,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                    _ExpiryDateFormatter(),
+                  ],
                 ),
-              ],
-            ),
-          ],
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: _buildInputField(
+                  'CVC',
+                  '000',
+                  cvcController,
+                  prefixIcon: Icons.lock_outline,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                    LengthLimitingTextInputFormatter(3),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildInputField(String label, String hint, {IconData? prefixIcon}) {
+  Widget _buildInputField(
+    String label,
+    String hint,
+    TextEditingController controller, {
+    IconData? prefixIcon,
+    List<TextInputFormatter>? inputFormatters,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
           style: const TextStyle(
-            color: Colors.black,
+            color: Colors.black54,
             fontSize: 12,
             fontFamily: 'Poppins',
-            fontWeight: FontWeight.w400,
+            fontWeight: FontWeight.w500,
           ),
         ),
         const SizedBox(height: 8),
         Container(
-          height: 48,
           decoration: BoxDecoration(
-            border: Border.all(color: Colors.black87),
+            color: const Color(0xFFF8F9FA),
             borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.black12),
           ),
-          padding: const EdgeInsets.symmetric(horizontal: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Row(
             children: [
               if (prefixIcon != null) ...[
-                Icon(prefixIcon, size: 20, color: Colors.black87),
-                const SizedBox(width: 8),
+                Icon(prefixIcon, size: 18, color: Colors.black45),
+                const SizedBox(width: 10),
               ],
               Expanded(
                 child: TextField(
+                  controller: controller,
+                  inputFormatters: inputFormatters,
+                  keyboardType: TextInputType.number,
+                  style: const TextStyle(
+                    fontFamily: 'Poppins',
+                    fontSize: 14,
+                    color: Colors.black,
+                  ),
                   decoration: InputDecoration(
                     hintText: hint,
                     hintStyle: const TextStyle(
-                      color: Colors.black38,
+                      color: Colors.black26,
                       fontSize: 14,
                       fontFamily: 'Poppins',
                     ),
                     border: InputBorder.none,
                     isDense: true,
+                    contentPadding: const EdgeInsets.symmetric(vertical: 14),
                   ),
                 ),
               ),
@@ -131,3 +147,64 @@ class PaymentMethodCard extends StatelessWidget {
     );
   }
 }
+
+class _CardNumberFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    if (newValue.text.length < oldValue.text.length) {
+      return newValue;
+    }
+
+    var text = newValue.text.replaceAll(' ', '');
+    if (text.length > 16) text = text.substring(0, 16);
+
+    final buffer = StringBuffer();
+    for (int i = 0; i < text.length; i++) {
+      buffer.write(text[i]);
+      var nonSpaceLength = i + 1;
+      if (nonSpaceLength % 4 == 0 && nonSpaceLength != text.length) {
+        buffer.write(' ');
+      }
+    }
+
+    final string = buffer.toString();
+    return newValue.copyWith(
+      text: string,
+      selection: TextSelection.collapsed(offset: string.length),
+    );
+  }
+}
+
+class _ExpiryDateFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    if (newValue.text.length < oldValue.text.length) {
+      return newValue;
+    }
+
+    var text = newValue.text.replaceAll('/', '');
+    if (text.length > 4) text = text.substring(0, 4);
+
+    final buffer = StringBuffer();
+    for (int i = 0; i < text.length; i++) {
+      buffer.write(text[i]);
+      var nonSpaceLength = i + 1;
+      if (nonSpaceLength % 2 == 0 && nonSpaceLength != text.length) {
+        buffer.write('/');
+      }
+    }
+
+    final string = buffer.toString();
+    return newValue.copyWith(
+      text: string,
+      selection: TextSelection.collapsed(offset: string.length),
+    );
+  }
+}
+

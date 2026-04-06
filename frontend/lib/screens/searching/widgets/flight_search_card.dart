@@ -2,7 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import '../land_vehicle.dart';
 import '../../main/main_screen.dart';
+import '../../cart/services/cart_service.dart';
 import '../../checkout/checkout.dart';
+import '../../checkout/models/checkout_details_model.dart';
+import '../../checkout/models/ticket_model.dart';
+import '../../checkout/models/purchase_item_model.dart';
 import '../models/flight_leg.dart';
 import '../services/searching_service.dart';
 import 'search_input_field.dart';
@@ -10,7 +14,6 @@ import 'airport_picker_sheet.dart';
 import 'pickers.dart';
 import '../models/flight_offer.dart';
 import '../../cart/models/cart_models.dart';
-import '../../cart/services/cart_service.dart';
 
 class FlightSearchCard extends StatefulWidget {
   const FlightSearchCard({super.key});
@@ -35,9 +38,42 @@ class _PesanButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
+        if (selectedFlight == null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Please select a flight first')),
+          );
+          return;
+        }
+
+        final details = CheckoutDetailsModel(
+          ticket: TicketModel(
+            type: 'Fly',
+            classType: flightClassApi.toUpperCase(),
+            from: selectedFlight!.origin,
+            to: selectedFlight!.destination,
+            date: selectedFlight!.departureTime.split('T').first,
+            departureTime:
+                selectedFlight!.departureTime.split('T').last.substring(0, 5),
+            arrivalTime:
+                selectedFlight!.arrivalTime.split('T').last.substring(0, 5),
+            flightNumber: selectedFlight!.flightNumber,
+            airline: selectedFlight!.airlineName,
+            operator: selectedFlight!.airlineName,
+          ),
+          purchaseItems: [
+            PurchaseItemModel(
+              label: 'Flight: ${selectedFlight!.airlineName}',
+              amount: 'Rp ${selectedFlight!.price.toInt()}',
+            ),
+          ],
+          totalPrice: 'Rp ${selectedFlight!.price.toInt()}',
+        );
+
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const CheckoutPage()),
+          MaterialPageRoute(
+            builder: (context) => CheckoutPage(checkoutDetails: details),
+          ),
         );
       },
       child: SizedBox(

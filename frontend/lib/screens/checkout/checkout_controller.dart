@@ -1,47 +1,45 @@
 import 'package:flutter/material.dart';
 import 'models/checkout_details_model.dart';
-import 'models/payment_method_model.dart';
-import 'services/checkout_service.dart';
 
 class CheckoutController extends ChangeNotifier {
-  final CheckoutService _service = CheckoutService();
-
   CheckoutDetailsModel? _details;
-  List<PaymentMethodModel> _paymentMethods = [];
-  int? _expandedPaymentIndex;
-  bool _isLoading = true;
+  bool _isLoading = false;
+
+  // Payment Form Controllers
+  final cardNumberController = TextEditingController();
+  final expiryDateController = TextEditingController();
+  final cvcController = TextEditingController();
 
   CheckoutDetailsModel? get details => _details;
-  List<PaymentMethodModel> get paymentMethods => _paymentMethods;
-  int? get expandedPaymentIndex => _expandedPaymentIndex;
   bool get isLoading => _isLoading;
 
-  Future<void> init() async {
-    _isLoading = true;
+  void init(CheckoutDetailsModel details) {
+    _details = details;
     notifyListeners();
-
-    try {
-      final results = await Future.wait([
-        _service.getCheckoutDetails(),
-        _service.getPaymentMethods(),
-      ]);
-
-      _details = results[0] as CheckoutDetailsModel;
-      _paymentMethods = results[1] as List<PaymentMethodModel>;
-    } catch (e) {
-      // Handle error
-    } finally {
-      _isLoading = false;
-      notifyListeners();
-    }
   }
 
-  void togglePaymentMethod(int index) {
-    _expandedPaymentIndex = _expandedPaymentIndex == index ? null : index;
-    notifyListeners();
+  @override
+  void dispose() {
+    cardNumberController.dispose();
+    expiryDateController.dispose();
+    cvcController.dispose();
+    super.dispose();
   }
 
   Future<bool> confirmPurchase() async {
-    return await _service.confirmPurchase();
+    final cleanCardNumber = cardNumberController.text.replaceAll(' ', '');
+    final cvc = cvcController.text;
+
+    if (cleanCardNumber.length != 16 ||
+        expiryDateController.text.length != 5 ||
+        cvc.length != 3) {
+      return false;
+    }
+    
+    // Simulate API call
+    await Future.delayed(const Duration(seconds: 1));
+    return true;
   }
+
 }
+

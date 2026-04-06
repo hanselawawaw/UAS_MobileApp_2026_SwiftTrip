@@ -5,6 +5,9 @@ import 'package:swifttrip_frontend/screens/cart/promotions.dart';
 import '../../widgets/top_bar.dart';
 import '../customer_service/onboarding.dart';
 import '../checkout/checkout.dart';
+import '../checkout/models/checkout_details_model.dart';
+import '../checkout/models/ticket_model.dart';
+import '../checkout/models/purchase_item_model.dart';
 import 'models/detail_row.dart';
 import 'models/ride_option.dart';
 import 'models/vehicle_pin.dart';
@@ -347,9 +350,35 @@ class _LandVehicleSearchState extends State<LandVehicleSearch> {
               discountAmount: _discountAmount,
               onCartTap: _onAddToCart,
               onConfirm: () {
+                final details = CheckoutDetailsModel(
+                  ticket: TicketModel(
+                    type: _selectedVehicle?.ticket.type ?? _activeType,
+                    classType: _selectedVehicle?.ticket.classLabel ?? '-',
+                    from: _selectedVehicle?.ticket.from ?? '-',
+                    to: _selectedVehicle?.ticket.to ?? '-',
+                    date: _selectedVehicle?.ticket.date ?? '-',
+                    departureTime: _selectedVehicle?.ticket.departure ?? '-',
+                    arrivalTime: _selectedVehicle?.ticket.arrive ?? '-',
+                    operator: _selectedVehicle?.ticket.operator,
+                    carPlate: _selectedVehicle?.ticket.carPlate,
+                    busNumber: _selectedVehicle?.ticket.busNumber,
+                  ),
+                  purchaseItems: _dynamicDetails
+                      .map(
+                        (d) => PurchaseItemModel(
+                          label: d.label,
+                          amount: d.amount,
+                          isDiscount: d.label.toLowerCase().contains('discount'),
+                        ),
+                      )
+                      .toList(),
+                  totalPrice: formatRp(_finalTotal),
+                );
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => const CheckoutPage()),
+                  MaterialPageRoute(
+                    builder: (_) => CheckoutPage(checkoutDetails: details),
+                  ),
                 );
               },
             ),

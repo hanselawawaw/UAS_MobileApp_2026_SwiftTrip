@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../models/promotion_models.dart';
-import '../../checkout/checkout.dart';
 
 class ApplyPromotionsRow extends StatelessWidget {
   final Promotion? appliedPromo;
@@ -75,10 +74,12 @@ class ApplyPromotionsRow extends StatelessWidget {
 class TotalConfirmBar extends StatelessWidget {
   final String totalString;
   final int discountAmount;
+  final VoidCallback onConfirm;
 
   const TotalConfirmBar({
     super.key,
     required this.totalString,
+    required this.onConfirm,
     this.discountAmount = 0,
   });
 
@@ -128,23 +129,18 @@ class TotalConfirmBar extends StatelessWidget {
               ),
             ],
           ),
-          Container(
-            width: 103,
-            height: 32,
-            alignment: Alignment.center,
-            decoration: ShapeDecoration(
-              color: const Color(0xFF2B99E3),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
+          GestureDetector(
+            onTap: onConfirm,
+            child: Container(
+              width: 103,
+              height: 32,
+              alignment: Alignment.center,
+              decoration: ShapeDecoration(
+                color: const Color(0xFF2B99E3),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
               ),
-            ),
-            child: GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const CheckoutPage()),
-                );
-              },
               child: const Text(
                 'Confirm',
                 style: TextStyle(
@@ -161,3 +157,4 @@ class TotalConfirmBar extends StatelessWidget {
     );
   }
 }
+

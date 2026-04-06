@@ -112,9 +112,9 @@ class PaymentTicketCard extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _LabelValue(label: 'TRAIN', value: ticket.trainNumber),
-                _LabelValue(label: 'CARRIAGE', value: ticket.carriage),
-                _LabelValue(label: 'SEAT', value: ticket.seatNumber),
+                _LabelValue(label: 'TRAIN', value: ticket.trainNumber ?? '-'),
+                _LabelValue(label: 'CARRIAGE', value: ticket.carriage ?? '-'),
+                _LabelValue(label: 'SEAT', value: ticket.seatNumber ?? '-'),
               ],
             ),
           ),

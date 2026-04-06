@@ -4,6 +4,9 @@ import 'package:swifttrip_frontend/screens/cart/widgets/ticket_card.dart';
 import '../../widgets/top_bar.dart';
 import '../cart/cart.dart';
 import '../checkout/checkout.dart';
+import '../checkout/models/checkout_details_model.dart';
+import '../checkout/models/ticket_model.dart';
+import '../checkout/models/purchase_item_model.dart';
 import '../main/main_screen.dart';
 import 'services/ticket_service.dart';
 import 'widgets/bottom_action_bar.dart';
@@ -63,10 +66,52 @@ class _OrderTicketPageState extends State<OrderTicketPage> {
   }
 
   void _handleConfirm() {
-    // TODO: POST selected tickets directly to checkout/order endpoint
+    if (_selectedIndices.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please select at least one ticket')),
+      );
+      return;
+    }
+
+    final selectedTickets = _selectedIndices.map((i) => _tickets[i]).toList();
+    final t = selectedTickets.first;
+
+    final details = CheckoutDetailsModel(
+      ticket: TicketModel(
+        type: t.type,
+        classType: t.classLabel,
+        from: t.from ?? '-',
+        to: t.to ?? '-',
+        date: t.date ?? '-',
+        departureTime: t.departure ?? '-',
+        arrivalTime: t.arrive ?? '-',
+        trainNumber: t.type.contains('Train')
+            ? 'TR-${t.bookingId.substring(0, 4)}'
+            : null,
+        carriage: t.carriage,
+        seatNumber: t.seat,
+        flightNumber: t.flightNumber,
+        airline: t.operator,
+        carPlate: t.carPlate,
+        busNumber: t.busNumber,
+        operator: t.operator,
+      ),
+      purchaseItems: selectedTickets
+          .map(
+            (ticket) => PurchaseItemModel(
+              label: ticket.type,
+              amount: _formatRp(ticket.priceRp),
+            ),
+          )
+          .toList(),
+      totalPrice: _formatRp(_totalPrice),
+    );
+
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (_) => const CheckoutPage()),
+      MaterialPageRoute(
+        builder: (_) => CheckoutPage(checkoutDetails: details),
+      ),
     );
   }
 

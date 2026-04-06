@@ -9,6 +9,10 @@ import 'widgets/ticket_card.dart';
 import 'widgets/cart_bottom_bar.dart';
 import 'widgets/remove_dialog.dart';
 import '../main/main_screen.dart';
+import '../checkout/checkout.dart';
+import '../checkout/models/checkout_details_model.dart';
+import '../checkout/models/ticket_model.dart';
+import '../checkout/models/purchase_item_model.dart';
 
 // CART PAGE
 class CartPage extends StatefulWidget {
@@ -227,6 +231,56 @@ class _CartPageState extends State<CartPage> {
                   TotalConfirmBar(
                     totalString: _formatRp(_finalTotal),
                     discountAmount: _discountAmount,
+                    onConfirm: () {
+                      if (_tickets.isEmpty) return;
+                      final t = _tickets.first;
+                      final details = CheckoutDetailsModel(
+                        ticket: TicketModel(
+                          type: t.type,
+                          classType: t.classLabel,
+                          from: t.from ?? '-',
+                          to: t.to ?? '-',
+                          date: t.date ?? '-',
+                          departureTime: t.departure ?? '-',
+                          arrivalTime: t.arrive ?? '-',
+                          trainNumber: t.type.contains('Train') ? 'TR-${t.bookingId.substring(0, 4)}' : null,
+                          carriage: t.carriage,
+                          seatNumber: t.seat,
+                          flightNumber: t.flightNumber,
+                          airline: t.operator,
+                          carPlate: t.carPlate,
+                          busNumber: t.busNumber,
+                          operator: t.operator,
+                        ),
+                        purchaseItems: _tickets
+                            .map(
+                              (ticket) => PurchaseItemModel(
+                                label: ticket.type,
+                                amount: _formatRp(ticket.priceRp),
+                              ),
+                            )
+                            .toList(),
+                        totalPrice: _formatRp(_finalTotal),
+                      );
+
+                      if (_discountAmount > 0) {
+                        details.purchaseItems.add(
+                          PurchaseItemModel(
+                            label: 'Discount',
+                            amount: '- ${_formatRp(_discountAmount)}',
+                            isDiscount: true,
+                          ),
+                        );
+                      }
+
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              CheckoutPage(checkoutDetails: details),
+                        ),
+                      );
+                    },
                   ),
                 ],
               ),
