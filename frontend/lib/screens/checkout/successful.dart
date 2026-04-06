@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import '../../widgets/top_bar.dart';
 import 'payment_detail.dart';
+import 'models/checkout_details_model.dart';
 import '../customer_service/onboarding.dart';
 import 'widgets/success_check_icon.dart';
 
 class SuccessfulPage extends StatefulWidget {
-  const SuccessfulPage({super.key});
+  final CheckoutDetailsModel details;
+
+  const SuccessfulPage({super.key, required this.details});
 
   @override
   State<SuccessfulPage> createState() => _SuccessfulPageState();
@@ -35,7 +38,7 @@ class _SuccessfulPageState extends State<SuccessfulPage>
       Navigator.pushReplacement(
         context,
         PageRouteBuilder(
-          pageBuilder: (_, __, ___) => const PaymentDetailPage(),
+          pageBuilder: (_, __, ___) => PaymentDetailPage(details: widget.details),
           transitionsBuilder: (_, animation, __, child) =>
               FadeTransition(opacity: animation, child: child),
           transitionDuration: const Duration(milliseconds: 400),

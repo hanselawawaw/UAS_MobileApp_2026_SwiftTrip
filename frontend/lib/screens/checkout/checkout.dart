@@ -112,7 +112,8 @@ class _CheckoutPageState extends State<CheckoutPage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const SuccessfulPage(),
+                    builder: (context) =>
+                        SuccessfulPage(details: _controller.details!),
                   ),
                 );
               } else if (!success && mounted) {
