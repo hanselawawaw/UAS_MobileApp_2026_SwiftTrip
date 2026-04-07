@@ -1,8 +1,10 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import '../cart/models/cart_models.dart';
 import '../cart/widgets/ticket_card.dart';
 import '../../widgets/top_bar.dart';
 import '../customer_service/onboarding.dart';
+import '../auth/login.dart';
 import 'services/history_service.dart';
 
 class HistoryPage extends StatefulWidget {
@@ -20,6 +22,16 @@ class _HistoryPageState extends State<HistoryPage> {
   void initState() {
     super.initState();
     _historyFuture = _historyService.fetchHistory();
+  }
+
+  void _redirectToLogin() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginPage()),
+        (route) => false,
+      );
+    });
   }
 
   @override
@@ -67,6 +79,11 @@ class _HistoryPageState extends State<HistoryPage> {
                   }
                   
                   if (snapshot.hasError) {
+                    final error = snapshot.error;
+                    if (error is DioException && error.response?.statusCode == 401) {
+                      _redirectToLogin();
+                      return const Center(child: CircularProgressIndicator());
+                    }
                     return Center(child: Text('Error: ${snapshot.error}'));
                   }
 

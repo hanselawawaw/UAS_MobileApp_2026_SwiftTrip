@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:dio/dio.dart';
-import '../../core/constants.dart';
-import '../../repositories/auth_repository.dart';
 import 'models/checkout_details_model.dart';
+import 'services/checkout_service.dart';
 
 class CheckoutController extends ChangeNotifier {
   CheckoutDetailsModel? _details;
   bool _isLoading = false;
   String? _lastErrorMessage;
+  final _service = CheckoutService();
 
   // Payment Form Controllers
   final cardNumberController = TextEditingController();
@@ -47,31 +46,16 @@ class CheckoutController extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final dio = Dio();
-      final token = await AuthRepository().getToken();
-      
-      final response = await dio.post(
-        '${Constants.bookingsUrl}checkout/confirm/',
-        options: Options(headers: {
-          if (token != null) 'Authorization': 'Bearer $token',
-        }),
-      );
+      final success = await _service.confirmPurchase();
 
       _isLoading = false;
       notifyListeners();
 
-      if (response.statusCode == 200) {
+      if (success) {
         return true;
       }
+      
       _lastErrorMessage = 'Server error. Please try again.';
-      return false;
-    } on DioException catch (e) {
-      debugPrint('Error confirming purchase: $e');
-      _lastErrorMessage = (e.response?.statusCode == 401)
-          ? 'Session expired. Please log in again.'
-          : 'Failed to confirm purchase. Try again later.';
-      _isLoading = false;
-      notifyListeners();
       return false;
     } catch (e) {
       debugPrint('Error confirming purchase: $e');

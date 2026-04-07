@@ -33,7 +33,17 @@ class Booking(models.Model):
     train_number = models.CharField(max_length=100, null=True, blank=True)
     carriage = models.CharField(max_length=50, null=True, blank=True)
     seat_number = models.CharField(max_length=50, null=True, blank=True)
+    seat = models.CharField(max_length=10, null=True, blank=True)
     class_label = models.CharField(max_length=100, null=True, blank=True)
+    operator = models.CharField(max_length=100, null=True, blank=True)
+    flight_number = models.CharField(max_length=100, null=True, blank=True)
+    terminal = models.CharField(max_length=100, null=True, blank=True)
+    flight_class = models.CharField(max_length=100, null=True, blank=True)
+    bus_class = models.CharField(max_length=100, null=True, blank=True)
+    bus_number = models.CharField(max_length=100, null=True, blank=True)
+    car_plate = models.CharField(max_length=100, null=True, blank=True)
+    driver_name = models.CharField(max_length=100, null=True, blank=True)
+    flight_route = models.JSONField(default=list, blank=True, null=True)
 
     # Accommodation fields
     image_url = models.URLField(max_length=500, null=True, blank=True)

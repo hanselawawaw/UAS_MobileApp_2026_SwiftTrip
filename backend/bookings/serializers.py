@@ -54,7 +54,10 @@ class CartTicketSerializer(serializers.ModelSerializer):
             'type', 'booking_id', 'class_label', 'price_rp',
             'from_loc', 'to_loc', 'date', 'departure', 'arrive',
             'train', 'carriage', 'seat', 'image_url', 'stay_date', 
-            'stay_duration', 'bed_type', 'location'
+            'stay_duration', 'bed_type', 'location',
+            'operator', 'flight_number', 'terminal', 'flight_class',
+            'bus_class', 'bus_number', 'car_plate', 'driver_name',
+            'flight_route'
         ]
 
     def get_type(self, obj):
@@ -92,7 +95,10 @@ class TicketModelSerializer(serializers.ModelSerializer):
         fields = [
             'class_type', 'from_loc', 'to_loc', 'date',
             'departure_time', 'arrival_time', 'train_number',
-            'carriage', 'seat_number'
+            'carriage', 'seat_number', 'seat', 'operator',
+            'flight_number', 'terminal', 'flight_class',
+            'bus_class', 'bus_number', 'car_plate', 'driver_name',
+            'flight_route'
         ]
 
     def to_representation(self, instance):
