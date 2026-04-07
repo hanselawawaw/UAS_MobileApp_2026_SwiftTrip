@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:swifttrip_frontend/screens/cart/models/cart_models.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:swifttrip_frontend/screens/cart/widgets/ticket_card.dart';
 import '../../widgets/top_bar.dart';
 import '../cart/cart.dart';
@@ -203,8 +205,11 @@ class _NextTripPageState extends State<NextTripPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // ── Map Placeholder ─────────────────────────────────────
-                  _MapPlaceholder(),
+                  // ── Map Display ─────────────────────────────────────────
+                  if (_ticket != null && _ticket!.latitude != null && _ticket!.longitude != null)
+                    _DynamicMap(lat: _ticket!.latitude!, lng: _ticket!.longitude!)
+                  else
+                    _MapPlaceholder(),
                   const SizedBox(height: 12),
 
                   const Divider(color: Colors.black12, thickness: 1),
@@ -252,8 +257,6 @@ class _MapPlaceholder extends StatelessWidget {
         color: const Color(0xFFCBD5E1),
         child: Stack(
           children: [
-            // TODO: Replace with actual map widget (e.g. google_maps_flutter)
-            // TODO: Center map on ticket departure → arrival coordinates
             Center(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -270,6 +273,49 @@ class _MapPlaceholder extends StatelessWidget {
                   ),
                 ],
               ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _DynamicMap extends StatelessWidget {
+  final double lat;
+  final double lng;
+  
+  const _DynamicMap({required this.lat, required this.lng});
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(12),
+      child: SizedBox(
+        width: double.infinity,
+        height: 180,
+        child: FlutterMap(
+          options: MapOptions(
+            initialCenter: LatLng(lat, lng),
+            initialZoom: 14.0,
+            interactionOptions: const InteractionOptions(
+              flags: InteractiveFlag.drag | InteractiveFlag.pinchZoom,
+            ),
+          ),
+          children: [
+            TileLayer(
+              urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+              userAgentPackageName: 'com.swifttrip.app',
+            ),
+            MarkerLayer(
+              markers: [
+                Marker(
+                  point: LatLng(lat, lng),
+                  width: 40,
+                  height: 40,
+                  child: const Icon(Icons.location_on, color: Color(0xFFE25142), size: 40),
+                ),
+              ],
             ),
           ],
         ),

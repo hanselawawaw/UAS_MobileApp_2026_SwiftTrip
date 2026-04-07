@@ -45,6 +45,8 @@ class CartTicket {
   final String? stayDuration;
   final String? bedType;
   final String? location;
+  final double? latitude;
+  final double? longitude;
 
   const CartTicket({
     required this.type,
@@ -72,6 +74,8 @@ class CartTicket {
     this.stayDuration,
     this.bedType,
     this.location,
+    this.latitude,
+    this.longitude,
     this.flightRoute,
   });
 
@@ -123,6 +127,8 @@ class CartTicket {
       stayDuration: json['stay_duration'] as String?,
       bedType: json['bed_type'] as String?,
       location: json['location'] as String?,
+      latitude: json['latitude'] != null ? (json['latitude'] as num).toDouble() : null,
+      longitude: json['longitude'] != null ? (json['longitude'] as num).toDouble() : null,
       flightRoute: (json['flight_route'] as List<dynamic>?)
           ?.map((e) => e.toString())
           .toList(),
@@ -156,6 +162,8 @@ class CartTicket {
       'stay_duration': stayDuration,
       'bed_type': bedType,
       'location': location,
+      'latitude': latitude,
+      'longitude': longitude,
       'flight_route': flightRoute,
       'booking_type': _mapTypeToBookingType(type),
     };
@@ -204,6 +212,8 @@ class CartTicket {
     String? stayDuration,
     String? bedType,
     String? location,
+    double? latitude,
+    double? longitude,
     List<String>? flightRoute,
   }) {
     return CartTicket(
@@ -232,6 +242,8 @@ class CartTicket {
       stayDuration: stayDuration ?? this.stayDuration,
       bedType: bedType ?? this.bedType,
       location: location ?? this.location,
+      latitude: latitude ?? this.latitude,
+      longitude: longitude ?? this.longitude,
       flightRoute: flightRoute ?? this.flightRoute,
     );
   }

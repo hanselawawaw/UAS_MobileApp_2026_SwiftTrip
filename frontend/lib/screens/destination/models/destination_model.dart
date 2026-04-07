@@ -13,6 +13,8 @@ class DestinationModel {
   final List<String> features;
   final List<String> tags;
   final String sectionTag;
+  final double? latitude;
+  final double? longitude;
 
   DestinationModel({
     required this.id,
@@ -28,6 +30,8 @@ class DestinationModel {
     this.features = const [],
     this.tags = const [],
     this.sectionTag = '',
+    this.latitude,
+    this.longitude,
   });
 
   bool get hasDiscount => discountPercentage > 0;
@@ -54,6 +58,8 @@ class DestinationModel {
           (json['tags'] as List<dynamic>?)?.map((e) => e.toString()).toList() ??
           [],
       sectionTag: json['section_tag'] as String? ?? '',
+      latitude: json['latitude'] != null ? (json['latitude'] as num).toDouble() : null,
+      longitude: json['longitude'] != null ? (json['longitude'] as num).toDouble() : null,
     );
   }
 
@@ -72,6 +78,8 @@ class DestinationModel {
       'advantages': features,
       'tags': tags,
       'section_tag': sectionTag,
+      'latitude': latitude,
+      'longitude': longitude,
     };
   }
 }
