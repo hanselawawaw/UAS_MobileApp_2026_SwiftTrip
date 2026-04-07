@@ -8,7 +8,7 @@ class CartTicket {
   final String classLabel;
   final int priceRp;
 
-  // General operator for all transport (e.g., Avanza, Batik Air, KAI, PO Haryanto)
+  // General operator for all transport
   final String? operator;
 
   // Shared transport fields
@@ -36,7 +36,7 @@ class CartTicket {
   final String? carPlate;
   final String? driverName;
 
-  // Flight-specific route path (e.g. ['CGK', 'DPS', 'JFK'])
+  // Flight-specific route path
   final List<String>? flightRoute;
 
   // Accommodation fields
@@ -74,6 +74,27 @@ class CartTicket {
     this.location,
     this.flightRoute,
   });
+
+  factory CartTicket.accommodation({
+    required String locationName,
+    required int price,
+    required String imageUrl,
+    required String stayDate,
+    required int stayDuration,
+    String? bookingId,
+    String? classLabel,
+  }) {
+    return CartTicket(
+      type: 'Accommodation Ticket',
+      bookingId: bookingId ?? '',
+      classLabel: classLabel ?? 'Standard',
+      priceRp: price,
+      imageUrl: imageUrl,
+      stayDate: stayDate,
+      stayDuration: stayDuration.toString(),
+      location: locationName,
+    );
+  }
 
   factory CartTicket.fromJson(Map<String, dynamic> json) {
     return CartTicket(
@@ -136,7 +157,25 @@ class CartTicket {
       'bed_type': bedType,
       'location': location,
       'flight_route': flightRoute,
+      'booking_type': _mapTypeToBookingType(type),
     };
+  }
+
+  String _mapTypeToBookingType(String type) {
+    switch (type) {
+      case 'Plane Ticket':
+        return 'PLANE_TICKET';
+      case 'Train Ticket':
+        return 'TRAIN_TICKET';
+      case 'Bus Ticket':
+        return 'BUS_TICKET';
+      case 'Car Ticket':
+        return 'CAR_TICKET';
+      case 'Accommodation Ticket':
+        return 'ACCOMMODATION';
+      default:
+        return 'TRAIN_TICKET';
+    }
   }
 
   CartTicket copyWith({

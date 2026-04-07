@@ -23,37 +23,9 @@ class CartService {
       
       print('Debug: 3. Service attempting POST to ${Constants.bookingsUrl}cart/add/');
       
-      final String bookingType = _mapTicketTypeToBookingType(ticket.type);
-      
       final response = await dio.post(
         '${Constants.bookingsUrl}cart/add/',
-        data: {
-          'booking_type': bookingType,
-          'price_rp': ticket.priceRp,
-          'from': ticket.from,
-          'to': ticket.to,
-          'date': ticket.date,
-          'departure': ticket.departure,
-          'arrive': ticket.arrive,
-          'train': ticket.trainNumber, // backend uses 'train' key for 'train_number'
-          'carriage': ticket.carriage,
-          'seat': ticket.seat,
-          'class_label': ticket.classLabel,
-          'operator': ticket.operator,
-          'flight_number': ticket.flightNumber,
-          'terminal': ticket.terminal,
-          'flight_class': ticket.flightClass,
-          'bus_class': ticket.busClass,
-          'bus_number': ticket.busNumber,
-          'car_plate': ticket.carPlate,
-          'driver_name': ticket.driverName,
-          'flight_route': ticket.flightRoute,
-          'image_url': ticket.imageUrl,
-          'stay_date': ticket.stayDate,
-          'stay_duration': ticket.stayDuration,
-          'bed_type': ticket.bedType,
-          'location': ticket.location,
-        },
+        data: ticket.toJson(),
         options: Options(headers: {
           if (token != null) 'Authorization': 'Bearer $token',
         }),
@@ -71,23 +43,6 @@ class CartService {
       }
     } catch (e) {
       print('Debug: CRITICAL ERROR in CartService: $e');
-    }
-  }
-
-  String _mapTicketTypeToBookingType(String ticketType) {
-    switch (ticketType) {
-      case 'Plane Ticket':
-        return 'PLANE_TICKET';
-      case 'Train Ticket':
-        return 'TRAIN_TICKET';
-      case 'Bus Ticket':
-        return 'BUS_TICKET';
-      case 'Car Ticket':
-        return 'CAR_TICKET';
-      case 'Accommodation Ticket':
-        return 'ACCOMMODATION';
-      default:
-        return 'TRAIN_TICKET';
     }
   }
 

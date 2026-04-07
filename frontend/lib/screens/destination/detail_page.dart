@@ -6,6 +6,8 @@ import 'package:swifttrip_frontend/screens/auth/login.dart';
 import 'package:swifttrip_frontend/providers/wishlist_provider.dart';
 import 'models/destination_model.dart';
 import '../../widgets/top_bar.dart';
+import '../../providers/cart_provider.dart';
+import '../cart/models/cart_models.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // DESTINATION DETAIL PAGE
@@ -265,19 +267,45 @@ class _DestinationDetailPageState extends State<DestinationDetailPage> {
         destination: widget.destination,
         formattedPrice: _formattedPrice,
         formattedOriginalPrice: _formattedOriginalPrice,
-        onAddToCart: () {
-          // TODO: POST add to cart to backend with destination ID + price
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text(
-                'Added to cart!',
-                style: TextStyle(fontFamily: 'Poppins'),
+        onAddToCart: () async {
+          try {
+            final provider = context.read<CartProvider>();
+            final ticket = CartTicket.accommodation(
+              locationName: widget.destination.title,
+              price: widget.destination.price.toInt(),
+              imageUrl: widget.destination.imageUrl,
+              stayDate: DateTime.now().toIso8601String().split('T')[0],
+              stayDuration: 1,
+            );
+
+            await provider.addTicket(ticket);
+
+            if (!context.mounted) return;
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text(
+                  'Added to cart!',
+                  style: TextStyle(fontFamily: 'Poppins'),
+                ),
+                backgroundColor: Color(0xFF2B99E3),
+                behavior: SnackBarBehavior.floating,
+                duration: Duration(seconds: 2),
               ),
-              backgroundColor: Color(0xFF2B99E3),
-              behavior: SnackBarBehavior.floating,
-              duration: Duration(seconds: 2),
-            ),
-          );
+            );
+          } catch (e) {
+            if (!context.mounted) return;
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text(
+                  'Failed to add to cart. Please try again.',
+                  style: TextStyle(fontFamily: 'Poppins'),
+                ),
+                backgroundColor: Colors.redAccent,
+                behavior: SnackBarBehavior.floating,
+                duration: Duration(seconds: 2),
+              ),
+            );
+          }
         },
       ),
     );
