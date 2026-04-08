@@ -36,13 +36,24 @@ class _NextTripPageState extends State<NextTripPage> {
 
   Future<void> _fetchData() async {
     final ticket = widget.ticket ?? await _nextTripService.getNextTrip();
-    
+
     List<PurchaseDetail> details;
     if (widget.ticket != null) {
       // If passing ticket directly (Paid History), calculate details locally
       details = [
-        PurchaseDetail(label: 'Ticket Price', amount: _formatRp(widget.ticket!.priceRp)),
-        PurchaseDetail(label: 'Service Fee', amount: _formatRp(25000)),
+        PurchaseDetail(
+          label: 'Ticket Price',
+          amount: _formatRp(widget.ticket!.priceRp),
+        ),
+        PurchaseDetail(
+          label: 'Service Fee (5%)',
+          amount: _formatRp(widget.ticket!.serviceFee),
+        ),
+        if (widget.ticket!.discountRp > 0)
+          PurchaseDetail(
+            label: 'Discount',
+            amount: '- ${_formatRp(widget.ticket!.discountRp)}',
+          ),
       ];
     } else {
       details = await _nextTripService.getPurchaseDetails();
@@ -212,45 +223,55 @@ class _NextTripPageState extends State<NextTripPage> {
           const TopBar(showBackButton: true, showHamburger: false),
 
           Expanded(
-            child: _isLoading ? const Center(child: CircularProgressIndicator()) : SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(20, 16, 20, 40),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // ── Map Display ─────────────────────────────────────────
-                  if (_ticket != null && _ticket!.latitude != null && _ticket!.longitude != null)
-                    _DynamicMap(lat: _ticket!.latitude!, lng: _ticket!.longitude!)
-                  else
-                    _MapPlaceholder(),
-                  const SizedBox(height: 12),
+            child: _isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : SingleChildScrollView(
+                    padding: const EdgeInsets.fromLTRB(20, 16, 20, 40),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // ── Map Display ─────────────────────────────────────────
+                        if (_ticket != null &&
+                            _ticket!.latitude != null &&
+                            _ticket!.longitude != null)
+                          _DynamicMap(
+                            lat: _ticket!.latitude!,
+                            lng: _ticket!.longitude!,
+                          )
+                        else
+                          _MapPlaceholder(),
+                        const SizedBox(height: 12),
 
-                  const Divider(color: Colors.black12, thickness: 1),
-                  const SizedBox(height: 12),
+                        const Divider(color: Colors.black12, thickness: 1),
+                        const SizedBox(height: 12),
 
-                  // ── Ticket Card ─────────────────────────────────────────
-                  if (_ticket != null) TicketCard(
-                    ticket: _ticket!,
-                    formatRp: _formatRp,
-                    // If ticket came from constructor (Paid), disable delete
-                    onDelete: widget.ticket != null ? null : _removeTicket,
+                        // ── Ticket Card ─────────────────────────────────────────
+                        if (_ticket != null)
+                          TicketCard(
+                            ticket: _ticket!,
+                            formatRp: _formatRp,
+                            // If ticket came from constructor (Paid), disable delete
+                            onDelete: widget.ticket != null
+                                ? null
+                                : _removeTicket,
+                          ),
+                        const SizedBox(height: 12),
+
+                        const Divider(color: Colors.black12, thickness: 1),
+                        const SizedBox(height: 12),
+
+                        // ── Purchase Details Card ───────────────────────────────
+                        PurchaseDetailsCard(
+                          details: _purchaseDetails,
+                          total: _ticket != null
+                              ? (widget.ticket != null
+                                    ? _formatRp(_ticket!.priceRp + _ticket!.serviceFee - _ticket!.discountRp)
+                                    : _formatRp(_ticket!.priceRp))
+                              : 'Rp 0',
+                        ),
+                      ],
+                    ),
                   ),
-                  const SizedBox(height: 12),
-
-                  const Divider(color: Colors.black12, thickness: 1),
-                  const SizedBox(height: 12),
-
-                  // ── Purchase Details Card ───────────────────────────────
-                  PurchaseDetailsCard(
-                    details: _purchaseDetails,
-                    total: _ticket != null 
-                        ? (widget.ticket != null 
-                            ? _formatRp(_ticket!.priceRp + 25000) 
-                            : _formatRp(_ticket!.priceRp))
-                        : 'Rp 0',
-                  ),
-                ],
-              ),
-            ),
           ),
         ],
       ),
@@ -300,7 +321,7 @@ class _MapPlaceholder extends StatelessWidget {
 class _DynamicMap extends StatelessWidget {
   final double lat;
   final double lng;
-  
+
   const _DynamicMap({required this.lat, required this.lng});
 
   @override
@@ -329,7 +350,11 @@ class _DynamicMap extends StatelessWidget {
                   point: LatLng(lat, lng),
                   width: 40,
                   height: 40,
-                  child: const Icon(Icons.location_on, color: Color(0xFFE25142), size: 40),
+                  child: const Icon(
+                    Icons.location_on,
+                    color: Color(0xFFE25142),
+                    size: 40,
+                  ),
                 ),
               ],
             ),

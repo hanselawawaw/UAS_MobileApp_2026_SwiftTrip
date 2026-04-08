@@ -21,6 +21,8 @@ class Booking(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='IN_CART')
     booking_type = models.CharField(max_length=20, choices=TYPE_CHOICES)
     price_rp = models.IntegerField(default=0)
+    service_fee = models.IntegerField(default=0)
+    discount_rp = models.IntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

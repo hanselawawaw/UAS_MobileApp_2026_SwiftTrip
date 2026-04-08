@@ -7,6 +7,8 @@ class CartTicket {
   final String bookingId;
   final String classLabel;
   final int priceRp;
+  final int serviceFee;
+  final int discountRp;
 
   // General operator for all transport
   final String? operator;
@@ -53,6 +55,8 @@ class CartTicket {
     required this.bookingId,
     required this.classLabel,
     required this.priceRp,
+    this.serviceFee = 0,
+    this.discountRp = 0,
     this.from,
     this.to,
     this.date,
@@ -93,6 +97,8 @@ class CartTicket {
       bookingId: bookingId ?? '',
       classLabel: classLabel ?? 'Standard',
       priceRp: price,
+      serviceFee: 0,
+      discountRp: 0,
       imageUrl: imageUrl,
       stayDate: stayDate,
       stayDuration: stayDuration.toString(),
@@ -106,6 +112,8 @@ class CartTicket {
       bookingId: json['booking_id'] as String,
       classLabel: json['class_label'] as String,
       priceRp: json['price_rp'] as int,
+      serviceFee: json['service_fee'] as int? ?? 0,
+      discountRp: json['discount_rp'] as int? ?? 0,
       from: json['from'] as String?,
       to: json['to'] as String?,
       date: json['date'] as String?,
@@ -141,6 +149,8 @@ class CartTicket {
       'booking_id': bookingId,
       'class_label': classLabel,
       'price_rp': priceRp,
+      'service_fee': serviceFee,
+      'discount_rp': discountRp,
       'from': from,
       'to': to,
       'date': date,
@@ -191,6 +201,8 @@ class CartTicket {
     String? bookingId,
     String? classLabel,
     int? priceRp,
+    int? serviceFee,
+    int? discountRp,
     String? from,
     String? to,
     String? date,
@@ -221,6 +233,8 @@ class CartTicket {
       bookingId: bookingId ?? this.bookingId,
       classLabel: classLabel ?? this.classLabel,
       priceRp: priceRp ?? this.priceRp,
+      serviceFee: serviceFee ?? this.serviceFee,
+      discountRp: discountRp ?? this.discountRp,
       from: from ?? this.from,
       to: to ?? this.to,
       date: date ?? this.date,

@@ -58,10 +58,11 @@ class BookingViewSet(viewsets.ModelViewSet):
             location_name=request.data.get('location'),
             latitude=request.data.get('latitude'),
             longitude=request.data.get('longitude'),
+            service_fee=int(float(request.data.get('price_rp', 0)) * 0.05),
         )
 
         PurchaseItem.objects.create(booking=booking, label='Ticket Price', amount_rp=booking.price_rp)
-        PurchaseItem.objects.create(booking=booking, label='Service Fee', amount_rp=25000)
+        PurchaseItem.objects.create(booking=booking, label='Service Fee (5%)', amount_rp=booking.service_fee)
 
         return Response({"message": "Added to cart", "id": booking.id}, status=status.HTTP_201_CREATED)
 
@@ -81,7 +82,8 @@ class BookingViewSet(viewsets.ModelViewSet):
 
     @decorators.action(detail=False, methods=['post'], url_path='confirm_checkout')
     def confirm_checkout(self, request):
-        count = self.get_queryset().filter(status='IN_CART').update(status='PAID')
+        discount_rp = request.data.get('discount_rp', 0)
+        count = self.get_queryset().filter(status='IN_CART').update(status='PAID', discount_rp=discount_rp)
         return Response({"updated": count}, status=200)
 
     @decorators.action(detail=False, methods=['get'])
