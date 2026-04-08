@@ -196,7 +196,7 @@ class TicketCard extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 10),
             child: Row(
               children: [
-                if (onDelete != null)
+                if (onDelete != null) ...[
                   GestureDetector(
                     onTap: onDelete,
                     child: Container(
@@ -225,7 +225,9 @@ class TicketCard extends StatelessWidget {
                       ),
                     ),
                   ),
-                const Spacer(),
+                  const Spacer(),
+                ] else
+                  const Spacer(),
                 Text(
                   formatRp(ticket.priceRp),
                   style: const TextStyle(

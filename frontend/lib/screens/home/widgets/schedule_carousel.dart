@@ -8,7 +8,7 @@ class ScheduleCarousel extends StatelessWidget {
   final PageController controller;
   final int currentIndex;
   final ValueChanged<int> onPageChanged;
-  final VoidCallback? onTap;
+  final Function(CartTicket)? onItemTap;
 
   const ScheduleCarousel({
     super.key,
@@ -16,7 +16,7 @@ class ScheduleCarousel extends StatelessWidget {
     required this.controller,
     required this.currentIndex,
     required this.onPageChanged,
-    this.onTap,
+    this.onItemTap,
   });
 
   @override
@@ -29,7 +29,7 @@ class ScheduleCarousel extends StatelessWidget {
             controller: controller,
             onPageChanged: onPageChanged,
             itemCount: items.length,
-            itemBuilder: (_, i) => _ScheduleCard(item: items[i], onTap: onTap),
+            itemBuilder: (_, i) => _ScheduleCard(item: items[i], onItemTap: onItemTap),
           ),
         ),
         const SizedBox(height: 10),
@@ -41,9 +41,9 @@ class ScheduleCarousel extends StatelessWidget {
 
 class _ScheduleCard extends StatelessWidget {
   final CartTicket item;
-  final VoidCallback? onTap;
+  final Function(CartTicket)? onItemTap;
 
-  const _ScheduleCard({required this.item, this.onTap});
+  const _ScheduleCard({required this.item, this.onItemTap});
 
   String _formatDate(String? rawDate) {
     if (rawDate == null || rawDate.isEmpty) return '';
@@ -68,7 +68,7 @@ class _ScheduleCard extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(left: 12, right: 12, bottom: 16),
       child: GestureDetector(
-        onTap: onTap,
+        onTap: () => onItemTap?.call(item),
         child: SizedBox(
           width: 350,
           height: 125,

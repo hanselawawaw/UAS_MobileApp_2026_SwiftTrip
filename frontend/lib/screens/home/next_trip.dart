@@ -36,7 +36,18 @@ class _NextTripPageState extends State<NextTripPage> {
 
   Future<void> _fetchData() async {
     final ticket = widget.ticket ?? await _nextTripService.getNextTrip();
-    final details = await _nextTripService.getPurchaseDetails();
+    
+    List<PurchaseDetail> details;
+    if (widget.ticket != null) {
+      // If passing ticket directly (Paid History), calculate details locally
+      details = [
+        PurchaseDetail(label: 'Ticket Price', amount: _formatRp(widget.ticket!.priceRp)),
+        PurchaseDetail(label: 'Service Fee', amount: _formatRp(25000)),
+      ];
+    } else {
+      details = await _nextTripService.getPurchaseDetails();
+    }
+
     if (mounted) {
       setState(() {
         _ticket = ticket;
@@ -220,7 +231,8 @@ class _NextTripPageState extends State<NextTripPage> {
                   if (_ticket != null) TicketCard(
                     ticket: _ticket!,
                     formatRp: _formatRp,
-                    onDelete: _removeTicket,
+                    // If ticket came from constructor (Paid), disable delete
+                    onDelete: widget.ticket != null ? null : _removeTicket,
                   ),
                   const SizedBox(height: 12),
 
@@ -230,8 +242,11 @@ class _NextTripPageState extends State<NextTripPage> {
                   // ── Purchase Details Card ───────────────────────────────
                   PurchaseDetailsCard(
                     details: _purchaseDetails,
-                    // TODO: Replace with dynamic total from backend
-                    total: 'Rp 12.000.000',
+                    total: _ticket != null 
+                        ? (widget.ticket != null 
+                            ? _formatRp(_ticket!.priceRp + 25000) 
+                            : _formatRp(_ticket!.priceRp))
+                        : 'Rp 0',
                   ),
                 ],
               ),

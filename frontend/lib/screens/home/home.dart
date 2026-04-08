@@ -200,13 +200,12 @@ class _HomePageState extends State<HomePage> {
                                   onPageChanged: (i) {
                                     setState(() => _currentSchedule = i);
                                   },
-                                  onTap: () {
+                                  onItemTap: (ticket) {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) => NextTripPage(
-                                          ticket:
-                                              _serverSchedules[_currentSchedule],
+                                          ticket: ticket,
                                         ),
                                       ),
                                     );
