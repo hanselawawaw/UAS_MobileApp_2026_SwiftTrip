@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
 import '../room_chat.dart';
+import '../../../providers/language_provider.dart';
 
 class SearchBarWidget extends StatelessWidget {
   const SearchBarWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final provider = context.watch<LanguageProvider>();
     return Center(
       child: GestureDetector(
         onTap: () {
@@ -34,7 +37,7 @@ class SearchBarWidget extends StatelessWidget {
             children: [
               Expanded(
                 child: Text(
-                  'Let AI Help Your Journey',
+                  provider.translate('search'),
                   style: TextStyle(
                     color: Colors.black.withOpacity(0.40),
                     fontSize: 12,

@@ -17,7 +17,6 @@ class _LanguageScreenState extends State<LanguageScreen> {
   final LanguageService _languageService = LanguageService();
   List<Language> _languages = [];
   bool _isLoading = true;
-  int? _selectedIndex;
 
   @override
   void initState() {
@@ -80,58 +79,65 @@ class _LanguageScreenState extends State<LanguageScreen> {
                 Expanded(
                   child: _isLoading
                       ? const Center(child: CircularProgressIndicator())
-                      : ListView.builder(
-                          itemCount: _languages.length,
-                          itemBuilder: (_, i) {
-                            final lang = _languages[i];
-                            final provider = context.watch<LanguageProvider>();
-                            final isSelected =
-                                provider.currentCode == lang.code;
+                      : Consumer<LanguageProvider>(
+                          builder: (context, provider, child) {
+                            return ListView.builder(
+                              itemCount: _languages.length,
+                              itemBuilder: (_, i) {
+                                final lang = _languages[i];
+                                final isSelected =
+                                    provider.currentCode == lang.code;
 
-                            return InkWell(
-                              onTap: () {
-                                provider.setLanguage(lang.code);
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                      'Language updated to ${lang.name} (Demo)',
+                                return InkWell(
+                                  onTap: () {
+                                    provider.setLanguage(lang.code);
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                          'Language updated to ${lang.name}',
+                                          style: const TextStyle(
+                                            fontFamily: 'Poppins',
+                                          ),
+                                        ),
+                                        backgroundColor: Constants.popupSuccess,
+                                        behavior: SnackBarBehavior.floating,
+                                        duration: const Duration(seconds: 2),
+                                      ),
+                                    );
+                                  },
+                                  child: Container(
+                                    color: isSelected
+                                        ? const Color(0xFFE8F4FD)
+                                        : Colors.transparent,
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 20,
+                                      vertical: 14,
                                     ),
-                                    backgroundColor: Constants.popupSuccess,
-                                    behavior: SnackBarBehavior.floating,
-                                    duration: const Duration(seconds: 2),
+                                    child: Row(
+                                      children: [
+                                        SizedBox(
+                                          width: 32,
+                                          child: Text(
+                                            lang.flag,
+                                            style:
+                                                const TextStyle(fontSize: 20),
+                                          ),
+                                        ),
+                                        const SizedBox(width: 10),
+                                        Text(
+                                          lang.name,
+                                          style: const TextStyle(
+                                            fontFamily: 'Poppins',
+                                            fontWeight: FontWeight.w400,
+                                            fontSize: 14,
+                                            color: Colors.black,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 );
                               },
-                              child: Container(
-                                color: isSelected
-                                    ? const Color(0xFFE8F4FD)
-                                    : Colors.transparent,
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 20,
-                                  vertical: 14,
-                                ),
-                                child: Row(
-                                  children: [
-                                    SizedBox(
-                                      width: 32,
-                                      child: Text(
-                                        lang.flag,
-                                        style: const TextStyle(fontSize: 20),
-                                      ),
-                                    ),
-                                    const SizedBox(width: 10),
-                                    Text(
-                                      lang.name,
-                                      style: const TextStyle(
-                                        fontFamily: 'Poppins',
-                                        fontWeight: FontWeight.w400,
-                                        fontSize: 14,
-                                        color: Colors.black,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
                             );
                           },
                         ),

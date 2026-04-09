@@ -8,17 +8,17 @@ class LanguageProvider extends ChangeNotifier {
   String get currentCode => _currentCode;
 
   Future<void> loadLanguage() async {
-    _currentCode = await _service.getLanguageCode();
+    _currentCode = await _service.getLanguage();
     notifyListeners();
   }
 
   Future<void> setLanguage(String code) async {
     _currentCode = code;
-    await _service.saveLanguageCode(code);
+    await _service.saveLanguage(code);
     notifyListeners();
   }
 
-  String getText(String key) {
+  String translate(String key) {
     return AppStrings.values[_currentCode]?[key] ?? key;
   }
 }

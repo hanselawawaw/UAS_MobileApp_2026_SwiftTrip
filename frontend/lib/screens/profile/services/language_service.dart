@@ -11,12 +11,12 @@ class LanguageService {
     ];
   }
 
-  Future<void> saveLanguageCode(String code) async {
+  Future<void> saveLanguage(String code) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_langKey, code);
   }
 
-  Future<String> getLanguageCode() async {
+  Future<String> getLanguage() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(_langKey) ?? 'en';
   }
@@ -27,12 +27,12 @@ class AppStrings {
     'en': {
       'schedule': 'Your Schedule',
       'recommendation': 'Recommendation',
-      'search': 'Search Destination',
+      'search': 'Let AI Help Your Journey',
     },
     'id': {
       'schedule': 'Jadwal Anda',
       'recommendation': 'Rekomendasi',
-      'search': 'Cari Destinasi',
+      'search': 'Biarkan AI Membantu Perjalanan Anda',
     },
   };
 }

@@ -22,6 +22,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'review.dart';
 import '../main/main_screen.dart';
 import '../../core/constants.dart';
+import '../../providers/language_provider.dart';
+import 'package:provider/provider.dart';
 
 // ─────────────────────────────────────────────
 // CONSTANTS
@@ -126,6 +128,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final provider = context.watch<LanguageProvider>();
     return Scaffold(
       backgroundColor: const Color(0xFFF6F6F6),
       body: _isLoading
@@ -179,7 +182,7 @@ class _HomePageState extends State<HomePage> {
 
                               // Your Schedule section
                               SectionHeader(
-                                title: 'Your Schedule',
+                                title: provider.translate('schedule'),
                                 actionLabel: 'History >',
                                 onAction: () {
                                   Navigator.push(
@@ -217,7 +220,9 @@ class _HomePageState extends State<HomePage> {
                               const SizedBox(height: 20),
 
                               // Recommendation section
-                              const SectionHeader(title: 'Recommendation'),
+                              SectionHeader(
+                                title: provider.translate('recommendation'),
+                              ),
                               const SizedBox(height: 12),
 
                               RecommendationGrid(
