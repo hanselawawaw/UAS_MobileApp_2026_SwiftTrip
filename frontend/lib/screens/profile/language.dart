@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../widgets/top_bar.dart';
 import 'models/language_model.dart';
 import 'services/language_service.dart';
+import '../../providers/language_provider.dart';
+import '../../core/constants.dart';
 
 class LanguageScreen extends StatefulWidget {
   const LanguageScreen({super.key});
@@ -81,9 +84,24 @@ class _LanguageScreenState extends State<LanguageScreen> {
                           itemCount: _languages.length,
                           itemBuilder: (_, i) {
                             final lang = _languages[i];
-                            final isSelected = _selectedIndex == i;
+                            final provider = context.watch<LanguageProvider>();
+                            final isSelected =
+                                provider.currentCode == lang.code;
+
                             return InkWell(
-                              onTap: () => setState(() => _selectedIndex = i),
+                              onTap: () {
+                                provider.setLanguage(lang.code);
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      'Language updated to ${lang.name} (Demo)',
+                                    ),
+                                    backgroundColor: Constants.popupSuccess,
+                                    behavior: SnackBarBehavior.floating,
+                                    duration: const Duration(seconds: 2),
+                                  ),
+                                );
+                              },
                               child: Container(
                                 color: isSelected
                                     ? const Color(0xFFE8F4FD)
