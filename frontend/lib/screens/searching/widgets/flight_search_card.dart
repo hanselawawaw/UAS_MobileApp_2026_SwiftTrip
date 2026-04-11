@@ -14,6 +14,7 @@ import 'airport_picker_sheet.dart';
 import 'pickers.dart';
 import '../models/flight_offer.dart';
 import '../../cart/models/cart_models.dart';
+import '../../../providers/language_provider.dart';
 
 class FlightSearchCard extends StatefulWidget {
   const FlightSearchCard({super.key});
@@ -36,17 +37,20 @@ class _PesanButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final langProvider = context.watch<LanguageProvider>();
     return GestureDetector(
       onTap: () {
         if (selectedFlight == null) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Please select a flight first')),
+            SnackBar(
+              content: Text(langProvider.translate('select_flight_before')),
+            ),
           );
           return;
         }
 
-        final displayClass = flightClassApi.toUpperCase() == 'FIRST' 
-            ? 'First Class' 
+        final displayClass = flightClassApi.toUpperCase() == 'FIRST'
+            ? langProvider.translate('first_class')
             : flightClassApi;
 
         final ticket = CartTicket(
@@ -113,10 +117,10 @@ class _PesanButton extends StatelessWidget {
                   ],
                 ),
                 alignment: Alignment.center,
-                child: const Text(
-                  'Pesan Tiket Sekarang',
+                child: Text(
+                  langProvider.translate('book_now'),
                   textAlign: TextAlign.center,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontFamily: 'Poppins',
                     fontWeight: FontWeight.w400,
                     fontSize: 12,
@@ -161,7 +165,11 @@ class _PesanButton extends StatelessWidget {
                     );
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Silakan pilih penerbangan terlebih dahulu.')),
+                      SnackBar(
+                        content: Text(
+                          langProvider.translate('select_flight_before'),
+                        ),
+                      ),
                     );
                   }
                 },
@@ -260,9 +268,10 @@ class _FlightSearchCardState extends State<FlightSearchCard>
     if (!_isMultiCity) {
       if (_fromCode == _toCode) {
         if (!mounted) return;
+        final langProvider = context.read<LanguageProvider>();
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Origin and destination cannot be the same.'),
+          SnackBar(
+            content: Text(langProvider.translate('origin_dest_same')),
           ),
         );
         return;
@@ -271,10 +280,11 @@ class _FlightSearchCardState extends State<FlightSearchCard>
       for (final leg in _multiCityLegs) {
         if (leg.originLocationCode == leg.destinationLocationCode) {
           if (!mounted) return;
+          final langProvider = context.read<LanguageProvider>();
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
+            SnackBar(
               content: Text(
-                'Origin and destination cannot be the same for all legs.',
+                langProvider.translate('origin_dest_same_legs'),
               ),
             ),
           );
@@ -292,16 +302,18 @@ class _FlightSearchCardState extends State<FlightSearchCard>
     );
     if (departureOnly.isBefore(todayOnly)) {
       if (!mounted) return;
+      final langProvider = context.read<LanguageProvider>();
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Departure date cannot be in the past.')),
+        SnackBar(content: Text(langProvider.translate('date_past'))),
       );
       return;
     }
 
     if (_passengers.adults < 1) {
       if (!mounted) return;
+      final langProvider = context.read<LanguageProvider>();
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Minimum 1 adult passenger is required.')),
+        SnackBar(content: Text(langProvider.translate('min_passenger'))),
       );
       return;
     }
@@ -400,14 +412,15 @@ class _FlightSearchCardState extends State<FlightSearchCard>
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) {
+        final langProvider = context.read<LanguageProvider>();
         return Container(
           padding: const EdgeInsets.symmetric(vertical: 20),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text(
-                'Pilih Maskapai',
-                style: TextStyle(
+              Text(
+                langProvider.translate('choose_airline'),
+                style: const TextStyle(
                   fontFamily: 'Poppins',
                   fontWeight: FontWeight.w600,
                   fontSize: 16,
@@ -498,9 +511,10 @@ class _FlightSearchCardState extends State<FlightSearchCard>
   }
 
   Future<void> _pickAirport({required bool isFrom}) async {
+    final langProvider = context.read<LanguageProvider>();
     final result = await showAirportPicker(
       context,
-      label: isFrom ? 'From' : 'To',
+      label: isFrom ? langProvider.translate('from') : langProvider.translate('to'),
     );
     if (result == null || !mounted) return;
     setState(() {
@@ -516,9 +530,10 @@ class _FlightSearchCardState extends State<FlightSearchCard>
   }
 
   Future<void> _pickAirportForLeg(int index, {required bool isTo}) async {
+    final langProvider = context.read<LanguageProvider>();
     final result = await showAirportPicker(
       context,
-      label: isTo ? 'To' : 'From',
+      label: isTo ? langProvider.translate('to') : langProvider.translate('from'),
     );
     if (result == null || !mounted) return;
 
@@ -530,9 +545,10 @@ class _FlightSearchCardState extends State<FlightSearchCard>
 
     if (targetOrigin == targetDestination) {
       if (!mounted) return;
+      final langProvider = context.read<LanguageProvider>();
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Origin and destination cannot be the same.'),
+        SnackBar(
+          content: Text(langProvider.translate('origin_dest_same')),
         ),
       );
       return;
@@ -552,6 +568,7 @@ class _FlightSearchCardState extends State<FlightSearchCard>
 
   @override
   Widget build(BuildContext context) {
+    final langProvider = context.watch<LanguageProvider>();
     final List<String>? flightRoute = _isMultiCity
         ? [
             _multiCityLegs.first.originLocationCode,
@@ -602,7 +619,7 @@ class _FlightSearchCardState extends State<FlightSearchCard>
                           ),
                         ),
                         child: Text(
-                          'Round-trip',
+                          langProvider.translate('round_trip'),
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontFamily: 'Poppins',
@@ -637,7 +654,7 @@ class _FlightSearchCardState extends State<FlightSearchCard>
                           ),
                         ),
                         child: Text(
-                          'Multi-city',
+                          langProvider.translate('multi_city'),
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontFamily: 'Poppins',
@@ -663,7 +680,7 @@ class _FlightSearchCardState extends State<FlightSearchCard>
                         GestureDetector(
                           onTap: () => _pickAirport(isFrom: true),
                           child: SearchInputField(
-                            label: 'From',
+                            label: langProvider.translate('from'),
                             icon: Icons.flight_takeoff,
                             value: _fromLabel,
                             trailing: const Icon(
@@ -727,7 +744,7 @@ class _FlightSearchCardState extends State<FlightSearchCard>
                 GestureDetector(
                   onTap: _pickDate,
                   child: SearchInputField(
-                    label: 'Date',
+                    label: langProvider.translate('date'),
                     icon: Icons.calendar_today_outlined,
                     value: _dateDisplayLabel,
                     trailing: const Icon(
@@ -743,7 +760,7 @@ class _FlightSearchCardState extends State<FlightSearchCard>
                       child: GestureDetector(
                         onTap: _pickPassengers,
                         child: SearchInputField(
-                          label: 'Penumpang',
+                          label: langProvider.translate('passengers'),
                           icon: Icons.person_outline,
                           value: _passengers.displayLabel,
                           trailing: const Icon(
@@ -759,7 +776,7 @@ class _FlightSearchCardState extends State<FlightSearchCard>
                       child: GestureDetector(
                         onTap: _pickFlightClass,
                         child: SearchInputField(
-                          label: 'Flight Class',
+                          label: langProvider.translate('flight_class'),
                           icon: Icons.airline_seat_recline_normal,
                           value: _flightClassDisplay,
                           trailing: const Icon(
@@ -796,7 +813,7 @@ class _FlightSearchCardState extends State<FlightSearchCard>
                         GestureDetector(
                           onTap: () => _pickAirportForLeg(i, isTo: false),
                           child: SearchInputField(
-                            label: 'From',
+                            label: langProvider.translate('from'),
                             icon: Icons.flight_takeoff,
                             value: leg.originLabel,
                             trailing: const Icon(
@@ -812,7 +829,7 @@ class _FlightSearchCardState extends State<FlightSearchCard>
                             child: GestureDetector(
                               onTap: () => _pickAirportForLeg(i, isTo: true),
                               child: SearchInputField(
-                                label: 'To',
+                                label: langProvider.translate('to'),
                                 icon: Icons.flight_land,
                                 value: leg.destinationLabel,
                                 trailing: const Icon(
@@ -859,7 +876,7 @@ class _FlightSearchCardState extends State<FlightSearchCard>
                 GestureDetector(
                   onTap: () => _pickDateForLeg(0),
                   child: SearchInputField(
-                    label: 'Date',
+                    label: langProvider.translate('date'),
                     icon: Icons.calendar_today_outlined,
                     value: _multiCityLegs.isNotEmpty
                         ? formatDisplayDate(
@@ -882,7 +899,7 @@ class _FlightSearchCardState extends State<FlightSearchCard>
                       child: GestureDetector(
                         onTap: _pickPassengers,
                         child: SearchInputField(
-                          label: 'Penumpang',
+                          label: langProvider.translate('passengers'),
                           icon: Icons.person_outline,
                           value: _passengers.displayLabel,
                           trailing: const Icon(
@@ -898,7 +915,7 @@ class _FlightSearchCardState extends State<FlightSearchCard>
                       child: GestureDetector(
                         onTap: _pickFlightClass,
                         child: SearchInputField(
-                          label: 'Flight Class',
+                          label: langProvider.translate('flight_class'),
                           icon: Icons.airline_seat_recline_normal,
                           value: _flightClassDisplay,
                           trailing: const Icon(
@@ -960,9 +977,9 @@ class _FlightSearchCardState extends State<FlightSearchCard>
                                     color: Colors.black.withValues(alpha: 0.1),
                                   ),
                                 ),
-                                child: const Text(
-                                  'Kendaraan Darat',
-                                  style: TextStyle(
+                                child: Text(
+                                  langProvider.translate('land_vehicle'),
+                                  style: const TextStyle(
                                     fontFamily: 'Poppins',
                                     color: Color(0xFF616161),
                                     fontSize: 12,
@@ -998,9 +1015,9 @@ class _FlightSearchCardState extends State<FlightSearchCard>
                                           strokeWidth: 2,
                                         ),
                                       )
-                                    : const Text(
-                                        'Cari',
-                                        style: TextStyle(
+                                    : Text(
+                                        langProvider.translate('search_button'),
+                                        style: const TextStyle(
                                           fontFamily: 'Poppins',
                                           color: Colors.white,
                                           fontSize: 12,
@@ -1075,8 +1092,8 @@ class _FlightSearchCardState extends State<FlightSearchCard>
                           children: [
                             Text(
                               _foundFlights.isNotEmpty
-                                  ? 'Tiket Ditemukan'
-                                  : 'Tidak Ditemukan',
+                                  ? langProvider.translate('ticket_found')
+                                  : langProvider.translate('not_found'),
                               style: const TextStyle(
                                 fontFamily: 'Poppins',
                                 fontWeight: FontWeight.w700,

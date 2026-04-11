@@ -15,7 +15,6 @@ class SearchingPage extends StatelessWidget {
       backgroundColor: const Color(0xFFF6F6F6),
       body: Stack(
         children: [
-          // Background Image
           Positioned(
             top: 0,
             left: 0,
@@ -40,11 +39,7 @@ class SearchingPage extends StatelessWidget {
               ),
               const Expanded(
                 child: SingleChildScrollView(
-                  padding: EdgeInsets.only(
-                    left: 20,
-                    right: 20,
-                    bottom: 100,
-                  ),
+                  padding: EdgeInsets.only(left: 20, right: 20, bottom: 100),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
