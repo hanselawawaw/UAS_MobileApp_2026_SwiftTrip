@@ -13,8 +13,8 @@ class PromotionListView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        """Returns all promotions available in the system."""
-        return Promotion.objects.all()
+        """Returns only promotions the authenticated user has collected."""
+        return Promotion.objects.filter(collected_by=self.request.user)
 
 
 class CollectCouponView(APIView):
