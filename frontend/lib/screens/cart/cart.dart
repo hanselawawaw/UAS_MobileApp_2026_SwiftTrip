@@ -13,6 +13,7 @@ import '../main/main_screen.dart';
 import '../checkout/checkout.dart';
 import '../checkout/models/checkout_details_model.dart';
 import '../checkout/models/purchase_item_model.dart';
+import '../../providers/language_provider.dart';
 
 // CART PAGE
 class CartPage extends StatefulWidget {
@@ -58,7 +59,8 @@ class _CartPageState extends State<CartPage> {
     return 'Rp. ${buffer.toString()}';
   }
 
-  Widget _buildEmptyState() {
+  Widget _buildEmptyState(BuildContext context) {
+    final langProvider = context.watch<LanguageProvider>();
     return Center(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 40),
@@ -79,10 +81,10 @@ class _CartPageState extends State<CartPage> {
               ),
             ),
             const SizedBox(height: 24),
-            const Text(
-              'Your cart is empty',
+            Text(
+              langProvider.translate('empty_cart_title'),
               textAlign: TextAlign.center,
-              style: TextStyle(
+              style: const TextStyle(
                 fontFamily: 'Poppins',
                 fontSize: 20,
                 fontWeight: FontWeight.w600,
@@ -90,10 +92,10 @@ class _CartPageState extends State<CartPage> {
               ),
             ),
             const SizedBox(height: 12),
-            const Text(
-              'Looks like you haven\'t added any tickets yet. Let\'s find your next adventure!',
+            Text(
+              langProvider.translate('empty_cart_subtitle'),
               textAlign: TextAlign.center,
-              style: TextStyle(
+              style: const TextStyle(
                 fontFamily: 'Poppins',
                 fontSize: 14,
                 color: Colors.black54,
@@ -126,9 +128,9 @@ class _CartPageState extends State<CartPage> {
                 ),
                 elevation: 0,
               ),
-              child: const Text(
-                'Explore Flights',
-                style: TextStyle(
+              child: Text(
+                langProvider.translate('explore_flights'),
+                style: const TextStyle(
                   fontFamily: 'Poppins',
                   fontWeight: FontWeight.w500,
                   fontSize: 14,
@@ -168,7 +170,7 @@ class _CartPageState extends State<CartPage> {
           // ── Independent Ticket Scroll Area ────────────────────────────
           Expanded(
             child: tickets.isEmpty
-                ? _buildEmptyState()
+                ? _buildEmptyState(context)
                 : SingleChildScrollView(
                     padding: const EdgeInsets.only(
                       top: 20,

@@ -29,12 +29,18 @@ class AppStrings {
       'recommendation': 'Recommendation',
       'search': 'Let AI Help Your Journey',
       'history': 'History >',
+      'empty_cart_title': 'Your cart is empty',
+      'empty_cart_subtitle': 'Looks like you haven\'t added any tickets yet. Let\'s find your next adventure!',
+      'explore_flights': 'Explore Flights',
     },
     'id': {
       'schedule': 'Jadwal Anda',
       'recommendation': 'Rekomendasi',
       'search': 'Biarkan AI Membantu Perjalanan Anda',
       'history': 'Riwayat >',
+      'empty_cart_title': 'Keranjang Anda kosong',
+      'empty_cart_subtitle': 'Sepertinya Anda belum menambahkan tiket apapun. Mari temukan petualangan Anda berikutnya!',
+      'explore_flights': 'Jelajahi Penerbangan',
     },
   };
 }
