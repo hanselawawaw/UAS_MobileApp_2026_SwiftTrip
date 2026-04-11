@@ -170,7 +170,7 @@ class _DestinationDetailPageState extends State<DestinationDetailPage> {
                             ),
                             const SizedBox(width: 8),
                             Text(
-                              '${widget.destination.rating.toInt()}',
+                              widget.destination.rating.toStringAsFixed(1),
                               style: const TextStyle(
                                 fontFamily: 'Poppins',
                                 fontWeight: FontWeight.w700,

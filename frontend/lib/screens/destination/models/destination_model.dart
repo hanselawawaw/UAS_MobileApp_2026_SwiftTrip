@@ -45,7 +45,7 @@ class DestinationModel {
       category: json['category'] as String? ?? '',
       imageUrl: json['image_url'] as String? ?? '',
       location: json['location'] as String? ?? '',
-      rating: double.tryParse(json['rating']?.toString() ?? '0.0') ?? 0.0,
+      rating: (json['rating'] as num?)?.toDouble() ?? 0.0,
       reviewCount: json['review_count'] as int? ?? 0,
       originalPrice:
           double.tryParse(json['original_price']?.toString() ?? '0.0') ?? 0.0,

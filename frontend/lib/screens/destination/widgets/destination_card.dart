@@ -146,7 +146,7 @@ class DestinationCard extends StatelessWidget {
                 Row(
                   children: [
                     Text(
-                      destination.rating.toStringAsFixed(0),
+                      destination.rating.toStringAsFixed(1),
                       style: const TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
