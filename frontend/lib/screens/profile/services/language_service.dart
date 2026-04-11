@@ -64,6 +64,12 @@ class AppStrings {
       'dest_discount': 'Discount',
       'dest_favorites': 'People’s Favorites',
       'dest_hot': 'Hot Destinations',
+      'menu_edit_profile': 'Edit Profile',
+      'menu_wishlist': 'Wishlist',
+      'menu_subscription': 'Subscription Plan',
+      'menu_language': 'Language',
+      'menu_clear_cache': 'Clear Cache',
+      'menu_logout': 'Log Out',
     },
     'id': {
       'schedule': 'Jadwal Anda',
@@ -105,6 +111,12 @@ class AppStrings {
       'dest_discount': 'Diskon',
       'dest_favorites': 'Favorit Orang',
       'dest_hot': 'Destinasi Populer',
+      'menu_edit_profile': 'Edit Profil',
+      'menu_wishlist': 'Daftar Keinginan',
+      'menu_subscription': 'Paket Langganan',
+      'menu_language': 'Bahasa',
+      'menu_clear_cache': 'Bersihkan Cache',
+      'menu_logout': 'Keluar',
     },
   };
 }

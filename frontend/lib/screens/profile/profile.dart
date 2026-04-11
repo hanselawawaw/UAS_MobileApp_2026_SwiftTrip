@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:swifttrip_frontend/screens/customer_service/onboarding.dart';
+import '../../providers/language_provider.dart';
 import '../../widgets/top_bar.dart';
 import '../auth/login.dart';
 import 'widgets/profile_card.dart';
@@ -23,6 +25,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+    final langProvider = context.watch<LanguageProvider>();
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
       body: Column(
@@ -52,7 +55,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     items: [
                       MenuItem(
                         icon: Icons.edit,
-                        label: 'Edit Profile',
+                        label: langProvider.translate('menu_edit_profile'),
                         onTap: () async {
                           final result = await Navigator.push(
                             context,
@@ -67,7 +70,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                       MenuItem(
                         icon: Icons.favorite_border,
-                        label: 'Wishlist',
+                        label: langProvider.translate('menu_wishlist'),
                         onTap: () {
                           Navigator.push(
                             context,
@@ -86,7 +89,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     items: [
                       MenuItem(
                         icon: Icons.credit_card_outlined,
-                        label: 'Subscription Plan',
+                        label: langProvider.translate('menu_subscription'),
                         onTap: () {
                           Navigator.push(
                             context,
@@ -98,7 +101,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                       MenuItem(
                         icon: Icons.language,
-                        label: 'Language',
+                        label: langProvider.translate('menu_language'),
                         onTap: () {
                           Navigator.push(
                             context,
@@ -117,7 +120,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     items: [
                       MenuItem(
                         icon: Icons.delete_outline,
-                        label: 'Clear Cache',
+                        label: langProvider.translate('menu_clear_cache'),
                         onTap: () {
                           Navigator.push(
                             context,
@@ -129,7 +132,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                       MenuItem(
                         icon: Icons.logout,
-                        label: 'Log Out',
+                        label: langProvider.translate('menu_logout'),
                         iconColor: Colors.red,
                         labelColor: Colors.black,
                         showArrow: false,
