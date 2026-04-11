@@ -50,7 +50,7 @@ class ChatService {
             final ticket = CartTicket(
               type: 'Plane Ticket',
               bookingId: 'FL-${DateTime.now().millisecondsSinceEpoch}',
-              classLabel: 'Economy',
+              classLabel: _formatClass(f['travel_class']),
               priceRp: (f['price'] ?? 0).toInt(),
               operator: f['airlineName'],
               flightNumber: f['flight_number'],
@@ -107,6 +107,24 @@ class ChatService {
         type: MsgType.ai,
         text: 'An error occurred. Please try again later.',
       );
+    }
+  }
+
+  String _formatClass(String? cls) {
+    if (cls == null) return 'Economy';
+    switch (cls.toUpperCase()) {
+      case 'ECONOMY':
+        return 'Economy';
+      case 'PREMIUM_ECONOMY':
+        return 'Premium Economy';
+      case 'BUSINESS':
+        return 'Business';
+      case 'FIRST':
+        return 'First Class';
+      default:
+        // Proper case for any other values
+        if (cls.length < 2) return cls.toUpperCase();
+        return cls[0].toUpperCase() + cls.substring(1).toLowerCase();
     }
   }
 }
