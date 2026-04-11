@@ -24,6 +24,7 @@ import '../main/main_screen.dart';
 import '../../core/constants.dart';
 import '../../providers/language_provider.dart';
 import 'package:provider/provider.dart';
+import 'services/history_service.dart';
 
 // ─────────────────────────────────────────────
 // CONSTANTS
@@ -58,6 +59,7 @@ class _HomePageState extends State<HomePage> {
   Timer? _bannerTimer;
 
   bool _isLoading = true;
+  bool _popupShown = false;
   List<CartTicket> _serverSchedules = [];
   List<DestinationModel> _serverRecommendations = [];
 
@@ -65,6 +67,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _fetchHomeData();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _checkPendingReviews());
   }
 
   Future<void> _fetchHomeData() async {
@@ -84,6 +87,23 @@ class _HomePageState extends State<HomePage> {
       if (mounted) {
         setState(() => _isLoading = false);
       }
+    }
+  }
+
+  Future<void> _checkPendingReviews() async {
+    if (_popupShown) return;
+
+    final historyService = HistoryService();
+    try {
+      final history = await historyService.fetchHistory();
+      final reviewableTickets = history.where((t) => t.isReviewable == true).toList();
+
+      if (reviewableTickets.isNotEmpty && mounted) {
+        _popupShown = true;
+        _showReviewPopup(reviewableTickets.first);
+      }
+    } catch (e) {
+      debugPrint('Error checking pending reviews: $e');
     }
   }
 
@@ -118,11 +138,14 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
-  void _showReviewPopup() {
+  void _showReviewPopup(CartTicket ticket) {
     showDialog(
       context: context,
       barrierColor: Colors.black.withOpacity(0.4),
-      builder: (_) => const ReviewPopupWidget(),
+      builder: (_) => ReviewPopupWidget(
+        targetName: ticket.location ?? (ticket.to ?? 'SwiftTrip Destination'),
+        destinationId: ticket.destinationId,
+      ),
     );
   }
 

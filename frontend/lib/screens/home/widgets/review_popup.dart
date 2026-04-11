@@ -3,7 +3,14 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../review.dart';
 
 class ReviewPopupWidget extends StatelessWidget {
-  const ReviewPopupWidget({super.key});
+  final String targetName;
+  final String? destinationId;
+
+  const ReviewPopupWidget({
+    super.key,
+    required this.targetName,
+    this.destinationId,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -92,9 +99,13 @@ class ReviewPopupWidget extends StatelessWidget {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => ReviewPage()),
+                    MaterialPageRoute(
+                      builder: (context) => ReviewPage(
+                        targetName: targetName,
+                        destinationId: destinationId,
+                      ),
+                    ),
                   );
-                  // TODO: Pass booking ID so backend can link review to booking
                 },
                 child: const Text(
                   'Drop Your Thoughts >',

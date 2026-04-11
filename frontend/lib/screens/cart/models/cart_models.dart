@@ -49,6 +49,8 @@ class CartTicket {
   final String? location;
   final double? latitude;
   final double? longitude;
+  final String? destinationId;
+  final bool isReviewable;
 
   const CartTicket({
     required this.type,
@@ -81,6 +83,8 @@ class CartTicket {
     this.latitude,
     this.longitude,
     this.flightRoute,
+    this.destinationId,
+    this.isReviewable = false,
   });
 
   factory CartTicket.accommodation({
@@ -140,6 +144,8 @@ class CartTicket {
       flightRoute: (json['flight_route'] as List<dynamic>?)
           ?.map((e) => e.toString())
           .toList(),
+      destinationId: json['destination_id'] as String?,
+      isReviewable: json['is_reviewable'] as bool? ?? false,
     );
   }
 
@@ -175,6 +181,8 @@ class CartTicket {
       'latitude': latitude,
       'longitude': longitude,
       'flight_route': flightRoute,
+      'destination_id': destinationId,
+      'is_reviewable': isReviewable,
       'booking_type': _mapTypeToBookingType(type),
     };
   }
@@ -227,6 +235,8 @@ class CartTicket {
     double? latitude,
     double? longitude,
     List<String>? flightRoute,
+    String? destinationId,
+    bool? isReviewable,
   }) {
     return CartTicket(
       type: type ?? this.type,
@@ -259,6 +269,8 @@ class CartTicket {
       latitude: latitude ?? this.latitude,
       longitude: longitude ?? this.longitude,
       flightRoute: flightRoute ?? this.flightRoute,
+      destinationId: destinationId ?? this.destinationId,
+      isReviewable: isReviewable ?? this.isReviewable,
     );
   }
 }

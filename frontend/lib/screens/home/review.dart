@@ -8,8 +8,13 @@ import 'widgets/dropdown_field.dart';
 class ReviewPage extends StatefulWidget {
   // TODO: Accept bookingId and targetName from caller to link review to booking
   final String targetName;
+  final String? destinationId;
 
-  const ReviewPage({super.key, this.targetName = 'Hotel Santika Bandung'});
+  const ReviewPage({
+    super.key,
+    required this.targetName,
+    this.destinationId,
+  });
 
   @override
   State<ReviewPage> createState() => _ReviewPageState();
@@ -50,6 +55,7 @@ class _ReviewPageState extends State<ReviewPage> {
     // TODO: Validate fields before submitting
     await _reviewService.submitReview(
       targetName: widget.targetName,
+      destinationId: widget.destinationId,
       rating: _rating,
       feeling: _selectedFeeling,
       thoughts: _thoughtsController.text.trim(),
