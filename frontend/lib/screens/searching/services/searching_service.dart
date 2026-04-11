@@ -60,7 +60,7 @@ class SearchingService {
   Future<List<String>> getCouponCategories() async {
     // TODO: Fetch from backend
     await Future.delayed(const Duration(milliseconds: 200));
-    return ['Coupon Raya', 'Coupon Ticket Plane', 'Australia', 'Indonesia'];
+    return ['Coupon Raya', 'Ticket Plane', 'Australia', 'Indonesia', 'Business'];
   }
 
   /// Fetches coupons filtered by category.
@@ -81,7 +81,7 @@ class SearchingService {
           code: 'RAYA15',
         ),
       ],
-      'Coupon Ticket Plane': [
+      'Ticket Plane': [
         const CouponModel(
           title: 'Plane Saver',
           description: 'Get 20% off flights',
@@ -99,12 +99,29 @@ class SearchingService {
           description: 'Get 30% off to Australia',
           code: 'AUS30',
         ),
+        const CouponModel(
+          title: 'Sydney Saver',
+          description: 'Rp 150.000 off Sydney flights',
+          code: 'SYD150',
+        ),
       ],
       'Indonesia': [
         const CouponModel(
           title: 'IDN Deal',
           description: 'Get 5% off domestic',
           code: 'IDN05',
+        ),
+        const CouponModel(
+          title: 'Bali Getaway',
+          description: '12% discount for Bali hotels',
+          code: 'BALI12',
+        ),
+      ],
+      'Business': [
+        const CouponModel(
+          title: 'Biz Class Boost',
+          description: 'Upgrade discount Rp 500.000',
+          code: 'BIZ500',
         ),
       ],
     };
