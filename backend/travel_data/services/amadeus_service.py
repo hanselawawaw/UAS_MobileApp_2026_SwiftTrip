@@ -157,31 +157,53 @@ class AmadeusService:
         """
         # 1. Handle Dynamic Date
         try:
-            # If the AI/Frontend sends a valid YYYY-MM-DD string
             base_date = datetime.strptime(date, "%Y-%m-%d")
         except (ValueError, TypeError):
-            # Fallback to 7 days from now if date is 'next week' or invalid
             base_date = datetime.now() + timedelta(days=7)
 
-        # 2. Handle Dynamic Pricing
-        # Multiply base price by class (First Class is more expensive)
-        class_map = {"ECONOMY": 1.0, "PREMIUM_ECONOMY": 1.5, "BUSINESS": 2.5, "FIRST": 4.0}
-        multiplier = class_map.get(travel_class.upper(), 1.0)
-        
+        # 2. Base Configuration
         num_passengers = max(1, int(passengers))
+        class_map = {"ECONOMY": 1.0, "PREMIUM_ECONOMY": 1.5, "BUSINESS": 2.5, "FIRST": 4.0}
+        class_multiplier = class_map.get(travel_class.upper(), 1.0)
         
-        # 3. Generate 3 Diverse Options
+        base_route_price = self._get_dynamic_price(origin, destination)
+        
+        # 3. Defined Temporal Windows (Diurnal Spread)
+        # (Start Hour, End Hour, Duration Category)
+        windows = [
+            (5, 11, "short"),   # Morning
+            (12, 17, "medium"), # Afternoon
+            (18, 23, "long")    # Night
+        ]
+
         airlines = [
-            {"code": "GA", "name": "Garuda Indonesia", "price": 1200000},
-            {"code": "EK", "name": "Emirates", "price": 8500000},
-            {"code": "QR", "name": "Qatar Airways", "price": 7800000},
+            {"code": "GA", "name": "Garuda Indonesia"},
+            {"code": "EK", "name": "Emirates"},
+            {"code": "QR", "name": "Qatar Airways"},
         ]
 
         results = []
-        for i, air in enumerate(airlines):
-            # Create staggered times based on the base_date
-            depart = base_date + timedelta(hours=6 + (i * 5), minutes=random.randint(0, 59))
-            arrive = depart + timedelta(hours=random.randint(2, 12))
+        for i, (start_h, end_h, dur_cat) in enumerate(windows):
+            air = airlines[i]
+            
+            # A. Temporal Spread
+            hour = random.randint(start_h, end_h)
+            minute = random.randint(0, 59)
+            depart = base_date.replace(hour=hour, minute=minute, second=0)
+            
+            # B. Duration Simulation
+            if dur_cat == "short":
+                dur_hours = random.uniform(1.5, 3.0)
+            elif dur_cat == "medium":
+                dur_hours = random.uniform(4.0, 7.0)
+            else: # long
+                dur_hours = random.uniform(8.0, 14.0)
+            
+            arrive = depart + timedelta(hours=dur_hours)
+
+            # C. Competitive Pricing Variance
+            carrier_variance = random.uniform(0.85, 1.15)
+            final_price = int(base_route_price * class_multiplier * carrier_variance * num_passengers)
 
             results.append({
                 "airline": air["code"],
@@ -192,7 +214,7 @@ class AmadeusService:
                 "destination": destination.upper(),
                 "departure_time": depart.strftime("%Y-%m-%dT%H:%M:%S"),
                 "arrival_time": arrive.strftime("%Y-%m-%dT%H:%M:%S"),
-                "price": float(self._get_dynamic_price(origin, destination) * multiplier * num_passengers),
+                "price": float(final_price),
                 "currency": "IDR",
                 "travel_class": travel_class.upper(),
                 "source": "generative_mock"
@@ -350,36 +372,42 @@ class AmadeusService:
         
         # 2. Dynamic Pricing Logic
         class_map = {"ECONOMY": 1.0, "PREMIUM_ECONOMY": 1.5, "BUSINESS": 2.5, "FIRST": 4.0}
-        multiplier = class_map.get(travel_class.upper(), 1.0)
+        class_multiplier = class_map.get(travel_class.upper(), 1.0)
         num_passengers = max(1, int(passengers))
         
-        # Multi-city is naturally more expensive
-        base_trip_price = 5000000 * num_legs 
+        # Calculate base total price from all legs
+        total_base_price = 0
+        for leg in legs:
+            leg_origin = leg.get("origin", "").upper()
+            leg_dest = leg.get("destination", "").upper()
+            total_base_price += self._get_dynamic_price(leg_origin, leg_dest)
 
         airlines = [
-            {"code": "SQ", "name": "Singapore Airlines", "price": base_trip_price},
-            {"code": "EK", "name": "Emirates", "price": base_trip_price * 1.2},
-            {"code": "TK", "name": "Turkish Airlines", "price": base_trip_price * 0.9},
+            {"code": "SQ", "name": "Singapore Airlines"},
+            {"code": "EK", "name": "Emirates"},
+            {"code": "TK", "name": "Turkish Airlines"},
         ]
 
         results = []
         for i, air in enumerate(airlines):
             try:
-                depart_date = datetime.strptime(first_leg.get("date"), "%Y-%m-%d")
+                base_depart_date = datetime.strptime(first_leg.get("date"), "%Y-%m-%d")
             except:
-                depart_date = datetime.now() + timedelta(days=7)
+                base_depart_date = datetime.now() + timedelta(days=7)
 
-            try:
-                arrival_date = datetime.strptime(last_leg.get("date"), "%Y-%m-%d")
-            except:
-                arrival_date = depart_date + timedelta(days=num_legs)
+            # A. Dynamic Multi-City Scheduling
+            # Random departure hour between 04:00 and 20:00
+            hour = random.randint(4, 20)
+            minute = random.randint(0, 59)
+            depart_date = base_depart_date.replace(hour=hour, minute=minute, second=0)
 
-            # Multi-city pricing: Sum of all legs
-            total_base_price = 0
-            for leg in legs:
-                leg_origin = leg.get("origin", "").upper()
-                leg_dest = leg.get("destination", "").upper()
-                total_base_price += self._get_dynamic_price(leg_origin, leg_dest)
+            # B. Duration Simulation (Flight Duration: 2 to 14 hours)
+            duration_hours = random.uniform(2.0, 14.0)
+            arrival_date = depart_date + timedelta(hours=duration_hours)
+
+            # C. Competitive Pricing Variance
+            carrier_variance = random.uniform(0.85, 1.15)
+            final_price = int(total_base_price * class_multiplier * carrier_variance * num_passengers)
 
             results.append({
                 "airline": air["code"],
@@ -388,9 +416,9 @@ class AmadeusService:
                 "flight_number": f"{air['code']} {random.randint(100, 999)} (Multi-City)",
                 "origin": origin,
                 "destination": destination,
-                "departure_time": depart_date.strftime("%Y-%m-%dT08:00:00"),
-                "arrival_time": arrival_date.strftime("%Y-%m-%dT22:00:00"),
-                "price": float(total_base_price * multiplier * num_passengers),
+                "departure_time": depart_date.strftime("%Y-%m-%dT%H:%M:%S"),
+                "arrival_time": arrival_date.strftime("%Y-%m-%dT%H:%M:%S"),
+                "price": float(final_price),
                 "currency": "IDR",
                 "travel_class": travel_class.upper(),
                 "source": "generative_mock_multi"
