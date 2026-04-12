@@ -41,6 +41,20 @@ class AuthRepository {
     return await _storage.read(key: 'access_token');
   }
 
+  Future<bool> loadSession() async {
+    final token = await getToken();
+    if (token != null) {
+      try {
+        await getUserProfile();
+        return true;
+      } catch (e) {
+        print('Session restoration failed: $e');
+        await _clearTokens();
+      }
+    }
+    return false;
+  }
+
   Future<User> getUserProfile() async {
     try {
       final token = await getToken();

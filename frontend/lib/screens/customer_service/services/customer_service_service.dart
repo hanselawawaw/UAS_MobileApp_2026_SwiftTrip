@@ -24,7 +24,21 @@ class CustomerServiceService {
 
   Future<Options> _authOptions() async {
     final token = await _auth.getToken();
-    return Options(headers: {'Authorization': 'Bearer $token'});
+    
+    // Diagnostic log for local debugging
+    if (token == null) {
+      print('[AUTH DEBUG] WARNING: Token is NULL. Sending request without authorization.');
+    } else {
+      final preview = token.length > 10 ? '${token.substring(0, 10)}...' : token;
+      print('[AUTH DEBUG] Token exists: $preview');
+    }
+
+    return Options(
+      headers: {
+        if (token != null) 'Authorization': 'Bearer $token',
+      },
+      validateStatus: (status) => status != null && status < 500,
+    );
   }
 
   // ── FAQs (kept as local data — no backend endpoint change needed) ──────

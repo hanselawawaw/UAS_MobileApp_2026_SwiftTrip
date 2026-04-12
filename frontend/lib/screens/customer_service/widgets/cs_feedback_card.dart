@@ -28,7 +28,11 @@ class CsFeedbackCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              Expanded(child: CsUserRow(username: entry.username)),
+              Expanded(
+                child: CsUserRow(
+                  username: entry.isAnswered ? 'IT Team CS' : entry.username,
+                ),
+              ),
               if (entry.isAnswered)
                 const Text(
                   'Answered',

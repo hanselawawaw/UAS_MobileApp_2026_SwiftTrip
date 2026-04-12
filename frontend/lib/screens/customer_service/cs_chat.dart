@@ -5,6 +5,10 @@ import '../home/models/chat_message.dart';
 import '../home/widgets/chat_widgets.dart';
 import '../home/services/chat_service.dart';
 import 'services/customer_service_service.dart';
+import 'models/cs_chat_models.dart';
+import 'widgets/cs_question_card.dart';
+import 'widgets/cs_feedback_card.dart';
+import 'widgets/cs_reply_bar.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // CS CHAT PAGE
@@ -25,7 +29,8 @@ class _CsChatPageState extends State<CsChatPage> {
   final ChatService _chatService = ChatService();
   final CustomerServiceService _csService = CustomerServiceService();
 
-  List<ChatMessage> _messages = [];
+  CsQuestion? _questionDetail;
+  List<CsFeedbackEntry> _feedbacks = [];
   bool _isBotTyping = false;
   bool _isLoading = true;
 
@@ -37,52 +42,32 @@ class _CsChatPageState extends State<CsChatPage> {
 
   Future<void> _initializeChat() async {
     try {
-      // Fetch the ticket's initial question
       final detail = await _csService.getQuestionDetail(widget.ticketId);
-      final userMessage = ChatMessage.text(type: MsgType.user, text: detail.body);
-
-      if (!mounted) return;
-      setState(() {
-        _messages = [userMessage];
-        _isLoading = false;
-      });
-      _scrollToBottom();
-
-      // Fetch existing reply thread
       final thread = await _csService.getFeedbackThread(widget.ticketId);
 
-      if (thread.isNotEmpty) {
+      if (!mounted) return;
+
+      setState(() {
+        _questionDetail = detail;
+        _feedbacks = thread;
+        _isLoading = false;
+      });
+
+      _scrollToBottom();
+
+      if (_feedbacks.isEmpty) {
+        setState(() => _isBotTyping = true);
+        _scrollToBottom();
+
+        final aiReplies = await _csService.generateAiReply(widget.ticketId);
+
         if (!mounted) return;
         setState(() {
-          for (final entry in thread) {
-            _messages.add(ChatMessage.text(
-              type: entry.isAnswered ? MsgType.ai : MsgType.user,
-              text: entry.body,
-            ));
-          }
+          _isBotTyping = false;
+          _feedbacks.addAll(aiReplies);
         });
         _scrollToBottom();
-        return;
       }
-
-      // No replies yet — trigger AI auto-reply
-      if (!mounted) return;
-      setState(() => _isBotTyping = true);
-      _scrollToBottom();
-
-      final aiReplies = await _csService.generateAiReply(widget.ticketId);
-
-      if (!mounted) return;
-      setState(() {
-        _isBotTyping = false;
-        for (final entry in aiReplies) {
-          _messages.add(ChatMessage.text(
-            type: entry.isAnswered ? MsgType.ai : MsgType.user,
-            text: entry.body,
-          ));
-        }
-      });
-      _scrollToBottom();
     } catch (e) {
       if (!mounted) return;
       setState(() {
@@ -114,26 +99,60 @@ class _CsChatPageState extends State<CsChatPage> {
 
   void _handleSendReply() async {
     final text = _replyController.text.trim();
-    if (text.isEmpty) return;
+    if (text.isEmpty || _questionDetail == null) return;
 
     _scrollToBottom();
 
-    final history = List<ChatMessage>.from(_messages);
-
     setState(() {
-      _messages.add(ChatMessage.text(type: MsgType.user, text: text));
+      _feedbacks.add(
+        CsFeedbackEntry(
+          username: 'You',
+          date: 'Just now',
+          body: text,
+          isAnswered: false,
+        ),
+      );
       _replyController.clear();
       _isBotTyping = true;
     });
 
     _scrollToBottom();
 
-    final response = await _chatService.sendMessage(text, history, 'support');
+    final historyForAi = <ChatMessage>[
+      ChatMessage.text(type: MsgType.user, text: _questionDetail!.body),
+    ];
+
+    for (var i = 0; i < _feedbacks.length - 1; i++) {
+      final feedback = _feedbacks[i];
+      historyForAi.add(
+        ChatMessage.text(
+          type: feedback.isAnswered ? MsgType.ai : MsgType.user,
+          text: feedback.body,
+        ),
+      );
+    }
+
+    final response = await _chatService.sendMessage(
+      text,
+      historyForAi,
+      'support',
+    );
+
     if (!mounted) return;
 
     setState(() {
       _isBotTyping = false;
-      _messages.add(response);
+
+      final replyText = response.text ?? 'Ticket Information Received';
+
+      _feedbacks.add(
+        CsFeedbackEntry(
+          username: 'IT Team CS',
+          date: 'Just now',
+          body: replyText,
+          isAnswered: true,
+        ),
+      );
     });
     _scrollToBottom();
   }
@@ -163,20 +182,47 @@ class _CsChatPageState extends State<CsChatPage> {
                 : ListView.builder(
                     controller: _scrollController,
                     padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
-                    itemCount: _messages.length + (_isBotTyping ? 1 : 0),
+                    itemCount: 2 + _feedbacks.length + (_isBotTyping ? 1 : 0),
                     itemBuilder: (_, i) {
-                      if (_isBotTyping && i == _messages.length) {
-                        return const TypingIndicator();
+                      if (i == 0) {
+                        return _questionDetail != null
+                            ? CsQuestionCard(question: _questionDetail!)
+                            : const SizedBox();
+                      } else if (i == 1) {
+                        return const Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(height: 12),
+                            Divider(color: Color(0xFFD9D9D9), thickness: 1),
+                            Padding(
+                              padding: EdgeInsets.only(top: 12, bottom: 12),
+                              child: Text(
+                                'Feedback:',
+                                style: TextStyle(
+                                  fontFamily: 'Poppins',
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 16,
+                                  color: Color(0xFF2B99E3),
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
                       }
-                      final msg = _messages[i];
-                      if (msg.type == MsgType.ticket) {
-                        return ChatTicketCard(ticket: msg.ticket!);
+
+                      final feedIdx = i - 2;
+                      if (feedIdx < _feedbacks.length) {
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: CsFeedbackCard(entry: _feedbacks[feedIdx]),
+                        );
                       }
-                      return ChatBubbleWidget(message: msg);
+
+                      return const TypingIndicator();
                     },
                   ),
           ),
-          ChatInputBar(controller: _replyController, onSend: _handleSendReply),
+          CsReplyBar(controller: _replyController, onSend: _handleSendReply),
           const SizedBox(height: 30),
         ],
       ),

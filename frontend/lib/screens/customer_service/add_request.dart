@@ -278,7 +278,7 @@ class _AddRequestPageState extends State<AddRequestPage>
                               mainAxisSize: MainAxisSize.min,
                               children: const [
                                 Text(
-                                  'Sent Request',
+                                  'Send Request',
                                   style: TextStyle(
                                     fontFamily: 'Poppins',
                                     fontWeight: FontWeight.w700,
