@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:swifttrip_frontend/repositories/auth_repository.dart';
+import 'package:swifttrip_frontend/core/constants.dart';
 import '../models/destination_model.dart';
 import '../models/review_model.dart';
 import '../models/category_model.dart';
@@ -56,7 +57,7 @@ class DestinationService {
 
   // --- API Integrations ---
   final Dio _dio = Dio(BaseOptions(
-    baseUrl: 'http://127.0.0.1:8000/api/bookings/destinations/',
+    baseUrl: '${Constants.bookingsUrl}destinations/',
     connectTimeout: const Duration(seconds: 5),
     receiveTimeout: const Duration(seconds: 5),
     headers: {
