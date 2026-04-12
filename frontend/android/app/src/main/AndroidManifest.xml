@@ -4,9 +4,9 @@
     <uses-permission android:name="android.permission.CAMERA"/>
 
     <application
-        android:label="swifttrip_frontend"
+        android:label="SwiftTrip"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/launcher_icon">
         <activity
             android:name=".MainActivity"
             android:exported="true"

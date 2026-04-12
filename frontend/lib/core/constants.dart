@@ -25,12 +25,13 @@ class Constants {
   static const Color warningColor = Color(0xFFF3CFCE);
 
   // Update this ONE line whenever you change Wi-Fi networks (use 127.0.0.1 for Web, 10.0.2.2 for Android Emulator, or your IPv4 for real devices)
-  static const String machineIp = 'localhost';
+  static const String machineIp = '192.168.1.25';
 
   static const String baseUrl = 'http://$machineIp:8000/api/auth/';
   static const String travelUrl = 'http://$machineIp:8000/api/travel/';
   static const String promotionsUrl = 'http://$machineIp:8000/api/promotions/';
   static const String bookingsUrl = 'http://$machineIp:8000/api/bookings/';
-  static const String historyUrl = 'http://$machineIp:8000/api/bookings/history/';
+  static const String historyUrl =
+      'http://$machineIp:8000/api/bookings/history/';
   static const String supportUrl = 'http://$machineIp:8000/api/support/';
 }
