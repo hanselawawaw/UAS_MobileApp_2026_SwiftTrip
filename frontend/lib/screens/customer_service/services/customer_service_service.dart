@@ -127,12 +127,25 @@ class CustomerServiceService {
 
   // ── Reply & AI generation ─────────────────────────────────────────────
 
-  Future<void> postReply(String ticketId, String body) async {
-    await _dio.post(
-      'tickets/$ticketId/reply/',
-      data: {'body': body},
-      options: await _authOptions(),
-    );
+  Future<bool> postReply(String ticketId, String body) async {
+    try {
+      final response = await _dio.post(
+        'tickets/$ticketId/reply/',
+        data: {'body': body},
+        options: await _authOptions(),
+      );
+      
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        print('[DB SUCCESS] Reply saved to Ticket $ticketId');
+        return true;
+      } else {
+        print('[DB ERROR] Failed to save reply. Status: ${response.statusCode}, Data: ${response.data}');
+        return false;
+      }
+    } catch (e) {
+      print('[DB EXCEPTION] Error saving reply: $e');
+      return false;
+    }
   }
 
   Future<List<CsFeedbackEntry>> generateAiReply(String ticketId) async {

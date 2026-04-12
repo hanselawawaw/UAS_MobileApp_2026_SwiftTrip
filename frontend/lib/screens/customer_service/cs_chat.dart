@@ -118,42 +118,54 @@ class _CsChatPageState extends State<CsChatPage> {
 
     _scrollToBottom();
 
-    final historyForAi = <ChatMessage>[
-      ChatMessage.text(type: MsgType.user, text: _questionDetail!.body),
-    ];
+    try {
+      // 1. Persist User Reply to Database
+      await _csService.postReply(widget.ticketId, text);
 
-    for (var i = 0; i < _feedbacks.length - 1; i++) {
-      final feedback = _feedbacks[i];
-      historyForAi.add(
-        ChatMessage.text(
-          type: feedback.isAnswered ? MsgType.ai : MsgType.user,
-          text: feedback.body,
-        ),
+      final historyForAi = <ChatMessage>[
+        ChatMessage.text(type: MsgType.user, text: _questionDetail!.body),
+      ];
+
+      for (var i = 0; i < _feedbacks.length - 1; i++) {
+        final feedback = _feedbacks[i];
+        historyForAi.add(
+          ChatMessage.text(
+            type: feedback.isAnswered ? MsgType.ai : MsgType.user,
+            text: feedback.body,
+          ),
+        );
+      }
+
+      final response = await _chatService.sendMessage(
+        text,
+        historyForAi,
+        'support',
       );
-    }
 
-    final response = await _chatService.sendMessage(
-      text,
-      historyForAi,
-      'support',
-    );
-
-    if (!mounted) return;
-
-    setState(() {
-      _isBotTyping = false;
+      if (!mounted) return;
 
       final replyText = response.text ?? 'Ticket Information Received';
 
-      _feedbacks.add(
-        CsFeedbackEntry(
-          username: 'IT Team CS',
-          date: 'Just now',
-          body: replyText,
-          isAnswered: true,
-        ),
-      );
-    });
+      // 2. Persist AI Follow-up to Database
+      await _csService.postReply(widget.ticketId, replyText);
+
+      setState(() {
+        _isBotTyping = false;
+        _feedbacks.add(
+          CsFeedbackEntry(
+            username: 'IT Team CS',
+            date: 'Just now',
+            body: replyText,
+            isAnswered: true,
+          ),
+        );
+      });
+    } catch (e) {
+      print('Failed to persist or send message: $e');
+      if (mounted) {
+        setState(() => _isBotTyping = false);
+      }
+    }
     _scrollToBottom();
   }
 
@@ -223,7 +235,7 @@ class _CsChatPageState extends State<CsChatPage> {
                   ),
           ),
           CsReplyBar(controller: _replyController, onSend: _handleSendReply),
-          const SizedBox(height: 30),
+          const SizedBox(height: 50),
         ],
       ),
     );
