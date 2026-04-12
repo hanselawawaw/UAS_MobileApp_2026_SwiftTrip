@@ -19,7 +19,7 @@ class TicketItem {
 
   factory TicketItem.fromJson(Map<String, dynamic> json) {
     return TicketItem(
-      id: json['id'] as String? ?? '',
+      id: json['id'].toString(),
       title: json['title'] as String,
       issuedDate: json['issued_date'] as String,
       preview: json['preview'] as String,

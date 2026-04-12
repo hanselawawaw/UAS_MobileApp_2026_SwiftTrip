@@ -127,29 +127,44 @@ class _CustomerServicePageState extends State<CustomerServicePage> {
                         ),
                         const SizedBox(height: 12),
 
-                        // Horizontal scrollable
-                        SizedBox(
-                          height: 130,
-                          child: ListView.separated(
-                            scrollDirection: Axis.horizontal,
-                            clipBehavior: Clip.none,
-                            padding: const EdgeInsets.only(right: 4),
-                            itemCount: _recentQuestions.length,
-                            separatorBuilder: (_, __) =>
-                                const SizedBox(width: 12),
-                            itemBuilder: (_, i) => RecentCard(
-                              question: _recentQuestions[i],
-                              onReadMore: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => CsChatPage(ticketId: _recentQuestions[i].id),
-                                  ),
-                                );
-                              },
+                        // Horizontal scrollable or empty state
+                        if (_recentQuestions.isEmpty)
+                          const SizedBox(
+                            height: 130,
+                            child: Center(
+                              child: Text(
+                                'No recently asked questions',
+                                style: TextStyle(
+                                  fontFamily: 'Poppins',
+                                  fontSize: 14,
+                                  color: Color(0xFF999999),
+                                ),
+                              ),
+                            ),
+                          )
+                        else
+                          SizedBox(
+                            height: 130,
+                            child: ListView.separated(
+                              scrollDirection: Axis.horizontal,
+                              clipBehavior: Clip.none,
+                              padding: const EdgeInsets.only(right: 4),
+                              itemCount: _recentQuestions.length,
+                              separatorBuilder: (_, __) =>
+                                  const SizedBox(width: 12),
+                              itemBuilder: (_, i) => RecentCard(
+                                question: _recentQuestions[i],
+                                onReadMore: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => CsChatPage(ticketId: _recentQuestions[i].id),
+                                    ),
+                                  );
+                                },
+                              ),
                             ),
                           ),
-                        ),
                       ],
                     ),
                   ),

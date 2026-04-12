@@ -11,7 +11,7 @@ class RecentQuestion {
 
   factory RecentQuestion.fromJson(Map<String, dynamic> json) {
     return RecentQuestion(
-      id: json['id'] as String,
+      id: json['id'].toString(),
       username: json['username'] as String,
       question: json['question'] as String,
     );

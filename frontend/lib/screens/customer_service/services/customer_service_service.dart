@@ -1,3 +1,6 @@
+import 'package:dio/dio.dart';
+import '../../../core/constants.dart';
+import '../../../repositories/auth_repository.dart';
 import '../models/faq_item.dart';
 import '../models/recent_question.dart';
 import '../models/cs_chat_models.dart';
@@ -5,13 +8,29 @@ import '../models/ticket_item.dart';
 import '../models/cs_request.dart';
 
 class CustomerServiceService {
-  // TODO: Inject Dio or http client here
-  // final Dio _dio;
-  // CustomerServiceService(this._dio);
+  final AuthRepository _auth = AuthRepository();
+
+  final Dio _dio = Dio(
+    BaseOptions(
+      baseUrl: Constants.supportUrl,
+      connectTimeout: const Duration(seconds: 10),
+      receiveTimeout: const Duration(seconds: 10),
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+    ),
+  );
+
+  Future<Options> _authOptions() async {
+    final token = await _auth.getToken();
+    return Options(headers: {'Authorization': 'Bearer $token'});
+  }
+
+  // ── FAQs (kept as local data — no backend endpoint change needed) ──────
 
   Future<List<FaqItem>> getFaqs() async {
-    // TODO: Implement GET /api/v1/customer-service/faqs
-    await Future.delayed(const Duration(milliseconds: 500)); // Simulate network
+    await Future.delayed(const Duration(milliseconds: 300));
     return const [
       FaqItem(
         question: 'Cara mengubah nama',
@@ -36,125 +55,93 @@ class CustomerServiceService {
     ];
   }
 
+  // ── Tickets (real HTTP) ────────────────────────────────────────────────
+
   Future<List<RecentQuestion>> getRecentQuestions() async {
-    // TODO: Implement GET /api/v1/customer-service/recent-questions
-    await Future.delayed(const Duration(milliseconds: 500));
-    return const [
-      RecentQuestion(
-        id: 'RQ001',
-        username: 'Wilson',
-        question: 'How to get refund after accidentally press confirm?',
-      ),
-      RecentQuestion(
-        id: 'RQ002',
-        username: 'James',
-        question: 'Can I change my booking date after payment?',
-      ),
-    ];
+    try {
+      final response = await _dio.get('tickets/', options: await _authOptions());
+      final List data = response.data as List;
+      return data.map((e) => RecentQuestion.fromJson(e)).toList();
+    } catch (e) {
+      print('getRecentQuestions error: $e');
+      return [];
+    }
   }
 
   Future<List<TicketItem>> getTickets() async {
-    // TODO: Implement GET /api/v1/customer-service/tickets
-    await Future.delayed(const Duration(milliseconds: 500));
-    return const [
-      TicketItem(
-        id: '1',
-        title: 'Saldo tidak terupdate',
-        issuedDate: '15 Jan 2026',
-        preview:
-            'Saldo terakhir tidak sesuai dengan transaksi terbaru. Mohon pengecekan karena nilai tidak berubah setelah pembayaran...',
-        status: TicketStatus.pending,
-        isPublic: true,
-      ),
-      TicketItem(
-        id: '2',
-        title: 'Gagal login aplikasi',
-        issuedDate: '16 Jan 2026',
-        preview:
-            'Tidak bisa login meskipun username dan password sudah benar. Muncul error tidak dikenal saat mencoba masuk...',
-        status: TicketStatus.pending,
-        isPublic: true,
-      ),
-      TicketItem(
-        id: '3',
-        title: 'Notifikasi tidak masuk',
-        issuedDate: '17 Jan 2026',
-        preview:
-            'Aplikasi tidak mengirim notifikasi transaksi terbaru. Sudah cek pengaturan tapi tetap tidak ada pemberitahuan...',
-        status: TicketStatus.pending,
-        isPublic: true,
-      ),
-      TicketItem(
-        id: '4',
-        title: 'Transaksi tertunda',
-        issuedDate: '18 Jan 2026',
-        preview:
-            'Transaksi sudah dilakukan namun status masih pending lebih dari 24 jam. Mohon konfirmasi apakah berhasil atau tidak...',
-        status: TicketStatus.pending,
-        isPublic: true,
-      ),
-      TicketItem(
-        id: '5',
-        title: 'Error saat checkout',
-        issuedDate: '19 Jan 2026',
-        preview:
-            'Terjadi error ketika menekan tombol checkout. Halaman tidak memproses dan kembali ke halaman sebelumnya...',
-        status: TicketStatus.pending,
-        isPublic: true,
-      ),
-    ];
+    try {
+      final response = await _dio.get('tickets/', options: await _authOptions());
+      final List data = response.data as List;
+      return data.map((e) => TicketItem.fromJson(e)).toList();
+    } catch (e) {
+      print('getTickets error: $e');
+      return [];
+    }
   }
 
   Future<CsQuestion> getQuestionDetail(String ticketId) async {
-    // TODO: Implement GET /api/v1/customer-service/tickets/{id}
-    await Future.delayed(const Duration(milliseconds: 500));
-    return const CsQuestion(
-      username: 'Anonymous_121',
-      subtitle: '12 des 2025 Refund request',
-      body: 'How to get refund after accidentally press confirm?',
-    );
+    final response = await _dio.get('tickets/$ticketId/', options: await _authOptions());
+    return CsQuestion.fromJson(response.data);
   }
 
   Future<List<CsFeedbackEntry>> getFeedbackThread(String ticketId) async {
-    // TODO: Implement GET /api/v1/customer-service/tickets/{id}/thread
-    await Future.delayed(const Duration(milliseconds: 500));
-    return const [
-      CsFeedbackEntry(
-        username: 'IT Team CS',
-        date: '14 jan 2026',
-        body:
-            'Saldo yang tidak terupdate biasanya disebabkan oleh proses pembayaran yang masih dalam tahap verifikasi, keterlambatan dari pihak bank atau metode pembayaran yang digunakan, atau transaksi yang belum berhasil sepenuhnya. Silakan cek kembali status transaksi di riwayat pesanan Anda dan pastikan pembayaran sudah berhasil. Jika saldo belum juga masuk setelah beberapa waktu, kemungkinan ada kendala teknis atau sistem, sehingga disarankan untuk menghubungi layanan pelanggan dengan menyertakan bukti pembayaran agar dapat ditindaklanjuti lebih lanjut.',
-        isAnswered: true,
-      ),
-      CsFeedbackEntry(
-        username: 'Anonymous_121',
-        date: '15 jan 2026',
-        body: 'Thank you',
-      ),
-    ];
+    try {
+      final response = await _dio.get('tickets/$ticketId/thread/', options: await _authOptions());
+      final List data = response.data as List;
+      return data.map((e) => CsFeedbackEntry.fromJson(e)).toList();
+    } catch (e) {
+      print('getFeedbackThread error: $e');
+      return [];
+    }
   }
+
+  // ── Create ticket ──────────────────────────────────────────────────────
 
   Future<void> postRequest(CsRequest request) async {
-    // TODO: Implement POST /api/v1/customer-service/requests
-    await Future.delayed(const Duration(seconds: 1));
-    // Simulate success
+    await _dio.post(
+      'tickets/',
+      data: {
+        'problem_type': request.problemType,
+        'location': request.location,
+        'publish_type': request.publishType,
+        'header': request.header,
+        'statement': request.statement,
+      },
+      options: await _authOptions(),
+    );
   }
 
+  // ── Reply & AI generation ─────────────────────────────────────────────
+
   Future<void> postReply(String ticketId, String body) async {
-    // TODO: Implement POST /api/v1/customer-service/tickets/{id}/reply
-    await Future.delayed(const Duration(milliseconds: 800));
-    // Simulate success
+    await _dio.post(
+      'tickets/$ticketId/reply/',
+      data: {'body': body},
+      options: await _authOptions(),
+    );
   }
+
+  Future<List<CsFeedbackEntry>> generateAiReply(String ticketId) async {
+    try {
+      final response = await _dio.post(
+        'tickets/$ticketId/generate_ai_reply/',
+        options: await _authOptions(),
+      );
+      if (response.data is List) {
+        return (response.data as List).map((e) => CsFeedbackEntry.fromJson(e)).toList();
+      }
+      return [CsFeedbackEntry.fromJson(response.data)];
+    } catch (e) {
+      print('generateAiReply error: $e');
+      return [];
+    }
+  }
+
+  // ── Metadata (local choices) ───────────────────────────────────────────
 
   Future<List<String>> getProblemTypes() async {
     await Future.delayed(const Duration(milliseconds: 200));
-    return [
-      'Bugs',
-      'Text Error',
-      'Button Malfunctions',
-      'Design Error',
-      'Others',
-    ];
+    return ['Bugs', 'Text Error', 'Button Malfunctions', 'Design Error', 'Others'];
   }
 
   Future<List<String>> getLocations() async {

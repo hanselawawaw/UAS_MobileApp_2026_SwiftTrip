@@ -32,4 +32,5 @@ class Constants {
   static const String promotionsUrl = 'http://$machineIp:8000/api/promotions/';
   static const String bookingsUrl = 'http://$machineIp:8000/api/bookings/';
   static const String historyUrl = 'http://$machineIp:8000/api/bookings/history/';
+  static const String supportUrl = 'http://$machineIp:8000/api/support/';
 }

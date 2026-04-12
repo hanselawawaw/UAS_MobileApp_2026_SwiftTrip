@@ -1,4 +1,5 @@
 from rest_framework import viewsets, status, decorators
+from django.db.models import Q
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from .models import FAQ, SupportTicket, TicketReply
@@ -17,7 +18,9 @@ class SupportTicketViewSet(viewsets.ModelViewSet):
     serializer_class = SupportTicketSerializer
 
     def get_queryset(self):
-        return self.queryset.filter(user=self.request.user)
+        return self.queryset.filter(
+            Q(user=self.request.user) | Q(publish_type='Public')
+        ).distinct().order_by('-created_at')
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
@@ -53,6 +56,58 @@ class SupportTicketViewSet(viewsets.ModelViewSet):
 
         serializer = TicketReplySerializer(reply)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    @decorators.action(detail=True, methods=['post'], url_path='generate_ai_reply')
+    def generate_ai_reply(self, request, pk=None):
+        ticket = self.get_object()
+        existing_replies = ticket.replies.all().order_by('created_at')
+
+        if existing_replies.exists():
+            serializer = TicketReplySerializer(existing_replies, many=True)
+            return Response(serializer.data)
+
+        from django.contrib.auth import get_user_model
+        User = get_user_model()
+        system_user = User.objects.filter(is_superuser=True).first()
+        if not system_user:
+            system_user = ticket.user
+
+        reply_text = self._call_gemini_for_reply(ticket.statement)
+
+        reply = TicketReply.objects.create(
+            ticket=ticket,
+            user=system_user,
+            body=reply_text,
+        )
+        ticket.status = 'replied'
+        ticket.save()
+
+        serializer = TicketReplySerializer(reply)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    def _call_gemini_for_reply(self, statement):
+        fallback = "Our support team has received your ticket and will look into it shortly."
+        try:
+            client = genai.Client(
+                api_key=os.environ.get("GEMINI_API_KEY"),
+                http_options={'api_version': 'v1beta'},
+            )
+            response = client.models.generate_content(
+                model="gemini-2.5-flash",
+                contents=[{"role": "user", "parts": [{"text": statement}]}],
+                config=types.GenerateContentConfig(
+                    system_instruction=(
+                        "You are a helpful customer support agent for SwiftTrip, a travel application. "
+                        "Respond concisely and helpfully to the user's support issue. "
+                        "Do not use markdown formatting. Keep your reply under 200 words."
+                    ),
+                    temperature=0.3,
+                ),
+            )
+            return response.text.strip() or fallback
+        except Exception as e:
+            print(f"AI reply generation failed: {e}")
+            return fallback
 
 class MetadataView(APIView):
     permission_classes = [AllowAny]

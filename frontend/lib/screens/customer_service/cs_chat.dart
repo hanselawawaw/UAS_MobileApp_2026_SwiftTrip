@@ -4,13 +4,14 @@ import 'onboarding.dart';
 import '../home/models/chat_message.dart';
 import '../home/widgets/chat_widgets.dart';
 import '../home/services/chat_service.dart';
+import 'services/customer_service_service.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // CS CHAT PAGE
 // ─────────────────────────────────────────────────────────────────────────────
 
 class CsChatPage extends StatefulWidget {
-  final String ticketId; // Kept to avoid breaking references
+  final String ticketId;
 
   const CsChatPage({super.key, required this.ticketId});
 
@@ -22,6 +23,7 @@ class _CsChatPageState extends State<CsChatPage> {
   final TextEditingController _replyController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   final ChatService _chatService = ChatService();
+  final CustomerServiceService _csService = CustomerServiceService();
 
   List<ChatMessage> _messages = [];
   bool _isBotTyping = false;
@@ -30,17 +32,64 @@ class _CsChatPageState extends State<CsChatPage> {
   @override
   void initState() {
     super.initState();
-    _fetchMessages();
+    _initializeChat();
   }
 
-  Future<void> _fetchMessages() async {
-    final msgs = await _chatService.getInitialMessages('support');
-    if (mounted) {
+  Future<void> _initializeChat() async {
+    try {
+      // Fetch the ticket's initial question
+      final detail = await _csService.getQuestionDetail(widget.ticketId);
+      final userMessage = ChatMessage.text(type: MsgType.user, text: detail.body);
+
+      if (!mounted) return;
       setState(() {
-        _messages = msgs;
+        _messages = [userMessage];
         _isLoading = false;
       });
       _scrollToBottom();
+
+      // Fetch existing reply thread
+      final thread = await _csService.getFeedbackThread(widget.ticketId);
+
+      if (thread.isNotEmpty) {
+        if (!mounted) return;
+        setState(() {
+          for (final entry in thread) {
+            _messages.add(ChatMessage.text(
+              type: entry.isAnswered ? MsgType.ai : MsgType.user,
+              text: entry.body,
+            ));
+          }
+        });
+        _scrollToBottom();
+        return;
+      }
+
+      // No replies yet — trigger AI auto-reply
+      if (!mounted) return;
+      setState(() => _isBotTyping = true);
+      _scrollToBottom();
+
+      final aiReplies = await _csService.generateAiReply(widget.ticketId);
+
+      if (!mounted) return;
+      setState(() {
+        _isBotTyping = false;
+        for (final entry in aiReplies) {
+          _messages.add(ChatMessage.text(
+            type: entry.isAnswered ? MsgType.ai : MsgType.user,
+            text: entry.body,
+          ));
+        }
+      });
+      _scrollToBottom();
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _isLoading = false;
+        _isBotTyping = false;
+      });
+      print('Chat init error: $e');
     }
   }
 
@@ -68,8 +117,8 @@ class _CsChatPageState extends State<CsChatPage> {
     if (text.isEmpty) return;
 
     _scrollToBottom();
-    
-    final history = List<ChatMessage>.from(_messages); // Captures context before new message
+
+    final history = List<ChatMessage>.from(_messages);
 
     setState(() {
       _messages.add(ChatMessage.text(type: MsgType.user, text: text));
