@@ -3,6 +3,8 @@ import requests
 import logging
 from datetime import datetime, timedelta
 import random
+import math
+import re
 from django.core.cache import cache
 from travel_data.models import TransportRoute
 
@@ -15,6 +17,63 @@ class AmadeusService:
     def __init__(self):
         self.api_key = os.environ.get("AMADEUS_API_KEY")
         self.api_secret = os.environ.get("AMADEUS_API_SECRET")
+        self._airport_data_cache = None
+
+    def _get_airport_coordinates(self, iata_code):
+        """
+        Extracts lat/lng from the frontend airport_search_service.dart file.
+        Returns (lat, lng) as floats or (None, None) if not found.
+        """
+        if self._airport_data_cache is None:
+            self._airport_data_cache = {}
+            try:
+                # Path relative to this service file
+                dart_file_path = os.path.abspath(os.path.join(
+                    os.path.dirname(__file__), 
+                    '..', '..', '..', 'frontend', 'lib', 'screens', 'searching', 'services', 'airport_search_service.dart'
+                ))
+                with open(dart_file_path, 'r', encoding='utf-8') as f:
+                    content = f.read()
+                
+                # Regex to find blocks of airports
+                # Matching: 'iataCode': '...', ... 'lat': '...', 'lng': '...'
+                matches = re.finditer(r"\{[^{]*'iataCode':\s*'([^']*)'[^{]*'lat':\s*'([^']*)'[^{]*'lng':\s*'([^']*)'", content, re.DOTALL)
+                for m in matches:
+                    code, lat, lng = m.groups()
+                    self._airport_data_cache[code.upper()] = (float(lat), float(lng))
+            except Exception as e:
+                logger.error(f"Error reading airport data from dart file: {e}")
+
+        return self._airport_data_cache.get(iata_code.upper(), (None, None))
+
+    def _calculate_distance(self, lat1, lon1, lat2, lon2):
+        """
+        Haversine formula to calculate the distance between two points in km.
+        """
+        if None in (lat1, lon1, lat2, lon2):
+            return 1000.0  # Default fallback distance
+            
+        R = 6371.0 # Earth radius in km
+        phi1, phi2 = math.radians(lat1), math.radians(lat2)
+        dphi = math.radians(lat2 - lat1)
+        dlambda = math.radians(lon2 - lon1)
+
+        a = math.sin(dphi / 2)**2 + \
+            math.cos(phi1) * math.cos(phi2) * math.sin(dlambda / 2)**2
+        c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+        return R * c
+
+    def _get_dynamic_price(self, origin, destination):
+        """
+        Calculates price: 500,000 Rp base + 1,500 Rp per km.
+        """
+        lat1, lon1 = self._get_airport_coordinates(origin)
+        lat2, lon2 = self._get_airport_coordinates(destination)
+        distance = self._calculate_distance(lat1, lon1, lat2, lon2)
+        
+        # Formula: 500k + (dist * 1.5k)
+        price = 500000 + (distance * 1500)
+        return int(price)
 
     def _get_token(self):
         # Try to get token from cache first
@@ -58,7 +117,7 @@ class AmadeusService:
                 "adults": max(1, int(passengers)),
                 "travelClass": travel_class.upper(),
                 "currencyCode": "IDR",
-                "max": 5
+                "max": 10
             }
             try:
                 res = requests.get(url, headers=headers, params=params, timeout=10)
@@ -66,12 +125,31 @@ class AmadeusService:
                     json_res = res.json()
                     data = json_res.get("data", [])
                     if data:
-                        return self._format_amadeus_response(data, json_res.get("dictionaries", {}).get("carriers", {}), travel_class)
+                        flights = self._format_amadeus_response(data, json_res.get("dictionaries", {}).get("carriers", {}), travel_class)
+                        
+                        # Temporal Validation: Filter past flights if today (2026-04-12)
+                        now = datetime.now()
+                        current_date_str = now.strftime("%Y-%m-%d")
+                        if date == current_date_str:
+                            current_time_str = now.strftime("%H:%M:%S")
+                            flights = [f for f in flights if f['departure_time'].split('T')[-1] > current_time_str]
+                        
+                        if flights:
+                            return flights
             except requests.RequestException:
                 pass
 
         # The Fallback: If data is empty or network fails, generate dynamic data.
-        return self._generative_fallback(origin, destination, date, passengers, travel_class)
+        flights = self._generative_fallback(origin, destination, date, passengers, travel_class)
+        
+        # Temporal Validation for fallback as well
+        now = datetime.now()
+        current_date_str = now.strftime("%Y-%m-%d")
+        if date == current_date_str:
+            current_time_str = now.strftime("%H:%M:%S")
+            flights = [f for f in flights if f['departure_time'].split('T')[-1] > current_time_str]
+            
+        return flights
     
     def _generative_fallback(self, origin, destination, date, passengers, travel_class):
         """
@@ -114,7 +192,7 @@ class AmadeusService:
                 "destination": destination.upper(),
                 "departure_time": depart.strftime("%Y-%m-%dT%H:%M:%S"),
                 "arrival_time": arrive.strftime("%Y-%m-%dT%H:%M:%S"),
-                "price": float(air["price"] * multiplier * num_passengers),
+                "price": float(self._get_dynamic_price(origin, destination) * multiplier * num_passengers),
                 "currency": "IDR",
                 "travel_class": travel_class.upper(),
                 "source": "generative_mock"
@@ -150,17 +228,20 @@ class AmadeusService:
                     if c_code:
                         all_carriers.add(c_code)
 
+            formatted_origin = lead_segment.get("departure", {}).get("iataCode")
+            formatted_dest = segments[-1].get("arrival", {}).get("iataCode")
+
             formatted_offer = {
                 "airline": carrier_code,
                 "airlineName": carriers.get(carrier_code, carrier_code),
                 "all_airlines": list(all_carriers),
                 "flight_number": f"{carrier_code} {lead_segment.get('number')}",
-                "origin": lead_segment.get("departure", {}).get("iataCode"),
-                "destination": segments[-1].get("arrival", {}).get("iataCode"),
+                "origin": formatted_origin,
+                "destination": formatted_dest,
                 "departure_time": lead_segment.get("departure", {}).get("at"),
                 "arrival_time": segments[-1].get("arrival", {}).get("at"), # arrival of the last segment in the first itinerary
-                "price": price,
-                "currency": price_info.get("currency", "EUR"),
+                "price": float(self._get_dynamic_price(formatted_origin, formatted_dest)),
+                "currency": "IDR",
                 "travel_class": travel_class.upper(),
                 "source": "amadeus"
             }
@@ -224,12 +305,33 @@ class AmadeusService:
                 json_res = res.json()
                 data = json_res.get("data", [])
                 if data:
-                    return self._format_amadeus_response(data, json_res.get("dictionaries", {}).get("carriers", {}), travel_class)
+                    flights = self._format_amadeus_response(data, json_res.get("dictionaries", {}).get("carriers", {}), travel_class)
+                    
+                    # Temporal Validation for Multi-City (using first leg date)
+                    now = datetime.now()
+                    current_date_str = now.strftime("%Y-%m-%d")
+                    first_leg_date = legs[0].get("date")
+                    if first_leg_date == current_date_str:
+                        current_time_str = now.strftime("%H:%M:%S")
+                        flights = [f for f in flights if f['departure_time'].split('T')[-1] > current_time_str]
+                    
+                    if flights:
+                        return flights
         except requests.RequestException:
             pass
 
         # The Fallback: Intercept empty responses and generate multi-city data
-        return self._generative_fallback_multi_city(legs, passengers, travel_class)
+        flights = self._generative_fallback_multi_city(legs, passengers, travel_class)
+        
+        # Temporal Validation for fallback
+        now = datetime.now()
+        current_date_str = now.strftime("%Y-%m-%d")
+        first_leg_date = legs[0].get("date")
+        if first_leg_date == current_date_str:
+            current_time_str = now.strftime("%H:%M:%S")
+            flights = [f for f in flights if f['departure_time'].split('T')[-1] > current_time_str]
+            
+        return flights
 
     def _generative_fallback_multi_city(self, legs, passengers, travel_class):
         """
@@ -272,6 +374,13 @@ class AmadeusService:
             except:
                 arrival_date = depart_date + timedelta(days=num_legs)
 
+            # Multi-city pricing: Sum of all legs
+            total_base_price = 0
+            for leg in legs:
+                leg_origin = leg.get("origin", "").upper()
+                leg_dest = leg.get("destination", "").upper()
+                total_base_price += self._get_dynamic_price(leg_origin, leg_dest)
+
             results.append({
                 "airline": air["code"],
                 "airlineName": air["name"],
@@ -281,7 +390,7 @@ class AmadeusService:
                 "destination": destination,
                 "departure_time": depart_date.strftime("%Y-%m-%dT08:00:00"),
                 "arrival_time": arrival_date.strftime("%Y-%m-%dT22:00:00"),
-                "price": float(air["price"] * multiplier * num_passengers),
+                "price": float(total_base_price * multiplier * num_passengers),
                 "currency": "IDR",
                 "travel_class": travel_class.upper(),
                 "source": "generative_mock_multi"
