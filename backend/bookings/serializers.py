@@ -139,6 +139,26 @@ class CartTicketSerializer(serializers.ModelSerializer):
         for old_key, new_key in mapping.items():
             if old_key in ret:
                 ret[new_key] = ret.pop(old_key)
+        
+        # Fallback coordinate mapping for transport tickets
+        if not ret.get('latitude') or not ret.get('longitude'):
+            destination_coords = {
+                'Jakarta': (-6.2088, 106.8456),
+                'Bali': (-8.4095, 115.1889),
+                'Yogyakarta': (-7.7970, 110.3705),
+                'Bandung': (-6.9175, 107.6191),
+                'Ngawi': (-7.3995, 111.4586),
+                'Ngawi Barat': (-7.3995, 111.4586),
+                'Surabaya': (-7.2504, 112.7688)
+            }
+            target_loc = ret.get('to') or ret.get('location')
+            if target_loc:
+                for key, (lat, lng) in destination_coords.items():
+                    if key.lower() in target_loc.lower():
+                        ret['latitude'] = lat
+                        ret['longitude'] = lng
+                        break
+                        
         return ret
 
 class TicketModelSerializer(serializers.ModelSerializer):
@@ -169,6 +189,26 @@ class TicketModelSerializer(serializers.ModelSerializer):
         for old_key, new_key in mapping.items():
             if old_key in ret:
                 ret[new_key] = ret.pop(old_key)
+
+        # Fallback coordinate mapping for transport tickets
+        if not ret.get('latitude') or not ret.get('longitude'):
+            destination_coords = {
+                'Jakarta': (-6.2088, 106.8456),
+                'Bali': (-8.4095, 115.1889),
+                'Yogyakarta': (-7.7970, 110.3705),
+                'Bandung': (-6.9175, 107.6191),
+                'Ngawi': (-7.3995, 111.4586),
+                'Ngawi Barat': (-7.3995, 111.4586),
+                'Surabaya': (-7.2504, 112.7688)
+            }
+            target_loc = ret.get('to') or ret.get('location')
+            if target_loc:
+                for key, (lat, lng) in destination_coords.items():
+                    if key.lower() in target_loc.lower():
+                        ret['latitude'] = lat
+                        ret['longitude'] = lng
+                        break
+
         return ret
 
 class CheckoutDetailsSerializer(serializers.ModelSerializer):

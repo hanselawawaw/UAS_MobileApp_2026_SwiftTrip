@@ -17,6 +17,8 @@ class NextTripService {
       carriage: '01',
       seat: 'A12',
       priceRp: 100000,
+      latitude: -7.3995,
+      longitude: 111.4586,
     );
   }
 

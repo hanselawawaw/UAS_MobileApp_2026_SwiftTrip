@@ -19,7 +19,25 @@ class HomeService {
 
       if (response.statusCode == 200) {
         final List<dynamic> data = response.data;
-        return data.map((json) => CartTicket.fromJson(json)).toList();
+        return data.map((json) {
+          final ticket = CartTicket.fromJson(json);
+          if (ticket.latitude == null || ticket.longitude == null) {
+            double? lat;
+            double? lng;
+            final target = ticket.to ?? ticket.location;
+            if (target != null) {
+              final lowerTarget = target.toLowerCase();
+              if (lowerTarget.contains('jakarta')) { lat = -6.2088; lng = 106.8456; }
+              else if (lowerTarget.contains('bali')) { lat = -8.4095; lng = 115.1889; }
+              else if (lowerTarget.contains('yogyakarta')) { lat = -7.7970; lng = 110.3705; }
+              else if (lowerTarget.contains('bandung')) { lat = -6.9175; lng = 107.6191; }
+              else if (lowerTarget.contains('ngawi')) { lat = -7.3995; lng = 111.4586; }
+              else if (lowerTarget.contains('surabaya')) { lat = -7.2504; lng = 112.7688; }
+            }
+            return ticket.copyWith(latitude: lat ?? ticket.latitude, longitude: lng ?? ticket.longitude);
+          }
+          return ticket;
+        }).toList();
       }
       return [];
     } catch (e) {
