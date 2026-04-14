@@ -270,12 +270,35 @@ class _DestinationDetailPageState extends State<DestinationDetailPage> {
         onAddToCart: () async {
           try {
             final provider = context.read<CartProvider>();
+            
+            final lowerTitle = widget.destination.title.toLowerCase();
+            double? lat;
+            double? lng;
+            if (lowerTitle.contains('bali')) {
+              lat = -8.4095;
+              lng = 115.1889;
+            } else if (lowerTitle.contains('yogyakarta') || lowerTitle.contains('jogja')) {
+              lat = -7.7956;
+              lng = 110.3695;
+            } else if (lowerTitle.contains('bandung')) {
+              lat = -6.9175;
+              lng = 107.6191;
+            } else if (lowerTitle.contains('surabaya')) {
+              lat = -7.2504;
+              lng = 112.7688;
+            } else {
+              lat = -6.2088;
+              lng = 106.8456;
+            }
+
             final ticket = CartTicket.accommodation(
               locationName: widget.destination.title,
               price: widget.destination.price.toInt(),
               imageUrl: widget.destination.imageUrl,
               stayDate: DateTime.now().toIso8601String().split('T')[0],
               stayDuration: 1,
+              latitude: lat,
+              longitude: lng,
             );
 
             await provider.addTicket(ticket);

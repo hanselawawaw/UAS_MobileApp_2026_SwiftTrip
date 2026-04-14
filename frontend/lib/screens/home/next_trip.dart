@@ -35,11 +35,10 @@ class _NextTripPageState extends State<NextTripPage> {
   }
 
   Future<void> _fetchData() async {
-    final rawTicket = widget.ticket ?? await _nextTripService.getNextTrip();
-    final ticket = _ensureCoordinates(rawTicket);
+    final ticket = widget.ticket ?? await _nextTripService.getNextTrip();
 
-    List<PurchaseDetail> details;
-    if (widget.ticket != null) {
+    List<PurchaseDetail> details = [];
+    if (widget.ticket != null && ticket != null) {
       // If passing ticket directly (Paid History), calculate details locally
       details = [
         PurchaseDetail(
@@ -67,32 +66,6 @@ class _NextTripPageState extends State<NextTripPage> {
         _isLoading = false;
       });
     }
-  }
-
-  CartTicket _ensureCoordinates(CartTicket ticket) {
-    if (ticket.latitude != null && ticket.longitude != null) {
-      return ticket;
-    }
-
-    final targetStr = ticket.location ?? ticket.to;
-    if (targetStr == null) {
-      return ticket.copyWith(latitude: -6.2088, longitude: 106.8456);
-    }
-
-    final lowerTarget = targetStr.toLowerCase();
-    
-    if (lowerTarget.contains('bali') || lowerTarget.contains('dps')) {
-      return ticket.copyWith(latitude: -8.4095, longitude: 115.1889);
-    } else if (lowerTarget.contains('yogyakarta') || lowerTarget.contains('jogja')) {
-      return ticket.copyWith(latitude: -7.7956, longitude: 110.3695);
-    } else if (lowerTarget.contains('bandung') || lowerTarget.contains('bdo')) {
-      return ticket.copyWith(latitude: -6.9175, longitude: 107.6191);
-    } else if (lowerTarget.contains('surabaya') || lowerTarget.contains('sub')) {
-      return ticket.copyWith(latitude: -7.2504, longitude: 112.7688);
-    }
-
-    // Default Fallback
-    return ticket.copyWith(latitude: -6.2088, longitude: 106.8456);
   }
 
   String _formatRp(int amount) {

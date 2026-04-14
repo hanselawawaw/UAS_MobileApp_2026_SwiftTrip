@@ -253,6 +253,8 @@ class AmadeusService:
             formatted_origin = lead_segment.get("departure", {}).get("iataCode")
             formatted_dest = segments[-1].get("arrival", {}).get("iataCode")
 
+            lat, lng = self._get_airport_coordinates(formatted_dest)
+
             formatted_offer = {
                 "airline": carrier_code,
                 "airlineName": carriers.get(carrier_code, carrier_code),
@@ -265,7 +267,9 @@ class AmadeusService:
                 "price": float(self._get_dynamic_price(formatted_origin, formatted_dest)),
                 "currency": "IDR",
                 "travel_class": travel_class.upper(),
-                "source": "amadeus"
+                "source": "amadeus",
+                "latitude": lat,
+                "longitude": lng,
             }
 
             # Only keep the cheapest representative for this airline

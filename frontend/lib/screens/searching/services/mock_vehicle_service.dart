@@ -70,6 +70,8 @@ class MockVehicleService {
           arrive: t1['arrive'],
           carPlate: 'B 1234 XYZ',
           driverName: 'Pak Budi',
+          latitude: -6.298200,
+          longitude: 106.641500,
         ),
         latitude: -6.298200,
         longitude: 106.641500, // North-east, near AEON BSD
@@ -90,6 +92,8 @@ class MockVehicleService {
           arrive: t2['arrive'],
           carPlate: 'B 5678 ABC',
           driverName: 'Pak Rudi',
+          latitude: -6.301800,
+          longitude: 106.635200,
         ),
         latitude: -6.301800,
         longitude: 106.635200, // West side along BSD Raya Barat
@@ -110,6 +114,8 @@ class MockVehicleService {
           arrive: t3['arrive'],
           carPlate: 'B 9012 DEF',
           driverName: 'Pak Hendra',
+          latitude: -6.303500,
+          longitude: 106.639800,
         ),
         latitude: -6.303500,
         longitude: 106.639800, // South, inside Edu Town
@@ -130,6 +136,8 @@ class MockVehicleService {
           arrive: t4['arrive'],
           carPlate: 'B 3344 GHI',
           driverName: 'Pak Agus',
+          latitude: -6.297900,
+          longitude: 106.637100,
         ),
         latitude: -6.297900,
         longitude: 106.637100, // North-west, near campus gate
@@ -150,6 +158,8 @@ class MockVehicleService {
           arrive: t5['arrive'],
           carPlate: 'B 7788 JKL',
           driverName: 'Pak Wahyu',
+          latitude: -6.300700,
+          longitude: 106.643200,
         ),
         latitude: -6.300700,
         longitude: 106.643200, // East, EduTown inner road
@@ -170,6 +180,8 @@ class MockVehicleService {
           arrive: t6['arrive'],
           carPlate: 'B 2255 MNO',
           driverName: 'Pak Doni',
+          latitude: -6.304200,
+          longitude: 106.636100,
         ),
         latitude: -6.304200,
         longitude: 106.636100, // South-west, near BSD Raya intersection
@@ -190,6 +202,8 @@ class MockVehicleService {
           arrive: t7['arrive'],
           carPlate: 'B 9900 PQR',
           driverName: 'Pak Fauzi',
+          latitude: -6.296800,
+          longitude: 106.640300,
         ),
         latitude: -6.296800,
         longitude: 106.640300, // Close north, near drop-off zone
@@ -222,6 +236,8 @@ class MockVehicleService {
           arrive: t1['arrive'],
           busClass: 'Regular',
           busNumber: 'S21',
+          latitude: -6.296500,
+          longitude: 106.639200,
         ),
         latitude: -6.296500,
         longitude: 106.639200,
@@ -242,6 +258,8 @@ class MockVehicleService {
           arrive: t2['arrive'],
           busClass: 'Executive',
           busNumber: 'HR-77',
+          latitude: -6.299100,
+          longitude: 106.644800,
         ),
         latitude: -6.299100,
         longitude: 106.644800, // East, near AEON access road
@@ -262,6 +280,8 @@ class MockVehicleService {
           arrive: t3['arrive'],
           busClass: 'Economy',
           busNumber: 'AC-05',
+          latitude: -6.304800,
+          longitude: 106.642600,
         ),
         latitude: -6.304800,
         longitude: 106.642600, // South-east, Edu Town exit road
@@ -282,6 +302,8 @@ class MockVehicleService {
           arrive: t4['arrive'],
           busClass: 'Regular',
           busNumber: 'S15',
+          latitude: -6.301200,
+          longitude: 106.633800,
         ),
         latitude: -6.301200,
         longitude: 106.633800, // West, BSD Raya Barat roadside
@@ -302,6 +324,8 @@ class MockVehicleService {
           arrive: t5['arrive'],
           busClass: 'Economy',
           busNumber: 'DM-12',
+          latitude: -6.305600,
+          longitude: 106.635500,
         ),
         latitude: -6.305600,
         longitude: 106.635500, // South-west, near Serpong interchange
@@ -333,6 +357,8 @@ class MockVehicleService {
           arrive: t1['arrive'],
           carriage: 'KRL-4',
           seat: '-',
+          latitude: -6.330800,
+          longitude: 106.666200,
         ),
         latitude: -6.330800,
         longitude: 106.666200, // Serpong Station platform area
@@ -353,6 +379,8 @@ class MockVehicleService {
           arrive: t2['arrive'],
           carriage: 'KRL-7',
           seat: '-',
+          latitude: -6.336400,
+          longitude: 106.710500,
         ),
         latitude: -6.336400,
         longitude: 106.710500, // Sudimara Station, ~5.5km south-east
@@ -373,6 +401,8 @@ class MockVehicleService {
           arrive: t3['arrive'],
           carriage: 'LRT-2',
           seat: 'A12',
+          latitude: -6.285600,
+          longitude: 106.680400,
         ),
         latitude: -6.285600,
         longitude: 106.680400, // North-east ~6km, toward Pondok Cabe corridor
@@ -393,6 +423,8 @@ class MockVehicleService {
           arrive: t4['arrive'],
           carriage: 'KRL-11',
           seat: '-',
+          latitude: -6.358200,
+          longitude: 106.618700,
         ),
         latitude: -6.358200,
         longitude: 106.618700, // South-west ~8km, toward Rangkasbitung line

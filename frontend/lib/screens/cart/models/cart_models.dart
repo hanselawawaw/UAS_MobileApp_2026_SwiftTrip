@@ -95,6 +95,8 @@ class CartTicket {
     required int stayDuration,
     String? bookingId,
     String? classLabel,
+    double? latitude,
+    double? longitude,
   }) {
     return CartTicket(
       type: 'Accommodation Ticket',
@@ -107,6 +109,8 @@ class CartTicket {
       stayDate: stayDate,
       stayDuration: stayDuration.toString(),
       location: locationName,
+      latitude: latitude,
+      longitude: longitude,
     );
   }
 
