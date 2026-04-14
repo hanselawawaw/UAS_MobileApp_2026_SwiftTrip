@@ -173,6 +173,7 @@ CRITICAL RULE: Strictly restrict all answers to travel contexts. If the user ask
         Categories:
         - SEARCH: User wants to find flights or transport. 
         - Flight searches: Provide 3-letter IATA codes for origin and destination.
+        - Land searches (car, bus, train): Provide the full city name for origin and destination.
         - Date Arithmetic: Today is {today_date}. Calculate relative dates (e.g., "next week" is Today + 7 days). If the user mentions a follow-up date like "2 days after," calculate it relative to the previous date in history.
         - Class Mapping: Map input to these exact values: ECONOMY, PREMIUM_ECONOMY, BUSINESS, FIRST.
             - "Economy" or "Cheap" -> ECONOMY
@@ -250,11 +251,12 @@ CRITICAL RULE: Strictly restrict all answers to travel contexts. If the user ask
                 has_required = all(
                     v and v.upper() != 'UNKNOWN'
                     for v in [origin, destination, date]
-                ) and len(origin) == 3 and len(destination) == 3
+                )
 
                 if search_type == 'flight':
+                    is_valid_flight = has_required and len(origin) == 3 and len(destination) == 3
                     flights = []
-                    if has_required:
+                    if is_valid_flight:
                         amadeus = AmadeusService()
                         flights = amadeus.search_flights(origin, destination, date, travel_class=travel_class) or []
                     
@@ -263,8 +265,11 @@ CRITICAL RULE: Strictly restrict all answers to travel contexts. If the user ask
                         intent_data['message'] = f"I couldn't find a direct flight from {origin} to {destination} for {date} in the sandbox, but I can check for land vehicle options like Bus or Train instead."
 
                 elif search_type in ['car', 'bus', 'train']:
-                    mock_land = MockLandService()
-                    intent_data['land_options'] = mock_land.search_land_tickets(search_type, origin, destination)
+                    if has_required:
+                        mock_land = MockLandService()
+                        intent_data['land_options'] = mock_land.search_land_tickets(search_type, origin, destination)
+                    else:
+                        intent_data['message'] = "Please specify the origin city, destination city, and travel date so I can search for options."
 
                 else:
                     intent_data['message'] = f"Search type '{search_type}' not recognized."
