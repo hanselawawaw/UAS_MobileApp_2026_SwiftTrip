@@ -180,21 +180,34 @@ class _ExpiryDateFormatter extends TextInputFormatter {
     var digits = newValue.text.replaceAll('/', '');
     if (digits.length > 4) digits = digits.substring(0, 4);
 
-    // Validate year when at least the YY portion is partially entered
-    if (digits.length > 2) {
-      final currentYear = DateTime.now().year % 100;
-      final enteredYear = int.tryParse(digits.substring(2)) ?? 0;
+    final now = DateTime.now();
+    final currentYear = now.year % 100;
+    final currentMonth = now.month;
 
-      // Allow partial year input (single digit), only reject complete invalid years
-      if (digits.length == 4 && enteredYear < currentYear) {
-        return oldValue;
-      }
+    // Validate month (01-12)
+    if (digits.length >= 2) {
+      final month = int.tryParse(digits.substring(0, 2)) ?? 0;
+      if (month > 12 || month == 0) return oldValue;
+    }
+
+    // Validate year and month relative to current date
+    if (digits.length > 2) {
+      final enteredYear = int.tryParse(digits.substring(2)) ?? 0;
 
       // Reject first digit of year if it can never form a valid year
       if (digits.length == 3) {
         final firstYearDigit = int.tryParse(digits[2]) ?? 0;
-        final minFirstDigit = currentYear ~/ 10;
-        if (firstYearDigit < minFirstDigit) return oldValue;
+        if (firstYearDigit < (currentYear ~/ 10)) return oldValue;
+      }
+
+      // Full validation when YY is complete
+      if (digits.length == 4) {
+        final year = int.tryParse(digits.substring(2, 4)) ?? 0;
+        final month = int.tryParse(digits.substring(0, 2)) ?? 0;
+
+        if (year < currentYear || (year == currentYear && month < currentMonth)) {
+          return oldValue;
+        }
       }
     }
 
