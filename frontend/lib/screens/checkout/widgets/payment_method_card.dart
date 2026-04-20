@@ -154,26 +154,19 @@ class _CardNumberFormatter extends TextInputFormatter {
     TextEditingValue oldValue,
     TextEditingValue newValue,
   ) {
-    if (newValue.text.length < oldValue.text.length) {
-      return newValue;
-    }
-
-    var text = newValue.text.replaceAll(' ', '');
-    if (text.length > 16) text = text.substring(0, 16);
+    var digits = newValue.text.replaceAll(' ', '');
+    if (digits.length > 16) digits = digits.substring(0, 16);
 
     final buffer = StringBuffer();
-    for (int i = 0; i < text.length; i++) {
-      buffer.write(text[i]);
-      var nonSpaceLength = i + 1;
-      if (nonSpaceLength % 4 == 0 && nonSpaceLength != text.length) {
-        buffer.write(' ');
-      }
+    for (int i = 0; i < digits.length; i++) {
+      if (i > 0 && i % 4 == 0) buffer.write(' ');
+      buffer.write(digits[i]);
     }
 
-    final string = buffer.toString();
+    final formatted = buffer.toString();
     return newValue.copyWith(
-      text: string,
-      selection: TextSelection.collapsed(offset: string.length),
+      text: formatted,
+      selection: TextSelection.collapsed(offset: formatted.length),
     );
   }
 }
@@ -184,26 +177,37 @@ class _ExpiryDateFormatter extends TextInputFormatter {
     TextEditingValue oldValue,
     TextEditingValue newValue,
   ) {
-    if (newValue.text.length < oldValue.text.length) {
-      return newValue;
-    }
+    var digits = newValue.text.replaceAll('/', '');
+    if (digits.length > 4) digits = digits.substring(0, 4);
 
-    var text = newValue.text.replaceAll('/', '');
-    if (text.length > 4) text = text.substring(0, 4);
+    // Validate year when at least the YY portion is partially entered
+    if (digits.length > 2) {
+      final currentYear = DateTime.now().year % 100;
+      final enteredYear = int.tryParse(digits.substring(2)) ?? 0;
 
-    final buffer = StringBuffer();
-    for (int i = 0; i < text.length; i++) {
-      buffer.write(text[i]);
-      var nonSpaceLength = i + 1;
-      if (nonSpaceLength % 2 == 0 && nonSpaceLength != text.length) {
-        buffer.write('/');
+      // Allow partial year input (single digit), only reject complete invalid years
+      if (digits.length == 4 && enteredYear < currentYear) {
+        return oldValue;
+      }
+
+      // Reject first digit of year if it can never form a valid year
+      if (digits.length == 3) {
+        final firstYearDigit = int.tryParse(digits[2]) ?? 0;
+        final minFirstDigit = currentYear ~/ 10;
+        if (firstYearDigit < minFirstDigit) return oldValue;
       }
     }
 
-    final string = buffer.toString();
+    final buffer = StringBuffer();
+    for (int i = 0; i < digits.length; i++) {
+      if (i == 2) buffer.write('/');
+      buffer.write(digits[i]);
+    }
+
+    final formatted = buffer.toString();
     return newValue.copyWith(
-      text: string,
-      selection: TextSelection.collapsed(offset: string.length),
+      text: formatted,
+      selection: TextSelection.collapsed(offset: formatted.length),
     );
   }
 }
