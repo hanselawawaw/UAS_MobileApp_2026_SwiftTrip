@@ -21,6 +21,7 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _passwordController = TextEditingController();
   final AuthService _authService = AuthService();
   bool _obscurePassword = true;
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -89,45 +90,55 @@ class _LoginPageState extends State<LoginPage> {
                 const SizedBox(height: 25),
 
                 // ── Log In Button ──────────────────────────────────────
-                AuthPrimaryButton(
-                  text: 'Log in',
-                  onTap: () async {
-                    final email = _emailController.text;
-                    final password = _passwordController.text;
-                    if (email.isEmpty || password.isEmpty) {
-                      if (!mounted) return;
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Please fill all fields')),
-                      );
-                      return;
-                    }
+                _isLoading
+                    ? const CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF2B99E3)),
+                      )
+                    : AuthPrimaryButton(
+                        text: 'Log in',
+                        onTap: () async {
+                          final email = _emailController.text;
+                          final password = _passwordController.text;
+                          if (email.isEmpty || password.isEmpty) {
+                            if (!mounted) return;
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Please fill all fields')),
+                            );
+                            return;
+                          }
 
-                    try {
-                      final success = await _authService.login(
-                        LoginRequest(email: email, password: password),
-                      );
+                          setState(() => _isLoading = true);
 
-                      if (success && mounted) {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const MainScreen(),
-                          ),
-                        );
-                      }
-                    } catch (e) {
-                      if (mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              e.toString().replaceAll('Exception: ', ''),
-                            ),
-                          ),
-                        );
-                      }
-                    }
-                  },
-                ),
+                          try {
+                            final success = await _authService.login(
+                              LoginRequest(email: email, password: password),
+                            );
+
+                            if (success && mounted) {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const MainScreen(),
+                                ),
+                              );
+                            }
+                          } catch (e) {
+                            if (mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    e.toString().replaceAll('Exception: ', ''),
+                                  ),
+                                ),
+                              );
+                            }
+                          } finally {
+                            if (mounted) {
+                              setState(() => _isLoading = false);
+                            }
+                          }
+                        },
+                      ),
                 const SizedBox(height: 12),
 
                 // ── New user? Sign Up ──────────────────────────────────

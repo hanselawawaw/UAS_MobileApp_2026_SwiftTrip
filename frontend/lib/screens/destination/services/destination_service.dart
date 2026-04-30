@@ -58,8 +58,8 @@ class DestinationService {
   // --- API Integrations ---
   final Dio _dio = Dio(BaseOptions(
     baseUrl: '${Constants.bookingsUrl}destinations/',
-    connectTimeout: const Duration(seconds: 5),
-    receiveTimeout: const Duration(seconds: 5),
+    connectTimeout: const Duration(seconds: 30),
+    receiveTimeout: const Duration(seconds: 30),
     headers: {
       'Content-Type': 'application/json',
     },

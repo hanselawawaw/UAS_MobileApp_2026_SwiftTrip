@@ -7,8 +7,8 @@ import '../models/subscription_plan_model.dart';
 class SubscriptionService {
   final Dio _dio = Dio(BaseOptions(
     baseUrl: Constants.baseUrl,
-    connectTimeout: const Duration(seconds: 5),
-    receiveTimeout: const Duration(seconds: 5),
+    connectTimeout: const Duration(seconds: 30),
+    receiveTimeout: const Duration(seconds: 30),
   ));
 
   Future<List<SubscriptionPlan>> getPlans() async {
