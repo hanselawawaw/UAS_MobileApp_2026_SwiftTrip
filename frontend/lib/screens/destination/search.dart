@@ -8,7 +8,9 @@ import 'services/destination_service.dart';
 import 'models/destination_model.dart';
 
 class DestinationSearchPage extends StatefulWidget {
-  const DestinationSearchPage({super.key});
+  final DestinationService? destinationService;
+
+  const DestinationSearchPage({super.key, this.destinationService});
 
   @override
   State<DestinationSearchPage> createState() => _DestinationSearchPageState();
@@ -16,7 +18,7 @@ class DestinationSearchPage extends StatefulWidget {
 
 class _DestinationSearchPageState extends State<DestinationSearchPage> {
   final TextEditingController _searchController = TextEditingController();
-  final DestinationService _service = DestinationService();
+  late final DestinationService _service;
 
   late final List<String> _trendingTags;
   List<DestinationModel> _searchResults = [];
@@ -28,6 +30,7 @@ class _DestinationSearchPageState extends State<DestinationSearchPage> {
   @override
   void initState() {
     super.initState();
+    _service = widget.destinationService ?? DestinationService();
     _trendingTags = _service.getTrendingTags();
   }
 

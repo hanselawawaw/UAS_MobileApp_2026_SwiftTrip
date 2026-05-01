@@ -8,19 +8,22 @@ import '../auth/login.dart';
 import 'services/history_service.dart';
 
 class HistoryPage extends StatefulWidget {
-  const HistoryPage({super.key});
+  final HistoryService? historyService;
+
+  const HistoryPage({super.key, this.historyService});
 
   @override
   State<HistoryPage> createState() => _HistoryPageState();
 }
 
 class _HistoryPageState extends State<HistoryPage> {
-  final HistoryService _historyService = HistoryService();
+  late final HistoryService _historyService;
   late Future<List<CartTicket>> _historyFuture;
 
   @override
   void initState() {
     super.initState();
+    _historyService = widget.historyService ?? HistoryService();
     _historyFuture = _historyService.fetchHistory();
   }
 
