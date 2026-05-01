@@ -84,16 +84,18 @@ class PlanCard extends StatelessWidget {
           Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: plan.features
-                    .map(
-                      (f) => FeatureRow(
-                        feature: f,
-                        accentColor: plan.gradientColor,
-                      ),
-                    )
-                    .toList(),
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: plan.features
+                      .map(
+                        (f) => FeatureRow(
+                          feature: f,
+                          accentColor: plan.gradientColor,
+                        ),
+                      )
+                      .toList(),
+                ),
               ),
             ),
           ),

@@ -12,14 +12,16 @@ import 'widgets/subscription/sub_bottom_nav_bar.dart';
 // ─────────────────────────────────────────────────────────────────────────────
 
 class SubscriptionPlanScreen extends StatefulWidget {
-  const SubscriptionPlanScreen({super.key});
+  final SubscriptionService? subscriptionService;
+
+  const SubscriptionPlanScreen({super.key, this.subscriptionService});
 
   @override
   State<SubscriptionPlanScreen> createState() => _SubscriptionPlanScreenState();
 }
 
 class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
-  final SubscriptionService _subscriptionService = SubscriptionService();
+  late final SubscriptionService _subscriptionService;
   List<SubscriptionPlan> _plans = [];
   bool _isLoading = true;
   int _currentIndex = 1;
@@ -27,6 +29,7 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
   @override
   void initState() {
     super.initState();
+    _subscriptionService = widget.subscriptionService ?? SubscriptionService();
     _fetchPlans();
   }
 
