@@ -13,7 +13,9 @@ import 'models/destination_model.dart';
 
 // --- Main Page ---
 class DestinationPage extends StatefulWidget {
-  const DestinationPage({super.key});
+  final DestinationService? destinationService;
+
+  const DestinationPage({super.key, this.destinationService});
 
   @override
   State<DestinationPage> createState() => _DestinationPageState();
@@ -21,11 +23,12 @@ class DestinationPage extends StatefulWidget {
 
 class _DestinationPageState extends State<DestinationPage> {
   late Future<Map<String, List<DestinationModel>>> _homeSectionsFuture;
-  final _service = DestinationService();
+  late final DestinationService _service;
 
   @override
   void initState() {
     super.initState();
+    _service = widget.destinationService ?? DestinationService();
     _loadData();
   }
 
