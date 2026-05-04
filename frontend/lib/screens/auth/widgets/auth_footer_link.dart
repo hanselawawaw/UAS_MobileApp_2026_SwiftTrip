@@ -17,9 +17,9 @@ class AuthFooterLink extends StatelessWidget {
     return SizedBox(
       width: 315,
       height: 48,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
+      child: Wrap(
+        alignment: WrapAlignment.center,
+        crossAxisAlignment: WrapCrossAlignment.center,
         children: [
           Text(
             label,

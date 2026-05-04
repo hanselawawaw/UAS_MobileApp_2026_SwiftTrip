@@ -41,6 +41,7 @@ void main() {
 
       // Validasi gagal = SnackBar "Please fill all fields" muncul
       expect(find.text('Please fill all fields'), findsOneWidget);
+      await tester.pumpAndSettle();
     });
 
     testWidgets(
@@ -51,13 +52,14 @@ void main() {
       await tester.pump();
 
       // Hanya isi email, password kosong
-      await tester.enterText(find.byType(TextFormField).first, 'user@test.com');
+      await tester.enterText(find.byType(TextField).first, 'user@test.com');
       await tester.pump();
 
       await tester.tap(find.text('Log in'));
       await tester.pump();
 
       expect(find.text('Please fill all fields'), findsOneWidget);
+      await tester.pumpAndSettle();
     });
 
     // ----------------------------------------------------------
@@ -72,7 +74,7 @@ void main() {
       await tester.pump();
 
       const inputEmail = 'saved@example.com';
-      await tester.enterText(find.byType(TextFormField).first, inputEmail);
+      await tester.enterText(find.byType(TextField).first, inputEmail);
       await tester.pump();
 
       // saveFormState() = nilai field tetap tersimpan setelah diketik
@@ -86,12 +88,12 @@ void main() {
       await tester.pumpWidget(buildSubject());
       await tester.pump();
 
-      await tester.enterText(find.byType(TextFormField).at(1), 'mypassword');
+      await tester.enterText(find.byType(TextField).at(1), 'mypassword');
       await tester.pump();
 
       // Password tersimpan di controller (tidak bisa dibaca karena obscure,
       // tapi field tetap aktif dan menerima input = saveFormState berhasil)
-      expect(find.byType(TextFormField).at(1), findsOneWidget);
+      expect(find.byType(TextField).at(1), findsOneWidget);
     });
 
     // ----------------------------------------------------------
@@ -106,11 +108,11 @@ void main() {
       await tester.pump();
 
       // onChanged() dipicu setiap kali teks berubah
-      await tester.enterText(find.byType(TextFormField).first, 'a');
+      await tester.enterText(find.byType(TextField).first, 'a');
       await tester.pump();
       expect(find.text('a'), findsOneWidget);
 
-      await tester.enterText(find.byType(TextFormField).first, 'ab@');
+      await tester.enterText(find.byType(TextField).first, 'ab@');
       await tester.pump();
       expect(find.text('ab@'), findsOneWidget);
     });
@@ -127,7 +129,7 @@ void main() {
       await tester.pump();
 
       // validator() dipasang pada TextFormField Email
-      expect(find.widgetWithText(TextFormField, 'Email'), findsOneWidget);
+      expect(find.widgetWithText(TextField, 'Email'), findsOneWidget);
     });
 
     // ----------------------------------------------------------
@@ -141,7 +143,7 @@ void main() {
       await tester.pumpWidget(buildSubject());
       await tester.pump();
 
-      final passwordField = find.byType(TextFormField).at(1);
+      final passwordField = find.byType(TextField).at(1);
 
       // onChanged() terpicu saat teks berubah
       await tester.enterText(passwordField, 'pass');
@@ -165,7 +167,7 @@ void main() {
       await tester.pumpWidget(buildSubject());
       await tester.pump();
 
-      expect(find.widgetWithText(TextFormField, 'Password'), findsOneWidget);
+      expect(find.widgetWithText(TextField, 'Password'), findsOneWidget);
     });
 
     testWidgets(
@@ -207,6 +209,7 @@ void main() {
       // Validasi berjalan = SnackBar muncul, bukan loading
       expect(find.text('Please fill all fields'), findsOneWidget);
       expect(find.byType(CircularProgressIndicator), findsNothing);
+      await tester.pumpAndSettle();
     });
 
     testWidgets(
@@ -217,8 +220,8 @@ void main() {
       await tester.pump();
 
       // Isi kedua field agar validasi lolos
-      await tester.enterText(find.byType(TextFormField).first, 'user@test.com');
-      await tester.enterText(find.byType(TextFormField).at(1), 'password123');
+      await tester.enterText(find.byType(TextField).first, 'user@test.com');
+      await tester.enterText(find.byType(TextField).at(1), 'password123');
       await tester.pump();
 
       await tester.tap(find.text('Log in'));
@@ -226,6 +229,7 @@ void main() {
 
       // submitLogin() sedang berjalan = CircularProgressIndicator tampil
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
+      await tester.pumpAndSettle(); // clear pending timers
     });
 
     // ----------------------------------------------------------

@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:swifttrip_frontend/repositories/auth_repository.dart';
 
@@ -18,7 +19,28 @@ import 'package:swifttrip_frontend/repositories/auth_repository.dart';
 // - showLoadingIndicator() → logika flag loading
 // ============================================================
 
+const _secureStorageChannel = MethodChannel(
+  'plugins.it_nomads.com/flutter_secure_storage',
+);
+
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
+  setUp(() {
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(_secureStorageChannel, (call) async {
+      if (call.method == 'read') return null;
+      if (call.method == 'write') return null;
+      if (call.method == 'delete') return null;
+      return null;
+    });
+  });
+
+  tearDown(() {
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(_secureStorageChannel, null);
+  });
+
   group('SplashScreen Unit Tests', () {
 
     // ----------------------------------------------------------

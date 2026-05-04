@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:swifttrip_frontend/screens/splash/splash_screen.dart';
 
@@ -13,7 +14,26 @@ import 'package:swifttrip_frontend/screens/splash/splash_screen.dart';
 //   CircularProgressIndicator | showLoadingIndicator()
 // ============================================================
 
+const _secureStorageChannel = MethodChannel(
+  'plugins.it_nomads.com/flutter_secure_storage',
+);
+
 void main() {
+  setUp(() {
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(_secureStorageChannel, (call) async {
+      if (call.method == 'read') return null;
+      if (call.method == 'write') return null;
+      if (call.method == 'delete') return null;
+      return null;
+    });
+  });
+
+  tearDown(() {
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(_secureStorageChannel, null);
+  });
+
   group('SplashScreen Widget Tests', () {
     Widget buildSubject() {
       return const MaterialApp(home: SplashScreen());

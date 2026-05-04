@@ -39,6 +39,7 @@ void main() {
 
       // validateSignupForm() = validasi gagal → SnackBar muncul
       expect(find.text('Please fill all fields'), findsOneWidget);
+      await tester.pumpAndSettle();
     });
 
     testWidgets(
@@ -48,16 +49,17 @@ void main() {
       await tester.pumpWidget(buildSubject());
       await tester.pump();
 
-      await tester.enterText(find.byType(TextFormField).first, 'user@test.com');
-      await tester.enterText(find.byType(TextFormField).at(1), 'password123');
-      await tester.enterText(find.byType(TextFormField).at(2), 'berbeda456');
-      await tester.enterText(find.byType(TextFormField).at(3), '123456');
+      await tester.enterText(find.byType(TextField).first, 'user@test.com');
+      await tester.enterText(find.byType(TextField).at(1), 'password123');
+      await tester.enterText(find.byType(TextField).at(2), 'berbeda456');
+      await tester.enterText(find.byType(TextField).at(3), '123456');
       await tester.pump();
 
       await tester.tap(find.text('Sign Up'));
       await tester.pump();
 
       expect(find.text('Passwords do not match'), findsOneWidget);
+      await tester.pumpAndSettle();
     });
 
     // ----------------------------------------------------------
@@ -72,7 +74,7 @@ void main() {
       await tester.pump();
 
       const email = 'newuser@swifttrip.com';
-      await tester.enterText(find.byType(TextFormField).first, email);
+      await tester.enterText(find.byType(TextField).first, email);
       await tester.pump();
 
       expect(find.text(email), findsOneWidget);
@@ -85,13 +87,13 @@ void main() {
       await tester.pumpWidget(buildSubject());
       await tester.pump();
 
-      await tester.enterText(find.byType(TextFormField).first, 'user@test.com');
-      await tester.enterText(find.byType(TextFormField).at(1), 'pass123');
+      await tester.enterText(find.byType(TextField).first, 'user@test.com');
+      await tester.enterText(find.byType(TextField).at(1), 'pass123');
       await tester.pump();
 
       // Kedua field masih ada dan tidak saling menimpa
       expect(find.text('user@test.com'), findsOneWidget);
-      expect(find.byType(TextFormField), findsNWidgets(4));
+      expect(find.byType(TextField), findsNWidgets(4));
     });
 
     // ----------------------------------------------------------
@@ -106,7 +108,7 @@ void main() {
       await tester.pump();
 
       // Field pertama = Email (sebagai identitas user / "Name" di signup)
-      expect(find.byType(TextFormField).first, findsOneWidget);
+      expect(find.byType(TextField).first, findsOneWidget);
     });
 
     testWidgets(
@@ -122,6 +124,7 @@ void main() {
 
       // Validator aktif = error muncul
       expect(find.text('Please fill all fields'), findsOneWidget);
+      await tester.pumpAndSettle();
     });
 
     // ----------------------------------------------------------
@@ -135,7 +138,7 @@ void main() {
       await tester.pumpWidget(buildSubject());
       await tester.pump();
 
-      expect(find.widgetWithText(TextFormField, 'Email'), findsOneWidget);
+      expect(find.widgetWithText(TextField, 'Email'), findsOneWidget);
     });
 
     testWidgets(
@@ -146,7 +149,7 @@ void main() {
       await tester.pump();
 
       await tester.enterText(
-          find.byType(TextFormField).first, 'valid@email.com');
+          find.byType(TextField).first, 'valid@email.com');
       await tester.pump();
 
       expect(find.text('valid@email.com'), findsOneWidget);
@@ -163,7 +166,7 @@ void main() {
       await tester.pumpWidget(buildSubject());
       await tester.pump();
 
-      expect(find.widgetWithText(TextFormField, 'Password'), findsOneWidget);
+      expect(find.widgetWithText(TextField, 'Password'), findsOneWidget);
     });
 
     testWidgets(
@@ -249,6 +252,7 @@ void main() {
       await tester.pump();
 
       expect(find.text('Please fill all fields'), findsOneWidget);
+      await tester.pumpAndSettle();
     });
 
     testWidgets(
@@ -258,16 +262,17 @@ void main() {
       await tester.pumpWidget(buildSubject());
       await tester.pump();
 
-      await tester.enterText(find.byType(TextFormField).first, 'user@test.com');
-      await tester.enterText(find.byType(TextFormField).at(1), 'pass111');
-      await tester.enterText(find.byType(TextFormField).at(2), 'pass222');
-      await tester.enterText(find.byType(TextFormField).at(3), '654321');
+      await tester.enterText(find.byType(TextField).first, 'user@test.com');
+      await tester.enterText(find.byType(TextField).at(1), 'pass111');
+      await tester.enterText(find.byType(TextField).at(2), 'pass222');
+      await tester.enterText(find.byType(TextField).at(3), '654321');
       await tester.pump();
 
       await tester.tap(find.text('Sign Up'));
       await tester.pump();
 
       expect(find.text('Passwords do not match'), findsOneWidget);
+      await tester.pumpAndSettle();
     });
   });
 }
