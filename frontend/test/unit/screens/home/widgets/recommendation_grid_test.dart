@@ -182,16 +182,15 @@ void main() {
       test('CartTicket fromJson should parse correctly', () {
         // Arrange
         final json = {
-          'id': 1,
-          'booking_type': 'Plane Ticket',
+          'type': 'Plane Ticket',
           'booking_id': 'BK-001',
-          'from_location': 'Jakarta',
-          'to_location': 'Bali',
-          'travel_date': '2026-06-01',
-          'departure_time': '08:00',
-          'arrival_time': '10:00',
-          'price': 1500000,
-          'bus_class': 'Economy',
+          'from': 'Jakarta',
+          'to': 'Bali',
+          'date': '2026-06-01',
+          'departure': '08:00',
+          'arrive': '10:00',
+          'price_rp': 1500000,
+          'class_label': 'Economy',
           'is_reviewable': false,
         };
 

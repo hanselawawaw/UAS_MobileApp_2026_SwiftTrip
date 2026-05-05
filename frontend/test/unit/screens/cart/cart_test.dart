@@ -52,6 +52,7 @@ class CartScreenController {
   }
 
   void onChanged(String id, bool? value) {
+    if (value == null) return;
     if (value == true) {
       selectedIds.add(id);
     } else {
@@ -78,6 +79,8 @@ class CartScreenController {
 }
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   group('Cart Screen Unit Tests', () {
     late CartScreenController controller;
     late CartService service;

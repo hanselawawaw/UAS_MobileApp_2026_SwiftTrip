@@ -116,10 +116,10 @@ class CartTicket {
 
   factory CartTicket.fromJson(Map<String, dynamic> json) {
     return CartTicket(
-      type: json['type'] as String,
-      bookingId: json['booking_id'] as String,
-      classLabel: json['class_label'] as String,
-      priceRp: json['price_rp'] as int,
+      type: json['type'] as String? ?? json['booking_type'] as String? ?? 'Plane Ticket',
+      bookingId: json['booking_id'] as String? ?? '',
+      classLabel: json['class_label'] as String? ?? 'Standard',
+      priceRp: (json['price_rp'] ?? json['price'] ?? 0) as int,
       serviceFee: json['service_fee'] as int? ?? 0,
       discountRp: json['discount_rp'] as int? ?? 0,
       from: json['from'] as String?,
