@@ -121,9 +121,9 @@ void main() {
 
       final fields = find.byType(TextField);
       if (fields.evaluate().length > 1) {
-        await tester.enterText(fields.at(1), '12/25');
+        await tester.enterText(fields.at(1), '12/30');
         await tester.pump();
-        expect(find.text('12/25'), findsOneWidget);
+        expect(find.text('12/30'), findsOneWidget);
       }
     });
 

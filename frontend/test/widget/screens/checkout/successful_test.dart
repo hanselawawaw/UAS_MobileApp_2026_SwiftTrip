@@ -7,6 +7,8 @@ import 'package:swifttrip_frontend/screens/cart/models/cart_models.dart';
 import 'package:swifttrip_frontend/providers/cart_provider.dart';
 import 'package:swifttrip_frontend/providers/language_provider.dart';
 import 'package:swifttrip_frontend/providers/wishlist_provider.dart';
+import 'dart:io';
+import '../../test_helpers.dart';
 
 // ============================================================
 // CART - PAYMENT SUCCESSFUL WIDGET TEST
@@ -33,6 +35,9 @@ CheckoutDetailsModel makeDetails() => CheckoutDetailsModel(
 );
 
 void main() {
+  HttpOverrides.global = MockHttpOverrides();
+  setupMockSecureStorage();
+
   group('SuccessfulPage Widget Tests', () {
     Widget buildSubject() {
       return MultiProvider(
@@ -47,6 +52,14 @@ void main() {
       );
     }
 
+    /// Advance past the 1000ms auto-nav timer and clean up the widget tree
+    Future<void> cleanupTimer(WidgetTester tester) async {
+      // Advance clock past the 1s Future.delayed timer in SuccessfulPage
+      await tester.pump(const Duration(seconds: 2));
+      // Replace with empty widget to stop any remaining timers
+      await tester.pumpWidget(Container());
+    }
+
     // ----------------------------------------------------------
     // WIDGET: Icon
     // METHOD: displaySuccessIcon()
@@ -57,6 +70,7 @@ void main() {
       await tester.pumpWidget(buildSubject());
       await tester.pump();
       expect(find.byType(SuccessfulPage), findsOneWidget);
+      await cleanupTimer(tester);
     });
 
     testWidgets(
@@ -65,8 +79,8 @@ void main() {
       await tester.pumpWidget(buildSubject());
       await tester.pump();
 
-      // SuccessCheckIcon dirender dalam ScaleTransition
       expect(find.byType(ScaleTransition), findsWidgets);
+      await cleanupTimer(tester);
     });
 
     testWidgets(
@@ -76,6 +90,7 @@ void main() {
       await tester.pump();
 
       expect(find.byType(ScaleTransition), findsWidgets);
+      await cleanupTimer(tester);
     });
 
     testWidgets(
@@ -85,6 +100,7 @@ void main() {
       await tester.pump();
 
       expect(find.byType(FadeTransition), findsWidgets);
+      await cleanupTimer(tester);
     });
 
     testWidgets(
@@ -95,6 +111,7 @@ void main() {
 
       final scaffold = tester.widget<Scaffold>(find.byType(Scaffold).first);
       expect(scaffold.backgroundColor, equals(const Color(0xFFF6F6F6)));
+      await cleanupTimer(tester);
     });
 
     // ----------------------------------------------------------
@@ -108,6 +125,7 @@ void main() {
       await tester.pump(const Duration(milliseconds: 100));
 
       expect(find.text('Payment Successful'), findsOneWidget);
+      await cleanupTimer(tester);
     });
 
     testWidgets(
@@ -119,6 +137,7 @@ void main() {
       final text = tester.widget<Text>(find.text('Payment Successful'));
       expect(text.style?.fontFamily, equals('Cairo'));
       expect(text.style?.fontWeight, equals(FontWeight.w700));
+      await cleanupTimer(tester);
     });
 
     testWidgets(
@@ -128,6 +147,7 @@ void main() {
       await tester.pump();
 
       expect(find.byType(Center), findsWidgets);
+      await cleanupTimer(tester);
     });
 
     // ----------------------------------------------------------
@@ -140,13 +160,17 @@ void main() {
         (WidgetTester tester) async {
       await tester.pumpWidget(buildSubject());
 
-      // Sebelum 1000ms
+      // Before 1000ms the page should still be visible
       await tester.pump(const Duration(milliseconds: 500));
       expect(find.byType(SuccessfulPage), findsOneWidget);
 
-      // Setelah 1000ms = auto navigate
-      await tester.pumpAndSettle(const Duration(seconds: 2));
+      // Advance past the 1000ms delayed callback
+      await tester.pump(const Duration(milliseconds: 600));
+      await tester.pump(const Duration(milliseconds: 500));
+
+      // After navigation, SuccessfulPage replaced by PaymentDetailPage
       expect(find.byType(SuccessfulPage), findsNothing);
+      await tester.pumpWidget(Container());
     });
 
     testWidgets(
@@ -156,6 +180,7 @@ void main() {
       await tester.pump();
 
       expect(find.byType(Scaffold), findsWidgets);
+      await cleanupTimer(tester);
     });
 
     testWidgets(
@@ -169,6 +194,7 @@ void main() {
 
       await tester.pump(const Duration(milliseconds: 300));
       expect(find.byType(SuccessfulPage), findsOneWidget);
+      await cleanupTimer(tester);
     });
   });
 }

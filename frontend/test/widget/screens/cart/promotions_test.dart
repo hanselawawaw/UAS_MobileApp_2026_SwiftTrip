@@ -6,6 +6,8 @@ import 'package:swifttrip_frontend/screens/cart/models/promotion_models.dart';
 import 'package:swifttrip_frontend/providers/language_provider.dart';
 import 'package:swifttrip_frontend/providers/cart_provider.dart';
 import 'package:swifttrip_frontend/providers/wishlist_provider.dart';
+import 'dart:io';
+import '../../test_helpers.dart';
 
 // ============================================================
 // CART - APPLY PROMOTIONS WIDGET TEST
@@ -20,6 +22,8 @@ import 'package:swifttrip_frontend/providers/wishlist_provider.dart';
 // ============================================================
 
 void main() {
+  HttpOverrides.global = MockHttpOverrides();
+
   group('PromotionsPage Widget Tests', () {
     Widget buildSubject({Promotion? initialSelection}) {
       return MultiProvider(
@@ -74,7 +78,7 @@ void main() {
         (WidgetTester tester) async {
       await tester.pumpWidget(buildSubject());
       await tester.pump(const Duration(seconds: 2));
-      await tester.pumpAndSettle();
+      await tester.pump(const Duration(seconds: 1));
 
       // Setelah load, ListView atau empty state tampil
       expect(find.byType(PromotionsPage), findsOneWidget);
@@ -118,7 +122,8 @@ void main() {
         ),
       );
       await tester.tap(find.text('Open'));
-      await tester.pumpAndSettle();
+      await tester.pump();
+      await tester.pump(const Duration(seconds: 1));
       expect(find.byType(PromotionsPage), findsOneWidget);
     });
 
@@ -140,7 +145,7 @@ void main() {
         (WidgetTester tester) async {
       await tester.pumpWidget(buildSubject());
       await tester.pump(const Duration(seconds: 2));
-      await tester.pumpAndSettle();
+      await tester.pump(const Duration(seconds: 1));
 
       // Jika ada promo, GestureDetector bisa di-tap
       final gestures = find.byType(GestureDetector);

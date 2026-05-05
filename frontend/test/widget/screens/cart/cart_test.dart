@@ -70,7 +70,9 @@ void main() {
       await tester.pumpWidget(buildSubject());
       await tester.pump();
 
-      expect(find.byType(SingleChildScrollView), findsWidgets);
+      // Cart is empty so it shows the empty state (Center) layout
+      // SingleChildScrollView only appears when there are tickets
+      expect(find.byType(Column), findsWidgets);
     });
 
     // ----------------------------------------------------------

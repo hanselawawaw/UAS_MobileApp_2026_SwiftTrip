@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 import 'package:swifttrip_frontend/screens/searching/searching.dart';
 import 'package:swifttrip_frontend/providers/language_provider.dart';
 import 'package:swifttrip_frontend/providers/cart_provider.dart';
+import 'dart:io';
+import '../../test_helpers.dart';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -22,6 +24,8 @@ Widget buildTestableWidget(Widget child) {
 // ─── Widget Tests: Searching - Search Trip ────────────────────────────────
 
 void main() {
+  HttpOverrides.global = MockHttpOverrides();
+
   group('Searching - Search Trip Widget Tests', () {
     // ── Form renders correctly ─────────────────────────────────────────────
 
@@ -36,6 +40,8 @@ void main() {
 
         // Assert
         expect(find.byType(SearchingPage), findsOneWidget);
+        await tester.pump(const Duration(seconds: 1));
+        await tester.pumpWidget(Container());
       });
 
       testWidgets('should display SingleChildScrollView inside SearchingPage',
@@ -48,6 +54,8 @@ void main() {
 
         // Assert
         expect(find.byType(SingleChildScrollView), findsWidgets);
+        await tester.pump(const Duration(seconds: 1));
+        await tester.pumpWidget(Container());
       });
     });
 

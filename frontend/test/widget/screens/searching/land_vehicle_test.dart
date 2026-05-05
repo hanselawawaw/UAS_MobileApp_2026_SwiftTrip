@@ -5,6 +5,8 @@ import 'package:swifttrip_frontend/screens/searching/land_vehicle.dart';
 import 'package:swifttrip_frontend/screens/searching/models/ride_option.dart';
 import 'package:swifttrip_frontend/providers/language_provider.dart';
 import 'package:swifttrip_frontend/providers/cart_provider.dart';
+import 'dart:io';
+import '../../test_helpers.dart';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -23,6 +25,8 @@ Widget buildTestableWidget(Widget child) {
 // ─── Widget Tests: Searching - Kendaraan Darat ──────────────────────────────
 
 void main() {
+  HttpOverrides.global = MockHttpOverrides();
+
   group('Searching - Kendaraan Darat Widget Tests', () {
     // ── ListView.builder renders RideOption list ───────────────────────────
 
@@ -37,6 +41,8 @@ void main() {
 
         // Assert
         expect(find.byType(LandVehicleSearch), findsOneWidget);
+        await tester.pump(const Duration(seconds: 1));
+        await tester.pumpWidget(Container());
       });
 
       testWidgets('should show loading indicator while fetching data',
@@ -50,6 +56,8 @@ void main() {
 
         // Assert
         expect(find.byType(CircularProgressIndicator), findsOneWidget);
+        await tester.pump(const Duration(seconds: 1));
+        await tester.pumpWidget(Container());
       });
 
       testWidgets(
@@ -59,7 +67,7 @@ void main() {
         await tester.pumpWidget(
           buildTestableWidget(const LandVehicleSearch()),
         );
-        await tester.pumpAndSettle(const Duration(seconds: 2));
+        await tester.pump(const Duration(seconds: 1));
 
         // Assert — minimal satu opsi kendaraan tampil
         final hasTransportOption = find.text('Car').evaluate().isNotEmpty ||
@@ -269,23 +277,19 @@ void main() {
         await tester.pumpWidget(
           buildTestableWidget(const LandVehicleSearch()),
         );
-        await tester.pumpAndSettle(const Duration(seconds: 2));
+        await tester.pump(const Duration(seconds: 1));
 
-        // Cari tombol Confirm/Add to Cart
-        final confirmBtn = find.byWidgetPredicate(
-          (w) =>
-              w is Text &&
-              (w.data?.toLowerCase().contains('confirm') == true ||
-                  w.data?.toLowerCase().contains('add') == true),
-        );
+        final cartBtn = find.byIcon(Icons.shopping_cart_outlined);
 
-        if (confirmBtn.evaluate().isNotEmpty) {
-          await tester.tap(confirmBtn.first);
+        if (cartBtn.evaluate().isNotEmpty) {
+          await tester.tap(cartBtn.first);
           await tester.pump();
+          await tester.pump(const Duration(seconds: 1));
 
           // Assert — SnackBar muncul
           expect(find.byType(SnackBar), findsOneWidget);
         }
+        await tester.pumpWidget(Container());
       });
 
       testWidgets('should not crash when LandVehicleSearch fully renders',
@@ -294,7 +298,7 @@ void main() {
         await tester.pumpWidget(
           buildTestableWidget(const LandVehicleSearch()),
         );
-        await tester.pumpAndSettle(const Duration(seconds: 2));
+        await tester.pump(const Duration(seconds: 1));
 
         // Assert
         expect(tester.takeException(), isNull);
