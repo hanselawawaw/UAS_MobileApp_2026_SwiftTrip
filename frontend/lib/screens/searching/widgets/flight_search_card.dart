@@ -420,6 +420,7 @@ class _FlightSearchCardState extends State<FlightSearchCard>
     if (_foundFlights.isEmpty) return;
     final result = await showModalBottomSheet<FlightOffer>(
       context: context,
+      isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -427,6 +428,9 @@ class _FlightSearchCardState extends State<FlightSearchCard>
         final langProvider = context.read<LanguageProvider>();
         return Container(
           padding: const EdgeInsets.symmetric(vertical: 20),
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(context).size.height * 0.75,
+          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -439,22 +443,35 @@ class _FlightSearchCardState extends State<FlightSearchCard>
                 ),
               ),
               const SizedBox(height: 16),
-              ..._foundFlights.map(
-                (offer) => ListTile(
-                  title: Text(
-                    offer.airlineName,
-                    style: const TextStyle(fontFamily: 'Poppins'),
-                  ),
-                  subtitle: Text(
-                    'Rp ${offer.price.toStringAsFixed(0)} • '
-                    '${offer.departureTime.split("T").last.substring(0, 5)} - '
-                    '${offer.arrivalTime.split("T").last.substring(0, 5)}',
-                    style: const TextStyle(fontFamily: 'Poppins', fontSize: 12),
-                  ),
-                  trailing: _selectedFlight == offer
-                      ? const Icon(Icons.check, color: Color(0xFF2B99E3))
-                      : null,
-                  onTap: () => Navigator.pop(context, offer),
+              Flexible(
+                child: ListView(
+                  shrinkWrap: true,
+                  children: _foundFlights
+                      .map(
+                        (offer) => ListTile(
+                          title: Text(
+                            offer.airlineName,
+                            style: const TextStyle(fontFamily: 'Poppins'),
+                          ),
+                          subtitle: Text(
+                            'Rp ${offer.price.toStringAsFixed(0)} • '
+                            '${offer.departureTime.split("T").last.substring(0, 5)} - '
+                            '${offer.arrivalTime.split("T").last.substring(0, 5)}',
+                            style: const TextStyle(
+                              fontFamily: 'Poppins',
+                              fontSize: 12,
+                            ),
+                          ),
+                          trailing: _selectedFlight == offer
+                              ? const Icon(
+                                  Icons.check,
+                                  color: Color(0xFF2B99E3),
+                                )
+                              : null,
+                          onTap: () => Navigator.pop(context, offer),
+                        ),
+                      )
+                      .toList(),
                 ),
               ),
             ],
