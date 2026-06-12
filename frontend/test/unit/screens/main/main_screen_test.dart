@@ -1,5 +1,4 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:provider/provider.dart';
 import 'package:swifttrip_frontend/providers/language_provider.dart';
 import 'package:swifttrip_frontend/providers/cart_provider.dart';
 import 'package:swifttrip_frontend/providers/wishlist_provider.dart';
@@ -20,7 +19,7 @@ class NavbarController {
   final int totalTabs;
 
   NavbarController({this.totalTabs = 5, int initialIndex = 0})
-      : _currentIndex = initialIndex;
+    : _currentIndex = initialIndex;
 
   int get currentIndex => _currentIndex;
 
@@ -223,11 +222,14 @@ void main() {
         expect(provider.currentCode, equals('en'));
       });
 
-      test('LanguageProvider translate mengembalikan key jika terjemahan tidak ada', () {
-        final provider = LanguageProvider();
-        const key = 'unknown_key';
-        expect(provider.translate(key), equals(key));
-      });
+      test(
+        'LanguageProvider translate mengembalikan key jika terjemahan tidak ada',
+        () {
+          final provider = LanguageProvider();
+          const key = 'unknown_key';
+          expect(provider.translate(key), equals(key));
+        },
+      );
 
       test('CartProvider dapat diinisialisasi', () {
         final provider = CartProvider();

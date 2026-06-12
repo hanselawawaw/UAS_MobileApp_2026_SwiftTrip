@@ -19,7 +19,9 @@ class CheckoutTicketCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isAccommodation = ticket.type == 'Accommodation Ticket';
-    final headerColor = isAccommodation ? const Color(0xFFA83029) : const Color(0xFF0098FF);
+    final headerColor = isAccommodation
+        ? const Color(0xFFA83029)
+        : const Color(0xFF0098FF);
 
     return Container(
       width: double.infinity,
@@ -94,7 +96,11 @@ class CheckoutTicketCard extends StatelessWidget {
                         height: 120,
                         color: const Color(0xFFE0E0E0),
                         alignment: Alignment.center,
-                        child: const Icon(Icons.hotel, size: 40, color: Colors.white),
+                        child: const Icon(
+                          Icons.hotel,
+                          size: 40,
+                          color: Colors.white,
+                        ),
                       ),
                     )
                   : Container(
@@ -102,7 +108,11 @@ class CheckoutTicketCard extends StatelessWidget {
                       height: 120,
                       color: const Color(0xFFE0E0E0),
                       alignment: Alignment.center,
-                      child: const Icon(Icons.hotel, size: 40, color: Colors.white),
+                      child: const Icon(
+                        Icons.hotel,
+                        size: 40,
+                        color: Colors.white,
+                      ),
                     ),
             ),
 
@@ -123,7 +133,10 @@ class CheckoutTicketCard extends StatelessWidget {
             // ── LOCATION ──────────────────────────────────────────────
             Padding(
               padding: const EdgeInsets.only(left: 15, right: 15, bottom: 10),
-              child: _LabelValue(label: 'LOCATION', value: ticket.location ?? '-'),
+              child: _LabelValue(
+                label: 'LOCATION',
+                value: ticket.location ?? '-',
+              ),
             ),
           ] else ...[
             // ── Class label (shared for all transport) ───────────────
@@ -145,15 +158,24 @@ class CheckoutTicketCard extends StatelessWidget {
             // ── FROM / TO (shared) ───────────────────────────────────
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-              child: (ticket.type == 'Plane Ticket' &&
+              child:
+                  (ticket.type == 'Plane Ticket' &&
                       ticket.flightRoute != null &&
                       ticket.flightRoute!.isNotEmpty)
                   ? _FlightBreadcrumb(codes: ticket.flightRoute!)
                   : Row(
                       children: [
-                        _LabelValue(label: 'FROM', value: ticket.from ?? '-', isLarge: true),
+                        _LabelValue(
+                          label: 'FROM',
+                          value: ticket.from ?? '-',
+                          isLarge: true,
+                        ),
                         const SizedBox(width: 100),
-                        _LabelValue(label: 'TO', value: ticket.to ?? '-', isLarge: true),
+                        _LabelValue(
+                          label: 'TO',
+                          value: ticket.to ?? '-',
+                          isLarge: true,
+                        ),
                       ],
                     ),
             ),
@@ -167,7 +189,10 @@ class CheckoutTicketCard extends StatelessWidget {
                 children: [
                   _LabelValue(label: 'DATE', value: ticket.date ?? '-'),
                   const SizedBox(width: 40),
-                  _LabelValue(label: 'DEPARTURE', value: ticket.departure ?? '-'),
+                  _LabelValue(
+                    label: 'DEPARTURE',
+                    value: ticket.departure ?? '-',
+                  ),
                   const SizedBox(width: 40),
                   _LabelValue(label: 'ARRIVE', value: ticket.arrive ?? '-'),
                 ],
@@ -251,7 +276,11 @@ class _LabelValue extends StatelessWidget {
   final String value;
   final bool isLarge;
 
-  const _LabelValue({required this.label, required this.value, this.isLarge = false});
+  const _LabelValue({
+    required this.label,
+    required this.value,
+    this.isLarge = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -306,14 +335,26 @@ class _FlightBreadcrumb extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 4),
                 child: Row(
                   children: [
-                    Container(width: 4, height: 1, color: Colors.black.withOpacity(0.2)),
+                    Container(
+                      width: 4,
+                      height: 1,
+                      color: Colors.black.withValues(alpha: 0.2),
+                    ),
                     const SizedBox(width: 2),
                     Transform.rotate(
                       angle: 1.57,
-                      child: Icon(Icons.airplanemode_active, size: 10, color: Colors.black.withOpacity(0.3)),
+                      child: Icon(
+                        Icons.airplanemode_active,
+                        size: 10,
+                        color: Colors.black.withValues(alpha: 0.3),
+                      ),
                     ),
                     const SizedBox(width: 2),
-                    Container(width: 4, height: 1, color: Colors.black.withOpacity(0.2)),
+                    Container(
+                      width: 4,
+                      height: 1,
+                      color: Colors.black.withValues(alpha: 0.2),
+                    ),
                   ],
                 ),
               ),
@@ -333,7 +374,7 @@ class _TicketDivider extends StatelessWidget {
       thickness: 1,
       indent: 13,
       endIndent: 13,
-      color: Colors.black.withOpacity(0.30),
+      color: Colors.black.withValues(alpha: 0.30),
     );
   }
 }

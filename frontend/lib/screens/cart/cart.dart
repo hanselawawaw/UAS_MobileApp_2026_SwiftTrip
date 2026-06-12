@@ -40,7 +40,7 @@ class _CartPageState extends State<CartPage> {
     final confirmed = await showDialog<bool>(
       context: context,
       barrierDismissible: true,
-      barrierColor: Colors.black.withOpacity(0.4),
+      barrierColor: Colors.black.withValues(alpha: 0.4),
       builder: (BuildContext context) => const RemoveTicketDialog(),
     );
 
@@ -71,7 +71,7 @@ class _CartPageState extends State<CartPage> {
               width: 120,
               height: 120,
               decoration: BoxDecoration(
-                color: const Color(0xFF2B99E3).withOpacity(0.1),
+                color: const Color(0xFF2B99E3).withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: const Icon(
@@ -150,7 +150,10 @@ class _CartPageState extends State<CartPage> {
 
     int baseTotalVal = tickets.fold(0, (sum, t) => sum + t.priceRp);
     int serviceFeeVal = tickets.fold(0, (sum, t) => sum + t.serviceFee);
-    int discountAmountVal = _cartService.calculateDiscount(baseTotalVal, _appliedPromo);
+    int discountAmountVal = _cartService.calculateDiscount(
+      baseTotalVal,
+      _appliedPromo,
+    );
     int finalTotalVal = baseTotalVal + serviceFeeVal - discountAmountVal;
 
     return Scaffold(
@@ -187,7 +190,8 @@ class _CartPageState extends State<CartPage> {
                             child: TicketCard(
                               ticket: tickets[i],
                               formatRp: _formatRp,
-                              onDelete: () => _removeTicket(tickets[i].bookingId),
+                              onDelete: () =>
+                                  _removeTicket(tickets[i].bookingId),
                             ),
                           ),
                         ),

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../../widgets/top_bar.dart';
 import 'onboarding.dart';
@@ -74,7 +75,9 @@ class _CsChatPageState extends State<CsChatPage> {
         _isLoading = false;
         _isBotTyping = false;
       });
-      print('Chat init error: $e');
+      if (kDebugMode) {
+        print('Chat init error: $e');
+      }
     }
   }
 
@@ -161,7 +164,9 @@ class _CsChatPageState extends State<CsChatPage> {
         );
       });
     } catch (e) {
-      print('Failed to persist or send message: $e');
+      if (kDebugMode) {
+        print('Failed to persist or send message: $e');
+      }
       if (mounted) {
         setState(() => _isBotTyping = false);
       }

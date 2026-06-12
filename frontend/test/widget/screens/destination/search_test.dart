@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:integration_test/integration_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:swifttrip_frontend/screens/destination/search.dart';
@@ -15,17 +14,35 @@ void main() {
 
   setUp(() {
     mockDestinationService = MockDestinationService();
-    when(() => mockDestinationService.getTrendingTags()).thenReturn(['Cozy', 'Villa', 'Hotel']);
-    when(() => mockDestinationService.getRecentSearches()).thenAnswer((_) async => []);
-    when(() => mockDestinationService.getTopRated()).thenAnswer((_) async => []);
-    when(() => mockDestinationService.fetchDestinations(sectionTag: any(named: 'sectionTag'))).thenAnswer((_) async => []);
+    when(
+      () => mockDestinationService.getTrendingTags(),
+    ).thenReturn(['Cozy', 'Villa', 'Hotel']);
+    when(
+      () => mockDestinationService.getRecentSearches(),
+    ).thenAnswer((_) async => []);
+    when(
+      () => mockDestinationService.getTopRated(),
+    ).thenAnswer((_) async => []);
+    when(
+      () => mockDestinationService.fetchDestinations(
+        sectionTag: any(named: 'sectionTag'),
+      ),
+    ).thenAnswer((_) async => []);
     SharedPreferences.setMockInitialValues({});
   });
 
   group('Accommodation Search & Filter - Widget Test', () {
-    testWidgets('renders query TextField and discover content text', (tester) async {
+    testWidgets('renders query TextField and discover content text', (
+      tester,
+    ) async {
       // Arrange
-      await tester.pumpWidget(MaterialApp(home: DestinationSearchPage(destinationService: mockDestinationService)));
+      await tester.pumpWidget(
+        MaterialApp(
+          home: DestinationSearchPage(
+            destinationService: mockDestinationService,
+          ),
+        ),
+      );
       await tester.pump();
 
       // Assert
@@ -36,7 +53,13 @@ void main() {
 
     testWidgets('typing in query switches to searching state', (tester) async {
       // Arrange
-      await tester.pumpWidget(MaterialApp(home: DestinationSearchPage(destinationService: mockDestinationService)));
+      await tester.pumpWidget(
+        MaterialApp(
+          home: DestinationSearchPage(
+            destinationService: mockDestinationService,
+          ),
+        ),
+      );
       await tester.pump();
       final textField = find.byType(TextField);
       expect(textField, findsOneWidget);
@@ -52,7 +75,13 @@ void main() {
 
     testWidgets('clearing query returns to discover content', (tester) async {
       // Arrange
-      await tester.pumpWidget(MaterialApp(home: DestinationSearchPage(destinationService: mockDestinationService)));
+      await tester.pumpWidget(
+        MaterialApp(
+          home: DestinationSearchPage(
+            destinationService: mockDestinationService,
+          ),
+        ),
+      );
       await tester.pump();
       final textField = find.byType(TextField);
       expect(textField, findsOneWidget);

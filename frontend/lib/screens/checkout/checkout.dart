@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/cart_provider.dart';
@@ -73,10 +75,12 @@ class _CheckoutPageState extends State<CheckoutPage> {
                 child: Column(
                   children: [
                     const SizedBox(height: 10),
-                    ..._controller.details!.tickets.map((ticket) => Padding(
-                          padding: const EdgeInsets.only(bottom: 16),
-                          child: CheckoutTicketCard(ticket: ticket),
-                        )),
+                    ..._controller.details!.tickets.map(
+                      (ticket) => Padding(
+                        padding: const EdgeInsets.only(bottom: 16),
+                        child: CheckoutTicketCard(ticket: ticket),
+                      ),
+                    ),
                     const SizedBox(height: 4),
                     const Divider(color: Colors.black12, thickness: 1),
                     const SizedBox(height: 20),

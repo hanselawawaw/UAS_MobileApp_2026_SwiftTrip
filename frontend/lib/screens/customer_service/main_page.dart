@@ -150,7 +150,7 @@ class _CustomerServicePageState extends State<CustomerServicePage> {
                               clipBehavior: Clip.none,
                               padding: const EdgeInsets.only(right: 4),
                               itemCount: _recentQuestions.length,
-                              separatorBuilder: (_, __) =>
+                              separatorBuilder: (_, _) =>
                                   const SizedBox(width: 12),
                               itemBuilder: (_, i) => RecentCard(
                                 question: _recentQuestions[i],
@@ -158,7 +158,9 @@ class _CustomerServicePageState extends State<CustomerServicePage> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (_) => CsChatPage(ticketId: _recentQuestions[i].id),
+                                      builder: (_) => CsChatPage(
+                                        ticketId: _recentQuestions[i].id,
+                                      ),
                                     ),
                                   );
                                 },

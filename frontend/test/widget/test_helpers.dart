@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:convert';
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -12,9 +13,9 @@ void setupMockSecureStorage() {
   const channel = MethodChannel('plugins.it_nomads.com/flutter_secure_storage');
   TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
       .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
-    // Return null for reads (no token), success for writes/deletes
-    return null;
-  });
+        // Return null for reads (no token), success for writes/deletes
+        return null;
+      });
 }
 
 /// A mock HTTP client that immediately returns a 404 for all requests.
@@ -22,7 +23,9 @@ void setupMockSecureStorage() {
 class MockHttpOverrides extends HttpOverrides {
   @override
   HttpClient createHttpClient(SecurityContext? context) {
-    print('Debug: MockHttpOverrides.createHttpClient called');
+    if (kDebugMode) {
+      print('Debug: MockHttpOverrides.createHttpClient called');
+    }
     return _MockHttpClient();
   }
 }
@@ -40,50 +43,84 @@ class _MockHttpClient implements HttpClient {
   String? userAgent;
 
   @override
-  void addCredentials(Uri url, String realm, HttpClientCredentials credentials) {}
+  void addCredentials(
+    Uri url,
+    String realm,
+    HttpClientCredentials credentials,
+  ) {}
   @override
-  void addProxyCredentials(String host, int port, String realm, HttpClientCredentials credentials) {}
+  void addProxyCredentials(
+    String host,
+    int port,
+    String realm,
+    HttpClientCredentials credentials,
+  ) {}
   @override
-  set authenticate(Future<bool> Function(Uri url, String scheme, String realm)? f) {}
+  set authenticate(
+    Future<bool> Function(Uri url, String scheme, String realm)? f,
+  ) {}
   @override
-  set authenticateProxy(Future<bool> Function(String host, int port, String scheme, String realm)? f) {}
+  set authenticateProxy(
+    Future<bool> Function(String host, int port, String scheme, String realm)?
+    f,
+  ) {}
   @override
-  set badCertificateCallback(bool Function(X509Certificate cert, String host, int port)? callback) {}
+  set badCertificateCallback(
+    bool Function(X509Certificate cert, String host, int port)? callback,
+  ) {}
   @override
   set findProxy(String Function(Uri url)? f) {}
   @override
-  set connectionFactory(Future<ConnectionTask<Socket>> Function(Uri url, String? proxyHost, int? proxyPort)? f) {}
+  set connectionFactory(
+    Future<ConnectionTask<Socket>> Function(
+      Uri url,
+      String? proxyHost,
+      int? proxyPort,
+    )?
+    f,
+  ) {}
   @override
   set keyLog(void Function(String line)? callback) {}
   @override
   void close({bool force = false}) {}
 
   @override
-  Future<HttpClientRequest> delete(String host, int port, String path) => _mockRequest();
+  Future<HttpClientRequest> delete(String host, int port, String path) =>
+      _mockRequest();
   @override
   Future<HttpClientRequest> deleteUrl(Uri url) => _mockRequest();
   @override
-  Future<HttpClientRequest> get(String host, int port, String path) => _mockRequest();
+  Future<HttpClientRequest> get(String host, int port, String path) =>
+      _mockRequest();
   @override
   Future<HttpClientRequest> getUrl(Uri url) => _mockRequest();
   @override
-  Future<HttpClientRequest> head(String host, int port, String path) => _mockRequest();
+  Future<HttpClientRequest> head(String host, int port, String path) =>
+      _mockRequest();
   @override
   Future<HttpClientRequest> headUrl(Uri url) => _mockRequest();
   @override
-  Future<HttpClientRequest> patch(String host, int port, String path) => _mockRequest();
+  Future<HttpClientRequest> patch(String host, int port, String path) =>
+      _mockRequest();
   @override
   Future<HttpClientRequest> patchUrl(Uri url) => _mockRequest();
   @override
-  Future<HttpClientRequest> post(String host, int port, String path) => _mockRequest();
+  Future<HttpClientRequest> post(String host, int port, String path) =>
+      _mockRequest();
   @override
   Future<HttpClientRequest> postUrl(Uri url) => _mockRequest();
   @override
-  Future<HttpClientRequest> put(String host, int port, String path) => _mockRequest();
+  Future<HttpClientRequest> put(String host, int port, String path) =>
+      _mockRequest();
   @override
   Future<HttpClientRequest> putUrl(Uri url) => _mockRequest();
   @override
-  Future<HttpClientRequest> open(String method, String host, int port, String path) => _mockRequest();
+  Future<HttpClientRequest> open(
+    String method,
+    String host,
+    int port,
+    String path,
+  ) => _mockRequest();
   @override
   Future<HttpClientRequest> openUrl(String method, Uri url) => _mockRequest();
 
@@ -111,11 +148,11 @@ class _MockHttpClientRequest implements HttpClientRequest {
   @override
   void write(Object? obj) {}
   @override
-  void writeAll(Iterable objects, [String separator = ""]) {}
+  void writeAll(Iterable objects, [String separator = '']) {}
   @override
   void writeCharCode(int charCode) {}
   @override
-  void writeln([Object? obj = ""]) {}
+  void writeln([Object? obj = '']) {}
   @override
   Future<HttpClientResponse> get done async => _MockHttpClientResponse();
   @override
@@ -136,7 +173,6 @@ class _MockHttpClientRequest implements HttpClientRequest {
   int get contentLength => 0;
   @override
   void abort([Object? exception, StackTrace? stackTrace]) {}
-  @override
   set cookies(List<Cookie> value) {}
   @override
   List<Cookie> get cookies => [];
@@ -144,7 +180,8 @@ class _MockHttpClientRequest implements HttpClientRequest {
   HttpConnectionInfo? get connectionInfo => null;
 }
 
-class _MockHttpClientResponse extends Stream<List<int>> implements HttpClientResponse {
+class _MockHttpClientResponse extends Stream<List<int>>
+    implements HttpClientResponse {
   @override
   int get statusCode => 404;
   @override
@@ -152,7 +189,8 @@ class _MockHttpClientResponse extends Stream<List<int>> implements HttpClientRes
   @override
   int get contentLength => 0;
   @override
-  HttpClientResponseCompressionState get compressionState => HttpClientResponseCompressionState.notCompressed;
+  HttpClientResponseCompressionState get compressionState =>
+      HttpClientResponseCompressionState.notCompressed;
   @override
   final HttpHeaders headers = _MockHttpHeaders();
   @override
@@ -167,13 +205,26 @@ class _MockHttpClientResponse extends Stream<List<int>> implements HttpClientRes
   HttpConnectionInfo? get connectionInfo => null;
 
   @override
-  StreamSubscription<List<int>> listen(void Function(List<int> event)? onData,
-      {Function? onError, void Function()? onDone, bool? cancelOnError}) {
-    return Stream<List<int>>.empty().listen(onData, onError: onError, onDone: onDone, cancelOnError: cancelOnError);
+  StreamSubscription<List<int>> listen(
+    void Function(List<int> event)? onData, {
+    Function? onError,
+    void Function()? onDone,
+    bool? cancelOnError,
+  }) {
+    return const Stream<List<int>>.empty().listen(
+      onData,
+      onError: onError,
+      onDone: onDone,
+      cancelOnError: cancelOnError,
+    );
   }
 
   @override
-  Future<HttpClientResponse> redirect([String? method, Uri? url, bool? followRedirects]) async => this;
+  Future<HttpClientResponse> redirect([
+    String? method,
+    Uri? url,
+    bool? followRedirects,
+  ]) async => this;
   @override
   Future<Socket> detachSocket() async => throw UnimplementedError();
   @override

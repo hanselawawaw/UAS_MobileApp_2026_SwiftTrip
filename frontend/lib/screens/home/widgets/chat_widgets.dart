@@ -103,7 +103,7 @@ class ChatBubbleWidget extends StatelessWidget {
               ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.07),
+                  color: Colors.black.withValues(alpha: 0.07),
                   blurRadius: 8,
                   offset: const Offset(0, 2),
                 ),
@@ -167,7 +167,7 @@ class _ChatTicketCardState extends State<ChatTicketCard> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
+            color: Colors.black.withValues(alpha: 0.08),
             blurRadius: 12,
             offset: const Offset(0, 3),
           ),
@@ -353,7 +353,7 @@ class _TypingIndicatorState extends State<TypingIndicator>
               ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.07),
+                  color: Colors.black.withValues(alpha: 0.07),
                   blurRadius: 8,
                   offset: const Offset(0, 2),
                 ),
@@ -364,7 +364,7 @@ class _TypingIndicatorState extends State<TypingIndicator>
               children: List.generate(3, (i) {
                 return AnimatedBuilder(
                   animation: _controller,
-                  builder: (_, __) {
+                  builder: (_, _) {
                     final offset =
                         sin((_controller.value * 2 * pi) - (i * pi / 2)) * 3;
                     return Container(
@@ -420,7 +420,7 @@ class ChatInputBar extends StatelessWidget {
           shape: const StadiumBorder(),
           shadows: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.10),
+              color: Colors.black.withValues(alpha: 0.10),
               blurRadius: 20,
               offset: const Offset(0, 4),
             ),
@@ -440,7 +440,7 @@ class ChatInputBar extends StatelessWidget {
                 decoration: InputDecoration(
                   hintText: 'Lets AI Help Your Journey',
                   hintStyle: TextStyle(
-                    color: Colors.black.withOpacity(0.40),
+                    color: Colors.black.withValues(alpha: 0.40),
                     fontSize: 13,
                     fontFamily: 'Poppins',
                     fontWeight: FontWeight.w400,

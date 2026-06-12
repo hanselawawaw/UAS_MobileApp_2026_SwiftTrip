@@ -11,11 +11,7 @@ class SearchResultCard extends StatelessWidget {
   final DestinationModel destination;
   final VoidCallback? onReturn;
 
-  const SearchResultCard({
-    super.key,
-    required this.destination,
-    this.onReturn,
-  });
+  const SearchResultCard({super.key, required this.destination, this.onReturn});
 
   String get _formattedPrice {
     final price = destination.price.toInt();
@@ -76,7 +72,7 @@ class SearchResultCard extends StatelessWidget {
                 width: 110,
                 height: 100,
                 fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => Container(
+                errorBuilder: (_, _, _) => Container(
                   width: 110,
                   height: 100,
                   color: Colors.grey.shade200,

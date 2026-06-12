@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:swifttrip_frontend/repositories/auth_repository.dart';
 import 'package:swifttrip_frontend/core/constants.dart';
@@ -56,21 +57,23 @@ class DestinationService {
   }
 
   // --- API Integrations ---
-  final Dio _dio = Dio(BaseOptions(
-    baseUrl: '${Constants.bookingsUrl}destinations/',
-    connectTimeout: const Duration(seconds: 30),
-    receiveTimeout: const Duration(seconds: 30),
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  ));
+  final Dio _dio = Dio(
+    BaseOptions(
+      baseUrl: '${Constants.bookingsUrl}destinations/',
+      connectTimeout: const Duration(seconds: 30),
+      receiveTimeout: const Duration(seconds: 30),
+      headers: {'Content-Type': 'application/json'},
+    ),
+  );
 
   Future<Options> _getOptions() async {
     final token = await AuthRepository().getToken();
-    return Options(headers: {
-      if (token != null) 'Authorization': 'Bearer $token',
-      'Content-Type': 'application/json',
-    });
+    return Options(
+      headers: {
+        if (token != null) 'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+    );
   }
 
   /// Generic fetcher to handle category, tag, ordering, and section_tag
@@ -93,7 +96,9 @@ class DestinationService {
       final data = response.data as List;
       return data.map((json) => DestinationModel.fromJson(json)).toList();
     } catch (e) {
-      print('Error fetching destinations: $e');
+      if (kDebugMode) {
+        print('Error fetching destinations: $e');
+      }
       return []; // Return empty list to prevent UI crash
     }
   }
@@ -102,7 +107,7 @@ class DestinationService {
     try {
       final response = await _dio.get('home_sections/');
       final data = response.data as Map<String, dynamic>;
-      
+
       return {
         'discount_destinations': (data['discount_destinations'] as List)
             .map((e) => DestinationModel.fromJson(e))
@@ -115,9 +120,13 @@ class DestinationService {
             .toList(),
       };
     } catch (e) {
-      print('Debug: Home Section Fetch Error: $e');
+      if (kDebugMode) {
+        print('Debug: Home Section Fetch Error: $e');
+      }
       if (e is DioException) {
-        print('Debug: Status Code: ${e.response?.statusCode}');
+        if (kDebugMode) {
+          print('Debug: Status Code: ${e.response?.statusCode}');
+        }
       }
       return {
         'discount_destinations': [],
@@ -133,7 +142,9 @@ class DestinationService {
       final data = response.data as List;
       return data.map((e) => DestinationModel.fromJson(e)).toList();
     } catch (e) {
-      print('Error fetching recommendations: $e');
+      if (kDebugMode) {
+        print('Error fetching recommendations: $e');
+      }
       return [];
     }
   }
@@ -141,10 +152,15 @@ class DestinationService {
   Future<bool> toggleWishlist(String id) async {
     try {
       final options = await _getOptions();
-      final response = await _dio.post('$id/toggle_wishlist/', options: options);
+      final response = await _dio.post(
+        '$id/toggle_wishlist/',
+        options: options,
+      );
       return response.statusCode == 200;
     } catch (e) {
-      print('Error toggling wishlist: $e');
+      if (kDebugMode) {
+        print('Error toggling wishlist: $e');
+      }
       return false;
     }
   }
@@ -159,7 +175,9 @@ class DestinationService {
       }
       return [];
     } catch (e) {
-      print('Error fetching wishlist ids: $e');
+      if (kDebugMode) {
+        print('Error fetching wishlist ids: $e');
+      }
       return [];
     }
   }
@@ -174,32 +192,41 @@ class DestinationService {
       }
       return [];
     } catch (e) {
-      print('Error fetching full wishlist: $e');
+      if (kDebugMode) {
+        print('Error fetching full wishlist: $e');
+      }
       return [];
     }
   }
 
   // --- Realized Methods (Replacing Mock Stubs) ---
-  Future<List<DestinationModel>> getVillaDestinations() => fetchDestinations(category: 'Villa');
-  Future<List<DestinationModel>> getHotelDestinations() => fetchDestinations(category: 'Hotel');
-  Future<List<DestinationModel>> getApartmentDestinations() => fetchDestinations(category: 'Apartment');
-  Future<List<DestinationModel>> getCondoDestinations() => fetchDestinations(category: 'Condo');
-  
-  Future<List<DestinationModel>> getTopRated() => fetchDestinations(ordering: '-rating');
-  Future<List<DestinationModel>> fetchByTag(String tag) => fetchDestinations(tag: tag);
+  Future<List<DestinationModel>> getVillaDestinations() =>
+      fetchDestinations(category: 'Villa');
+  Future<List<DestinationModel>> getHotelDestinations() =>
+      fetchDestinations(category: 'Hotel');
+  Future<List<DestinationModel>> getApartmentDestinations() =>
+      fetchDestinations(category: 'Apartment');
+  Future<List<DestinationModel>> getCondoDestinations() =>
+      fetchDestinations(category: 'Condo');
+
+  Future<List<DestinationModel>> getTopRated() =>
+      fetchDestinations(ordering: '-rating');
+  Future<List<DestinationModel>> fetchByTag(String tag) =>
+      fetchDestinations(tag: tag);
 
   Future<List<DestinationModel>> searchDestinations(String query) async {
     return fetchDestinations(search: query);
   }
-  
+
   // --- Recent Searches Implementation ---
   static const String _recentSearchesKey = 'recent_destination_searches';
 
   Future<void> addToRecentSearches(DestinationModel destination) async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final List<String> history = prefs.getStringList(_recentSearchesKey) ?? [];
-      
+      final List<String> history =
+          prefs.getStringList(_recentSearchesKey) ?? [];
+
       // Remove if exists to move to top
       history.removeWhere((item) {
         final decoded = json.decode(item);
@@ -216,20 +243,25 @@ class DestinationService {
 
       await prefs.setStringList(_recentSearchesKey, history);
     } catch (e) {
-      print('Error adding to recent searches: $e');
+      if (kDebugMode) {
+        print('Error adding to recent searches: $e');
+      }
     }
   }
 
   Future<List<DestinationModel>> getRecentSearches() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final List<String> history = prefs.getStringList(_recentSearchesKey) ?? [];
-      
+      final List<String> history =
+          prefs.getStringList(_recentSearchesKey) ?? [];
+
       return history.map((item) {
         return DestinationModel.fromJson(json.decode(item));
       }).toList();
     } catch (e) {
-      print('Error getting recent searches: $e');
+      if (kDebugMode) {
+        print('Error getting recent searches: $e');
+      }
       return [];
     }
   }
@@ -242,13 +274,17 @@ class DestinationService {
   List<String> getTrendingTags() => ['Cozy', 'Sleek', 'Airy', 'Moody'];
 
   // --- Review API ---
-  Future<List<ReviewModel>> getReviewsByDestination(String destinationId) async {
+  Future<List<ReviewModel>> getReviewsByDestination(
+    String destinationId,
+  ) async {
     try {
       final response = await _dio.get('$destinationId/reviews/');
       final data = response.data as List;
       return data.map((json) => ReviewModel.fromJson(json)).toList();
     } catch (e) {
-      print('Error fetching reviews: $e');
+      if (kDebugMode) {
+        print('Error fetching reviews: $e');
+      }
       return [];
     }
   }
@@ -272,7 +308,9 @@ class DestinationService {
       );
       return response.statusCode == 201;
     } catch (e) {
-      print('Error submitting review: $e');
+      if (kDebugMode) {
+        print('Error submitting review: $e');
+      }
       return false;
     }
   }

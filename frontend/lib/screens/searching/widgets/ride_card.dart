@@ -47,9 +47,9 @@ class RideCard extends StatelessWidget {
                 decoration: ShapeDecoration(
                   color: isSelected
                       ? const Color(0xFF2B99E3)
-                      : Colors.white.withOpacity(0),
-                  shape: OvalBorder(
-                    side: const BorderSide(width: 2, color: Color(0xFF2B99E3)),
+                      : Colors.white.withValues(alpha: 0),
+                  shape: const OvalBorder(
+                    side: BorderSide(width: 2, color: Color(0xFF2B99E3)),
                   ),
                 ),
                 child: isSelected
@@ -92,7 +92,8 @@ class RideCard extends StatelessWidget {
               right: option.passengerCapacity > 0 ? null : 0,
               child: Padding(
                 padding: EdgeInsets.only(
-                    left: option.passengerCapacity > 0 ? 46 : 0),
+                  left: option.passengerCapacity > 0 ? 46 : 0,
+                ),
                 child: Text(
                   dynamicDuration ?? '---',
                   textAlign: option.passengerCapacity > 0

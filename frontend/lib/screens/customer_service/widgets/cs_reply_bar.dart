@@ -4,11 +4,7 @@ class CsReplyBar extends StatelessWidget {
   final TextEditingController controller;
   final VoidCallback onSend;
 
-  const CsReplyBar({
-    super.key,
-    required this.controller,
-    required this.onSend,
-  });
+  const CsReplyBar({super.key, required this.controller, required this.onSend});
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +39,7 @@ class CsReplyBar extends StatelessWidget {
                     fontFamily: 'Poppins',
                     fontWeight: FontWeight.w500,
                     fontSize: 12,
-                    color: Colors.black.withOpacity(0.4),
+                    color: Colors.black.withValues(alpha: 0.4),
                   ),
                   border: InputBorder.none,
                   isDense: true,

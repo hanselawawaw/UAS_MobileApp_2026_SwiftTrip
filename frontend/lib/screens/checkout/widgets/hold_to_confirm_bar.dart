@@ -3,10 +3,7 @@ import 'package:flutter/material.dart';
 class HoldToConfirmBar extends StatefulWidget {
   final VoidCallback onConfirmed;
 
-  const HoldToConfirmBar({
-    super.key,
-    required this.onConfirmed,
-  });
+  const HoldToConfirmBar({super.key, required this.onConfirmed});
 
   @override
   State<HoldToConfirmBar> createState() => _HoldToConfirmBarState();
@@ -90,7 +87,9 @@ class _HoldToConfirmBarState extends State<HoldToConfirmBar>
                         width: 50,
                         height: 50,
                         decoration: BoxDecoration(
-                          color: const Color(0xFF90CAF9).withOpacity(0.45),
+                          color: const Color(
+                            0xFF90CAF9,
+                          ).withValues(alpha: 0.45),
                           shape: BoxShape.circle,
                         ),
                       ),

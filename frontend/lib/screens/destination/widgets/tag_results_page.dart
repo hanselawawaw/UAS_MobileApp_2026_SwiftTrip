@@ -88,7 +88,7 @@ class _TagResultsPageState extends State<TagResultsPage> {
                       bottom: 24,
                     ),
                     itemCount: destinations.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: 12),
+                    separatorBuilder: (_, _) => const SizedBox(height: 12),
                     itemBuilder: (context, index) {
                       return SearchResultCard(destination: destinations[index]);
                     },
@@ -112,10 +112,10 @@ class _TagResultsPageState extends State<TagResultsPage> {
             child: Container(
               width: 36,
               height: 36,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: Colors.white,
                 shape: BoxShape.circle,
-                boxShadow: const [
+                boxShadow: [
                   BoxShadow(
                     color: Color(0x26000000),
                     blurRadius: 10,

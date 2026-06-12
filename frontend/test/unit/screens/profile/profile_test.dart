@@ -28,34 +28,41 @@ void main() {
       expect(username, equals('Jane Doe'));
     });
 
-    test('fetchUserProfile can be stubbed via AuthRepository.getUserProfile', () async {
-      // Arrange
-      final expectedUser = User(
-        email: 'john@example.com',
-        firstName: 'John',
-        lastName: 'Smith',
-      );
-      when(() => mockAuthRepository.getUserProfile())
-          .thenAnswer((_) async => expectedUser);
+    test(
+      'fetchUserProfile can be stubbed via AuthRepository.getUserProfile',
+      () async {
+        // Arrange
+        final expectedUser = User(
+          email: 'john@example.com',
+          firstName: 'John',
+          lastName: 'Smith',
+        );
+        when(
+          () => mockAuthRepository.getUserProfile(),
+        ).thenAnswer((_) async => expectedUser);
 
-      // Act
-      final result = await mockAuthRepository.getUserProfile();
+        // Act
+        final result = await mockAuthRepository.getUserProfile();
 
-      // Assert
-      expect(result.email, equals('john@example.com'));
-      expect(result.fullName, equals('John Smith'));
-      verify(() => mockAuthRepository.getUserProfile()).called(1);
-    });
+        // Assert
+        expect(result.email, equals('john@example.com'));
+        expect(result.fullName, equals('John Smith'));
+        verify(() => mockAuthRepository.getUserProfile()).called(1);
+      },
+    );
 
-    test('load profile picture fallback icon state maps to empty image use-case', () {
-      // Arrange
-      const hasProfileImage = false;
+    test(
+      'load profile picture fallback icon state maps to empty image use-case',
+      () {
+        // Arrange
+        const hasProfileImage = false;
 
-      // Act
-      final shouldUseFallbackAvatar = !hasProfileImage;
+        // Act
+        const shouldUseFallbackAvatar = !hasProfileImage;
 
-      // Assert
-      expect(shouldUseFallbackAvatar, isTrue);
-    });
+        // Assert
+        expect(shouldUseFallbackAvatar, isTrue);
+      },
+    );
   });
 }

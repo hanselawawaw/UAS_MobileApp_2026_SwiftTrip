@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:swifttrip_frontend/core/constants.dart';
 import 'package:swifttrip_frontend/models/user.dart';
@@ -48,7 +49,9 @@ class AuthRepository {
         await getUserProfile();
         return true;
       } catch (e) {
-        print('Session restoration failed: $e');
+        if (kDebugMode) {
+          print('Session restoration failed: $e');
+        }
         await _clearTokens();
       }
     }
@@ -78,7 +81,9 @@ class AuthRepository {
     }
   }
 
-  Future<Map<String, dynamic>> updateUserProfile(Map<String, dynamic> data) async {
+  Future<Map<String, dynamic>> updateUserProfile(
+    Map<String, dynamic> data,
+  ) async {
     try {
       final token = await getToken();
       final response = await _dio.patch(
@@ -145,10 +150,14 @@ class AuthRepository {
         return true;
       }
     } on DioException catch (e) {
-      print('Login error: ${e.response?.data ?? e.message}');
+      if (kDebugMode) {
+        print('Login error: ${e.response?.data ?? e.message}');
+      }
       final data = e.response?.data;
       String message = 'Login failed. Please check your credentials.';
-      if (data is Map && data.containsKey('non_field_errors') && (data['non_field_errors'] as List).isNotEmpty) {
+      if (data is Map &&
+          data.containsKey('non_field_errors') &&
+          (data['non_field_errors'] as List).isNotEmpty) {
         message = data['non_field_errors'][0];
       } else if (data is Map && data.containsKey('detail')) {
         message = data['detail'];
@@ -185,7 +194,9 @@ class AuthRepository {
         return true;
       }
     } on DioException catch (e) {
-      print('Signup error: ${e.response?.data ?? e.message}');
+      if (kDebugMode) {
+        print('Signup error: ${e.response?.data ?? e.message}');
+      }
       if (e.response?.data != null && e.response?.data is Map) {
         String errorMsg = e.response!.data.values.first[0].toString();
         throw Exception(errorMsg);
@@ -209,7 +220,9 @@ class AuthRepository {
         return true;
       }
     } on DioException catch (e) {
-      print('Reset password error: ${e.response?.data ?? e.message}');
+      if (kDebugMode) {
+        print('Reset password error: ${e.response?.data ?? e.message}');
+      }
       throw Exception('Password reset request failed.');
     }
     return false;
@@ -230,7 +243,9 @@ class AuthRepository {
         return true;
       }
     } on DioException catch (e) {
-      print('Confirm reset error: ${e.response?.data ?? e.message}');
+      if (kDebugMode) {
+        print('Confirm reset error: ${e.response?.data ?? e.message}');
+      }
       throw Exception('Failed to reset password.');
     }
     return false;
@@ -240,7 +255,9 @@ class AuthRepository {
     try {
       await _dio.post('logout/');
     } catch (_) {
-      print('Logout API call failed, removing local tokens anyway.');
+      if (kDebugMode) {
+        print('Logout API call failed, removing local tokens anyway.');
+      }
     }
     await _clearTokens();
   }
@@ -257,7 +274,9 @@ class AuthRepository {
         throw Exception('Failed to send OTP');
       }
     } on DioException catch (e) {
-      print('OTP Error: ${e.response?.data ?? e.message}');
+      if (kDebugMode) {
+        print('OTP Error: ${e.response?.data ?? e.message}');
+      }
       final data = e.response?.data;
       String message = 'Failed to send verification code.';
       if (data is Map && data.containsKey('detail')) {
@@ -282,7 +301,9 @@ class AuthRepository {
       }
       return false;
     } on DioException catch (e) {
-      print('Verification Error: ${e.response?.data ?? e.message}');
+      if (kDebugMode) {
+        print('Verification Error: ${e.response?.data ?? e.message}');
+      }
       final data = e.response?.data;
       String message = 'Invalid or expired code.';
       if (data is Map && data.containsKey('detail')) {
@@ -306,7 +327,9 @@ class AuthRepository {
       }
       return false;
     } on DioException catch (e) {
-      print('Update Password Error: ${e.response?.data ?? e.message}');
+      if (kDebugMode) {
+        ('Update Password Error: ${e.response?.data ?? e.message}');
+      }
       final data = e.response?.data;
       String message = 'Failed to update password.';
       if (data is Map && data.containsKey('detail')) {

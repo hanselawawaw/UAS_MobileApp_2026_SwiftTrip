@@ -18,8 +18,6 @@ import 'history.dart';
 import '../destination/destination_screen.dart';
 import '../customer_service/onboarding.dart';
 import 'next_trip.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'review.dart';
 import '../main/main_screen.dart';
 import '../../core/constants.dart';
 import '../../providers/language_provider.dart';
@@ -96,7 +94,9 @@ class _HomePageState extends State<HomePage> {
     final historyService = HistoryService();
     try {
       final history = await historyService.fetchHistory();
-      final reviewableTickets = history.where((t) => t.isReviewable == true).toList();
+      final reviewableTickets = history
+          .where((t) => t.isReviewable == true)
+          .toList();
 
       if (reviewableTickets.isNotEmpty && mounted) {
         _popupShown = true;
@@ -107,11 +107,7 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  void _startBannerAutoPlay() {
-    _bannerTimer?.cancel();
-    _playNextBanner();
-  }
-
+  // ignore: unused_element
   void _playNextBanner() {
     _bannerTimer = Timer(const Duration(seconds: 2), () {
       if (!mounted) return;
@@ -141,7 +137,7 @@ class _HomePageState extends State<HomePage> {
   void _showReviewPopup(CartTicket ticket) {
     showDialog(
       context: context,
-      barrierColor: Colors.black.withOpacity(0.4),
+      barrierColor: Colors.black.withValues(alpha: 0.4),
       builder: (_) => ReviewPopupWidget(
         targetName: ticket.location ?? (ticket.to ?? 'SwiftTrip Destination'),
         destinationId: ticket.destinationId,
@@ -314,7 +310,7 @@ class _EmptySchedulePlaceholder extends StatelessWidget {
               ),
             ],
           ),
-          child: Row(
+          child: const Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
@@ -322,7 +318,7 @@ class _EmptySchedulePlaceholder extends StatelessWidget {
                 size: 36,
                 color: Constants.primaryBlue,
               ),
-              const SizedBox(width: 14),
+              SizedBox(width: 14),
               Flexible(
                 child: Text(
                   'No upcoming trips.\nFind your next destination!',

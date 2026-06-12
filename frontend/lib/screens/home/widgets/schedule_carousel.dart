@@ -29,7 +29,8 @@ class ScheduleCarousel extends StatelessWidget {
             controller: controller,
             onPageChanged: onPageChanged,
             itemCount: items.length,
-            itemBuilder: (_, i) => _ScheduleCard(item: items[i], onItemTap: onItemTap),
+            itemBuilder: (_, i) =>
+                _ScheduleCard(item: items[i], onItemTap: onItemTap),
           ),
         ),
         const SizedBox(height: 10),
@@ -142,7 +143,7 @@ class _ScheduleCard extends StatelessWidget {
                     Text(
                       'get more details',
                       style: TextStyle(
-                        color: Colors.black.withOpacity(0.40),
+                        color: Colors.black.withValues(alpha: 0.40),
                         fontSize: 8,
                         fontFamily: 'Poppins',
                         fontWeight: FontWeight.w300,
@@ -152,7 +153,7 @@ class _ScheduleCard extends StatelessWidget {
                     Icon(
                       Icons.arrow_forward,
                       size: 8,
-                      color: Colors.black.withOpacity(0.40),
+                      color: Colors.black.withValues(alpha: 0.40),
                     ),
                   ],
                 ),
@@ -165,7 +166,9 @@ class _ScheduleCard extends StatelessWidget {
                   bottom: 0,
                   right: 0,
                   child: ClipRRect(
-                    borderRadius: const BorderRadius.horizontal(right: Radius.circular(20)),
+                    borderRadius: const BorderRadius.horizontal(
+                      right: Radius.circular(20),
+                    ),
                     child: _ScheduleImage(
                       imageAsset: 'assets/images/home/vacation_logo.png',
                       imageUrl: item.imageUrl,
@@ -227,7 +230,7 @@ class _ScheduleImage extends StatelessWidget {
         width: w,
         height: h,
         fit: fit,
-        errorBuilder: (_, __, ___) => imageFallback,
+        errorBuilder: (_, _, _) => imageFallback,
       );
     }
 
@@ -237,7 +240,7 @@ class _ScheduleImage extends StatelessWidget {
       width: w,
       height: h,
       fit: fit,
-      errorBuilder: (_, __, ___) => imageFallback,
+      errorBuilder: (_, _, _) => imageFallback,
     );
   }
 }

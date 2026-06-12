@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import '../widgets/auth_widgets.dart';
 import '../widgets/auth_primary_button.dart';
@@ -84,7 +86,10 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
                     }
 
                     try {
-                      await _authService.requestOtp(email, isPasswordReset: true);
+                      await _authService.requestOtp(
+                        email,
+                        isPasswordReset: true,
+                      );
 
                       if (mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
@@ -140,7 +145,8 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => VerificationPage(email: email),
+                            builder: (context) =>
+                                VerificationPage(email: email),
                           ),
                         );
                       }

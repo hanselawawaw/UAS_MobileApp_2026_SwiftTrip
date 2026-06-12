@@ -21,48 +21,54 @@ void main() {
     // ── loadRecommendations() ─────────────────────────────────────────────
 
     group('loadRecommendations()', () {
-      test('should return list of RecommendationItem when fetch is successful',
-          () async {
-        // Arrange
-        final mockRecommendations = [
-          const RecommendationItem(
-            name: 'The Langham',
-            description: 'Jakarta',
-            imageAsset: 'assets/images/home/vacation_logo.png',
-          ),
-          const RecommendationItem(
-            name: 'The Ritz-Carlton',
-            description: 'Bali',
-            imageAsset: 'assets/images/home/vacation_logo.png',
-          ),
-        ];
+      test(
+        'should return list of RecommendationItem when fetch is successful',
+        () async {
+          // Arrange
+          final mockRecommendations = [
+            const RecommendationItem(
+              name: 'The Langham',
+              description: 'Jakarta',
+              imageAsset: 'assets/images/home/vacation_logo.png',
+            ),
+            const RecommendationItem(
+              name: 'The Ritz-Carlton',
+              description: 'Bali',
+              imageAsset: 'assets/images/home/vacation_logo.png',
+            ),
+          ];
 
-        when(() => mockHomeService.fetchRecommendations())
-            .thenAnswer((_) async => mockRecommendations);
+          when(
+            () => mockHomeService.fetchRecommendations(),
+          ).thenAnswer((_) async => mockRecommendations);
 
-        // Act
-        final result = await mockHomeService.fetchRecommendations();
+          // Act
+          final result = await mockHomeService.fetchRecommendations();
 
-        // Assert
-        expect(result, isA<List<RecommendationItem>>());
-        expect(result.length, equals(2));
-        expect(result.first.name, equals('The Langham'));
-        expect(result.first.description, equals('Jakarta'));
-        verify(() => mockHomeService.fetchRecommendations()).called(1);
-      });
+          // Assert
+          expect(result, isA<List<RecommendationItem>>());
+          expect(result.length, equals(2));
+          expect(result.first.name, equals('The Langham'));
+          expect(result.first.description, equals('Jakarta'));
+          verify(() => mockHomeService.fetchRecommendations()).called(1);
+        },
+      );
 
-      test('should return empty list when no recommendations available',
-          () async {
-        // Arrange
-        when(() => mockHomeService.fetchRecommendations())
-            .thenAnswer((_) async => []);
+      test(
+        'should return empty list when no recommendations available',
+        () async {
+          // Arrange
+          when(
+            () => mockHomeService.fetchRecommendations(),
+          ).thenAnswer((_) async => []);
 
-        // Act
-        final result = await mockHomeService.fetchRecommendations();
+          // Act
+          final result = await mockHomeService.fetchRecommendations();
 
-        // Assert
-        expect(result, isEmpty);
-      });
+          // Assert
+          expect(result, isEmpty);
+        },
+      );
 
       test('should return all 4 default recommendations', () async {
         // Arrange
@@ -73,8 +79,10 @@ void main() {
 
         // Assert
         expect(result.length, equals(4));
-        expect(result.map((r) => r.description),
-            containsAll(['Jakarta', 'Bali', 'Yogyakarta', 'Bandung']));
+        expect(
+          result.map((r) => r.description),
+          containsAll(['Jakarta', 'Bali', 'Yogyakarta', 'Bandung']),
+        );
       });
 
       test('should return recommendation with valid imageAsset', () async {
@@ -97,7 +105,7 @@ void main() {
     group('buildGridItems()', () {
       test('RecommendationItem should serialize and deserialize correctly', () {
         // Arrange
-        final item = const RecommendationItem(
+        const item = RecommendationItem(
           name: 'Hotel Tentrem',
           description: 'Yogyakarta',
           imageUrl: 'https://example.com/image.jpg',
@@ -133,23 +141,26 @@ void main() {
         expect(item.imageAsset, isNull);
       });
 
-      test('RecommendationItem list can be built from multiple JSON entries',
-          () {
-        // Arrange
-        final jsonList = [
-          {'name': 'Hotel A', 'description': 'City A'},
-          {'name': 'Hotel B', 'description': 'City B'},
-          {'name': 'Hotel C', 'description': 'City C'},
-        ];
+      test(
+        'RecommendationItem list can be built from multiple JSON entries',
+        () {
+          // Arrange
+          final jsonList = [
+            {'name': 'Hotel A', 'description': 'City A'},
+            {'name': 'Hotel B', 'description': 'City B'},
+            {'name': 'Hotel C', 'description': 'City C'},
+          ];
 
-        // Act
-        final items =
-            jsonList.map((j) => RecommendationItem.fromJson(j)).toList();
+          // Act
+          final items = jsonList
+              .map((j) => RecommendationItem.fromJson(j))
+              .toList();
 
-        // Assert
-        expect(items.length, equals(3));
-        expect(items[1].name, equals('Hotel B'));
-      });
+          // Assert
+          expect(items.length, equals(3));
+          expect(items[1].name, equals('Hotel B'));
+        },
+      );
     });
 
     // ── fetchSchedules() ─────────────────────────────────────────────────
@@ -157,8 +168,9 @@ void main() {
     group('fetchSchedules()', () {
       test('should return empty list when service throws exception', () async {
         // Arrange
-        when(() => mockHomeService.fetchSchedules())
-            .thenAnswer((_) async => []);
+        when(
+          () => mockHomeService.fetchSchedules(),
+        ).thenAnswer((_) async => []);
 
         // Act
         final result = await mockHomeService.fetchSchedules();
@@ -169,8 +181,9 @@ void main() {
 
       test('should call fetchSchedules exactly once', () async {
         // Arrange
-        when(() => mockHomeService.fetchSchedules())
-            .thenAnswer((_) async => []);
+        when(
+          () => mockHomeService.fetchSchedules(),
+        ).thenAnswer((_) async => []);
 
         // Act
         await mockHomeService.fetchSchedules();

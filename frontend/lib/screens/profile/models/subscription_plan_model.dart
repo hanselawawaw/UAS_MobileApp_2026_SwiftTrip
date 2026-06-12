@@ -34,7 +34,9 @@ class SubscriptionPlan {
     return {
       'id': id,
       'name': name,
-      'gradient_color': '0x${gradientColor.value.toRadixString(16).toUpperCase()}',
+      'gradient_color':
+          // ignore: deprecated_member_use
+          '0x${gradientColor.value.toRadixString(16).toUpperCase()}',
       'button_label': buttonLabel,
       'is_current': isCurrent,
       'features': features.map((f) => f.toJson()).toList(),
@@ -46,10 +48,7 @@ class PlanFeature {
   final String text;
   final bool isHighlighted;
 
-  const PlanFeature({
-    required this.text,
-    this.isHighlighted = false,
-  });
+  const PlanFeature({required this.text, this.isHighlighted = false});
 
   factory PlanFeature.fromJson(Map<String, dynamic> json) {
     return PlanFeature(
@@ -59,9 +58,6 @@ class PlanFeature {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'text': text,
-      'is_highlighted': isHighlighted,
-    };
+    return {'text': text, 'is_highlighted': isHighlighted};
   }
 }

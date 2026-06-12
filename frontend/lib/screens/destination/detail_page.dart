@@ -270,14 +270,15 @@ class _DestinationDetailPageState extends State<DestinationDetailPage> {
         onAddToCart: () async {
           try {
             final provider = context.read<CartProvider>();
-            
+
             final lowerTitle = widget.destination.title.toLowerCase();
             double? lat;
             double? lng;
             if (lowerTitle.contains('bali')) {
               lat = -8.4095;
               lng = 115.1889;
-            } else if (lowerTitle.contains('yogyakarta') || lowerTitle.contains('jogja')) {
+            } else if (lowerTitle.contains('yogyakarta') ||
+                lowerTitle.contains('jogja')) {
               lat = -7.7956;
               lng = 110.3695;
             } else if (lowerTitle.contains('bandung')) {
@@ -371,7 +372,7 @@ class _HeroImage extends StatelessWidget {
               ? Image.network(
                   destination.imageUrl,
                   fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => fallback,
+                  errorBuilder: (_, _, _) => fallback,
                 )
               : fallback,
         ),
@@ -384,7 +385,7 @@ class _HeroImage extends StatelessWidget {
               width: 34,
               height: 34,
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.85),
+                color: Colors.white.withValues(alpha: 0.85),
                 shape: BoxShape.circle,
               ),
               child: Icon(

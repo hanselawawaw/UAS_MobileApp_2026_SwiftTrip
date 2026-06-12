@@ -206,33 +206,37 @@ void main() {
         expect(ticket.classLabel, equals('Economy'));
       });
 
-      test('should return true when flight offer is selected before confirm',
-          () {
-        // Arrange
-        final FlightOffer? selectedFlight = makeFlightOffer(
-          airlineCode: 'SJ',
-          airlineName: 'Sriwijaya Air',
-          allAirlines: const ['Sriwijaya Air'],
-          origin: 'SUB',
-          destination: 'CGK',
-          flightNumber: 'SJ-202',
-          departureTime: '2026-07-10T14:00',
-          arrivalTime: '2026-07-10T15:30',
-          price: 750000,
-          latitude: -6.2,
-          longitude: 106.8,
-        );
+      test(
+        'should return true when flight offer is selected before confirm',
+        () {
+          // Arrange
+          final FlightOffer selectedFlight = makeFlightOffer(
+            airlineCode: 'SJ',
+            airlineName: 'Sriwijaya Air',
+            allAirlines: const ['Sriwijaya Air'],
+            origin: 'SUB',
+            destination: 'CGK',
+            flightNumber: 'SJ-202',
+            departureTime: '2026-07-10T14:00',
+            arrivalTime: '2026-07-10T15:30',
+            price: 750000,
+            latitude: -6.2,
+            longitude: 106.8,
+          );
 
-        // Act
-        final canConfirm = selectedFlight != null;
+          // Act
+          // ignore: unnecessary_null_comparison
+          final canConfirm = selectedFlight != null;
 
-        // Assert
-        expect(canConfirm, isTrue);
-      });
+          // Assert
+          expect(canConfirm, isTrue);
+        },
+      );
 
       test('should return false when no flight offer is selected', () {
         FlightOffer? selectedFlight;
 
+        // ignore: unnecessary_null_comparison
         final canConfirm = selectedFlight != null;
 
         expect(canConfirm, isFalse);
@@ -250,10 +254,7 @@ void main() {
 
       test('should format price in Rupiah correctly', () {
         String formatRp(int amount) {
-          return 'Rp ${amount.toString().replaceAllMapped(
-                RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
-                (m) => '${m[1]}.',
-              )}';
+          return 'Rp ${amount.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (m) => '${m[1]}.')}';
         }
 
         expect(formatRp(1500000), equals('Rp 1.500.000'));

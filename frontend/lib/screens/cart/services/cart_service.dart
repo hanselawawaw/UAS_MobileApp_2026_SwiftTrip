@@ -20,29 +20,45 @@ class CartService {
     try {
       final dio = Dio();
       final token = await AuthRepository().getToken();
-      
-      print('Debug: 3. Service attempting POST to ${Constants.bookingsUrl}cart/add/');
-      
+
+      if (kDebugMode) {
+        print(
+          'Debug: 3. Service attempting POST to ${Constants.bookingsUrl}cart/add/',
+        );
+      }
+
       final response = await dio.post(
         '${Constants.bookingsUrl}cart/add/',
         data: ticket.toJson(),
-        options: Options(headers: {
-          if (token != null) 'Authorization': 'Bearer $token',
-        }),
+        options: Options(
+          headers: {if (token != null) 'Authorization': 'Bearer $token'},
+        ),
       );
 
       if (response.statusCode == 201) {
-        print('Debug: POST successful. Server message: ${response.data}');
+        if (kDebugMode) {
+          print('Debug: POST successful. Server message: ${response.data}');
+        }
       } else {
-        print('Debug: POST returned unexpected status: ${response.statusCode}');
+        if (kDebugMode) {
+          print(
+            'Debug: POST returned unexpected status: ${response.statusCode}',
+          );
+        }
       }
     } on DioException catch (e) {
-      print('Debug: CRITICAL ERROR in CartService: $e');
+      if (kDebugMode) {
+        print('Debug: CRITICAL ERROR in CartService: $e');
+      }
       if (e.response != null) {
-        print('Debug: Server response data: ${e.response?.data}');
+        if (kDebugMode) {
+          print('Debug: Server response data: ${e.response?.data}');
+        }
       }
     } catch (e) {
-      print('Debug: CRITICAL ERROR in CartService: $e');
+      if (kDebugMode) {
+        print('Debug: CRITICAL ERROR in CartService: $e');
+      }
     }
   }
 
@@ -50,31 +66,43 @@ class CartService {
     try {
       final dio = Dio();
       final token = await AuthRepository().getToken();
-      
-      print('Debug: Deleting ticket ID: $id');
-      
+
+      if (kDebugMode) {
+        print('Debug: Deleting ticket ID: $id');
+      }
+
       final response = await dio.delete(
         '${Constants.bookingsUrl}$id/',
-        options: Options(headers: {
-          if (token != null) 'Authorization': 'Bearer $token',
-        }),
+        options: Options(
+          headers: {if (token != null) 'Authorization': 'Bearer $token'},
+        ),
       );
 
       if (response.statusCode == 204 || response.statusCode == 200) {
         _tickets.removeWhere((ticket) => ticket.bookingId == id);
         return true;
       } else {
-        print('Debug: Delete returned unexpected status: ${response.statusCode}');
+        if (kDebugMode) {
+          print(
+            'Debug: Delete returned unexpected status: ${response.statusCode}',
+          );
+        }
         return false;
       }
     } on DioException catch (e) {
-      print('Debug: CRITICAL ERROR deleting ticket: $e');
+      if (kDebugMode) {
+        print('Debug: CRITICAL ERROR deleting ticket: $e');
+      }
       if (e.response != null) {
-        print('Debug: Server response data: ${e.response?.data}');
+        if (kDebugMode) {
+          print('Debug: Server response data: ${e.response?.data}');
+        }
       }
       return false;
     } catch (e) {
-      print('Debug: CRITICAL ERROR in CartService delete: $e');
+      if (kDebugMode) {
+        print('Debug: CRITICAL ERROR in CartService delete: $e');
+      }
       return false;
     }
   }
@@ -89,15 +117,17 @@ class CartService {
       final token = await AuthRepository().getToken();
       final response = await dio.get(
         '${Constants.bookingsUrl}cart/',
-        options: Options(headers: {
-          if (token != null) 'Authorization': 'Bearer $token',
-        }),
+        options: Options(
+          headers: {if (token != null) 'Authorization': 'Bearer $token'},
+        ),
       );
 
       if (response.statusCode == 200) {
-        print('Debug: GET Cart response: ${response.data}');
+        if (kDebugMode) {
+          print('Debug: GET Cart response: ${response.data}');
+        }
         final List<dynamic> data = response.data;
-        
+
         final List<CartTicket> fetchedTickets = data.map((json) {
           return CartTicket.fromJson(json);
         }).toList();
@@ -106,17 +136,27 @@ class CartService {
         _tickets.addAll(fetchedTickets);
         return _tickets;
       } else {
-        print('Debug: GET Cart returned unexpected status ${response.statusCode}');
+        if (kDebugMode) {
+          print(
+            'Debug: GET Cart returned unexpected status ${response.statusCode}',
+          );
+        }
         return List.from(_tickets);
       }
     } on DioException catch (e) {
-      print('Debug: CRITICAL ERROR fetching cart: $e');
+      if (kDebugMode) {
+        print('Debug: CRITICAL ERROR fetching cart: $e');
+      }
       if (e.response != null) {
-        print('Debug: Server response data: ${e.response?.data}');
+        if (kDebugMode) {
+          print('Debug: Server response data: ${e.response?.data}');
+        }
       }
       return List.from(_tickets);
     } catch (e) {
-      print('Debug: Parse Error: $e');
+      if (kDebugMode) {
+        print('Debug: Parse Error: $e');
+      }
       return List.from(_tickets);
     }
   }
@@ -127,9 +167,9 @@ class CartService {
       final token = await AuthRepository().getToken();
       final response = await dio.get(
         Constants.promotionsUrl,
-        options: Options(headers: {
-          if (token != null) 'Authorization': 'Bearer $token',
-        }),
+        options: Options(
+          headers: {if (token != null) 'Authorization': 'Bearer $token'},
+        ),
       );
       if (response.statusCode == 200) {
         final List<dynamic> data = response.data;
@@ -152,7 +192,7 @@ class CartService {
     } else if (promo.promotionType == 'CASHBACK') {
       return promo.discountValue.toInt();
     }
-    
+
     return 0;
   }
 }

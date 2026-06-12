@@ -39,7 +39,7 @@ class SearchBarWidget extends StatelessWidget {
                 child: Text(
                   provider.translate('search'),
                   style: TextStyle(
-                    color: Colors.black.withOpacity(0.40),
+                    color: Colors.black.withValues(alpha: 0.40),
                     fontSize: 12,
                     fontFamily: 'Poppins',
                     fontWeight: FontWeight.w500,

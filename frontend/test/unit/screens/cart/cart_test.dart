@@ -20,16 +20,15 @@ CartTicket makeTicket({
   String type = 'Plane Ticket',
   int price = 500000,
   int serviceFee = 25000,
-}) =>
-    CartTicket(
-      bookingId: id,
-      type: type,
-      classLabel: 'Economy',
-      priceRp: price,
-      serviceFee: serviceFee,
-      from: 'CGK',
-      to: 'DPS',
-    );
+}) => CartTicket(
+  bookingId: id,
+  type: type,
+  classLabel: 'Economy',
+  priceRp: price,
+  serviceFee: serviceFee,
+  from: 'CGK',
+  to: 'DPS',
+);
 
 // Helper: logika toggleItemSelection murni
 class CartScreenController {
@@ -114,20 +113,23 @@ void main() {
         expect(identical(s1, s2), isTrue);
       });
 
-      test('loadCartItems - CartTicket.fromJson membuat objek dengan benar', () {
-        final json = {
-          'type': 'Plane Ticket',
-          'booking_id': 'BK-001',
-          'class_label': 'Economy',
-          'price_rp': 800000,
-          'service_fee': 40000,
-          'discount_rp': 0,
-        };
-        final ticket = CartTicket.fromJson(json);
-        expect(ticket.bookingId, equals('BK-001'));
-        expect(ticket.priceRp, equals(800000));
-        expect(ticket.type, equals('Plane Ticket'));
-      });
+      test(
+        'loadCartItems - CartTicket.fromJson membuat objek dengan benar',
+        () {
+          final json = {
+            'type': 'Plane Ticket',
+            'booking_id': 'BK-001',
+            'class_label': 'Economy',
+            'price_rp': 800000,
+            'service_fee': 40000,
+            'discount_rp': 0,
+          };
+          final ticket = CartTicket.fromJson(json);
+          expect(ticket.bookingId, equals('BK-001'));
+          expect(ticket.priceRp, equals(800000));
+          expect(ticket.type, equals('Plane Ticket'));
+        },
+      );
     });
 
     // ----------------------------------------------------------
@@ -144,11 +146,14 @@ void main() {
         expect(controller.selectedIds.contains('TK-001'), isTrue);
       });
 
-      test('toggleItemSelection - menghapus ID dari selectedIds saat dipilih lagi', () {
-        controller.toggleItemSelection('TK-001');
-        controller.toggleItemSelection('TK-001');
-        expect(controller.selectedIds.contains('TK-001'), isFalse);
-      });
+      test(
+        'toggleItemSelection - menghapus ID dari selectedIds saat dipilih lagi',
+        () {
+          controller.toggleItemSelection('TK-001');
+          controller.toggleItemSelection('TK-001');
+          expect(controller.selectedIds.contains('TK-001'), isFalse);
+        },
+      );
 
       test('toggleItemSelection - dapat mengelola multiple ID', () {
         controller.toggleItemSelection('TK-001');
@@ -220,10 +225,14 @@ void main() {
 
       test('calculateTotalAmount - mengurangi diskon promo PERCENTAGE', () {
         controller.tickets = [makeTicket(price: 1000000, serviceFee: 0)];
-        final promo = Promotion(
-          id: 'P1', title: '10% OFF', dateRange: '2025',
-          description: 'Test', promotionType: 'PERCENTAGE',
-          discountValue: 10, minPurchase: 0,
+        const promo = Promotion(
+          id: 'P1',
+          title: '10% OFF',
+          dateRange: '2025',
+          description: 'Test',
+          promotionType: 'PERCENTAGE',
+          discountValue: 10,
+          minPurchase: 0,
         );
         // 1000000 - 10% = 900000
         expect(controller.calculateTotalAmount(promo: promo), equals(900000));
@@ -231,18 +240,25 @@ void main() {
 
       test('calculateTotalAmount - mengurangi diskon promo CASHBACK', () {
         controller.tickets = [makeTicket(price: 1000000, serviceFee: 0)];
-        final promo = Promotion(
-          id: 'P2', title: 'Cashback 50K', dateRange: '2025',
-          description: 'Test', promotionType: 'CASHBACK',
-          discountValue: 50000, minPurchase: 0,
+        const promo = Promotion(
+          id: 'P2',
+          title: 'Cashback 50K',
+          dateRange: '2025',
+          description: 'Test',
+          promotionType: 'CASHBACK',
+          discountValue: 50000,
+          minPurchase: 0,
         );
         expect(controller.calculateTotalAmount(promo: promo), equals(950000));
       });
 
-      test('calculateTotalAmount - formatRp menghasilkan format Rp yang benar', () {
-        expect(controller.formatRp(1500000), equals('Rp. 1.500.000'));
-        expect(controller.formatRp(500000), equals('Rp. 500.000'));
-      });
+      test(
+        'calculateTotalAmount - formatRp menghasilkan format Rp yang benar',
+        () {
+          expect(controller.formatRp(1500000), equals('Rp. 1.500.000'));
+          expect(controller.formatRp(500000), equals('Rp. 500.000'));
+        },
+      );
     });
   });
 }

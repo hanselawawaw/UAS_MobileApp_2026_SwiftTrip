@@ -20,8 +20,8 @@ import '../../test_helpers.dart';
 //   ElevatedButton  | navigateToHome()
 // ============================================================
 
-CheckoutDetailsModel makeDetails() => CheckoutDetailsModel(
-  tickets: const [
+CheckoutDetailsModel makeDetails() => const CheckoutDetailsModel(
+  tickets: [
     CartTicket(
       bookingId: 'TXN-20250501',
       type: 'Plane Ticket',
@@ -29,7 +29,7 @@ CheckoutDetailsModel makeDetails() => CheckoutDetailsModel(
       priceRp: 1500000,
     ),
   ],
-  purchaseItems: const [],
+  purchaseItems: [],
   totalPrice: 'Rp. 1.500.000',
   discountTotal: 0,
 );
@@ -46,9 +46,7 @@ void main() {
           ChangeNotifierProvider(create: (_) => LanguageProvider()),
           ChangeNotifierProvider(create: (_) => WishlistProvider()),
         ],
-        child: MaterialApp(
-          home: SuccessfulPage(details: makeDetails()),
-        ),
+        child: MaterialApp(home: SuccessfulPage(details: makeDetails())),
       );
     }
 
@@ -65,47 +63,51 @@ void main() {
     // METHOD: displaySuccessIcon()
     // ----------------------------------------------------------
     testWidgets(
-        '[Icon] displaySuccessIcon() - SuccessfulPage renders tanpa error',
-        (WidgetTester tester) async {
-      await tester.pumpWidget(buildSubject());
-      await tester.pump();
-      expect(find.byType(SuccessfulPage), findsOneWidget);
-      await cleanupTimer(tester);
-    });
+      '[Icon] displaySuccessIcon() - SuccessfulPage renders tanpa error',
+      (WidgetTester tester) async {
+        await tester.pumpWidget(buildSubject());
+        await tester.pump();
+        expect(find.byType(SuccessfulPage), findsOneWidget);
+        await cleanupTimer(tester);
+      },
+    );
 
     testWidgets(
-        '[Icon] displaySuccessIcon() - SuccessCheckIcon tampil di halaman',
-        (WidgetTester tester) async {
-      await tester.pumpWidget(buildSubject());
-      await tester.pump();
+      '[Icon] displaySuccessIcon() - SuccessCheckIcon tampil di halaman',
+      (WidgetTester tester) async {
+        await tester.pumpWidget(buildSubject());
+        await tester.pump();
 
-      expect(find.byType(ScaleTransition), findsWidgets);
-      await cleanupTimer(tester);
-    });
-
-    testWidgets(
-        '[Icon] displaySuccessIcon() - ScaleTransition dengan Curves.elasticOut ada',
-        (WidgetTester tester) async {
-      await tester.pumpWidget(buildSubject());
-      await tester.pump();
-
-      expect(find.byType(ScaleTransition), findsWidgets);
-      await cleanupTimer(tester);
-    });
+        expect(find.byType(ScaleTransition), findsWidgets);
+        await cleanupTimer(tester);
+      },
+    );
 
     testWidgets(
-        '[Icon] displaySuccessIcon() - FadeTransition untuk animasi teks ada',
-        (WidgetTester tester) async {
-      await tester.pumpWidget(buildSubject());
-      await tester.pump();
+      '[Icon] displaySuccessIcon() - ScaleTransition dengan Curves.elasticOut ada',
+      (WidgetTester tester) async {
+        await tester.pumpWidget(buildSubject());
+        await tester.pump();
 
-      expect(find.byType(FadeTransition), findsWidgets);
-      await cleanupTimer(tester);
-    });
+        expect(find.byType(ScaleTransition), findsWidgets);
+        await cleanupTimer(tester);
+      },
+    );
 
     testWidgets(
-        '[Icon] displaySuccessIcon() - Background color 0xFFF6F6F6',
-        (WidgetTester tester) async {
+      '[Icon] displaySuccessIcon() - FadeTransition untuk animasi teks ada',
+      (WidgetTester tester) async {
+        await tester.pumpWidget(buildSubject());
+        await tester.pump();
+
+        expect(find.byType(FadeTransition), findsWidgets);
+        await cleanupTimer(tester);
+      },
+    );
+
+    testWidgets('[Icon] displaySuccessIcon() - Background color 0xFFF6F6F6', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(buildSubject());
       await tester.pump();
 
@@ -119,82 +121,88 @@ void main() {
     // METHOD: displayTransactionId()
     // ----------------------------------------------------------
     testWidgets(
-        '[Text] displayTransactionId() - Teks "Payment Successful" tampil',
-        (WidgetTester tester) async {
-      await tester.pumpWidget(buildSubject());
-      await tester.pump(const Duration(milliseconds: 100));
+      '[Text] displayTransactionId() - Teks "Payment Successful" tampil',
+      (WidgetTester tester) async {
+        await tester.pumpWidget(buildSubject());
+        await tester.pump(const Duration(milliseconds: 100));
 
-      expect(find.text('Payment Successful'), findsOneWidget);
-      await cleanupTimer(tester);
-    });
-
-    testWidgets(
-        '[Text] displayTransactionId() - Teks Payment Successful menggunakan style Cairo',
-        (WidgetTester tester) async {
-      await tester.pumpWidget(buildSubject());
-      await tester.pump(const Duration(milliseconds: 100));
-
-      final text = tester.widget<Text>(find.text('Payment Successful'));
-      expect(text.style?.fontFamily, equals('Cairo'));
-      expect(text.style?.fontWeight, equals(FontWeight.w700));
-      await cleanupTimer(tester);
-    });
+        expect(find.text('Payment Successful'), findsOneWidget);
+        await cleanupTimer(tester);
+      },
+    );
 
     testWidgets(
-        '[Text] displayTransactionId() - Center widget digunakan untuk memusatkan konten',
-        (WidgetTester tester) async {
-      await tester.pumpWidget(buildSubject());
-      await tester.pump();
+      '[Text] displayTransactionId() - Teks Payment Successful menggunakan style Cairo',
+      (WidgetTester tester) async {
+        await tester.pumpWidget(buildSubject());
+        await tester.pump(const Duration(milliseconds: 100));
 
-      expect(find.byType(Center), findsWidgets);
-      await cleanupTimer(tester);
-    });
+        final text = tester.widget<Text>(find.text('Payment Successful'));
+        expect(text.style?.fontFamily, equals('Cairo'));
+        expect(text.style?.fontWeight, equals(FontWeight.w700));
+        await cleanupTimer(tester);
+      },
+    );
+
+    testWidgets(
+      '[Text] displayTransactionId() - Center widget digunakan untuk memusatkan konten',
+      (WidgetTester tester) async {
+        await tester.pumpWidget(buildSubject());
+        await tester.pump();
+
+        expect(find.byType(Center), findsWidgets);
+        await cleanupTimer(tester);
+      },
+    );
 
     // ----------------------------------------------------------
     // WIDGET: ElevatedButton
     // METHOD: navigateToHome()
     // ----------------------------------------------------------
     testWidgets(
-        '[ElevatedButton] navigateToHome() - SuccessfulPage auto-navigasi '
-        'ke PaymentDetailPage setelah 1000ms',
-        (WidgetTester tester) async {
-      await tester.pumpWidget(buildSubject());
+      '[ElevatedButton] navigateToHome() - SuccessfulPage auto-navigasi '
+      'ke PaymentDetailPage setelah 1000ms',
+      (WidgetTester tester) async {
+        await tester.pumpWidget(buildSubject());
 
-      // Before 1000ms the page should still be visible
-      await tester.pump(const Duration(milliseconds: 500));
-      expect(find.byType(SuccessfulPage), findsOneWidget);
+        // Before 1000ms the page should still be visible
+        await tester.pump(const Duration(milliseconds: 500));
+        expect(find.byType(SuccessfulPage), findsOneWidget);
 
-      // Advance past the 1000ms delayed callback
-      await tester.pump(const Duration(milliseconds: 600));
-      await tester.pump(const Duration(milliseconds: 500));
+        // Advance past the 1000ms delayed callback
+        await tester.pump(const Duration(milliseconds: 600));
+        await tester.pump(const Duration(milliseconds: 500));
 
-      // After navigation, SuccessfulPage replaced by PaymentDetailPage
-      expect(find.byType(SuccessfulPage), findsNothing);
-      await tester.pumpWidget(Container());
-    });
-
-    testWidgets(
-        '[ElevatedButton] navigateToHome() - TopBar ada dengan back button',
-        (WidgetTester tester) async {
-      await tester.pumpWidget(buildSubject());
-      await tester.pump();
-
-      expect(find.byType(Scaffold), findsWidgets);
-      await cleanupTimer(tester);
-    });
+        // After navigation, SuccessfulPage replaced by PaymentDetailPage
+        expect(find.byType(SuccessfulPage), findsNothing);
+        await tester.pumpWidget(Container());
+      },
+    );
 
     testWidgets(
-        '[ElevatedButton] navigateToHome() - Animasi controller berjalan '
-        'selama 600ms',
-        (WidgetTester tester) async {
-      await tester.pumpWidget(buildSubject());
+      '[ElevatedButton] navigateToHome() - TopBar ada dengan back button',
+      (WidgetTester tester) async {
+        await tester.pumpWidget(buildSubject());
+        await tester.pump();
 
-      await tester.pump(const Duration(milliseconds: 300));
-      expect(find.byType(SuccessfulPage), findsOneWidget);
+        expect(find.byType(Scaffold), findsWidgets);
+        await cleanupTimer(tester);
+      },
+    );
 
-      await tester.pump(const Duration(milliseconds: 300));
-      expect(find.byType(SuccessfulPage), findsOneWidget);
-      await cleanupTimer(tester);
-    });
+    testWidgets(
+      '[ElevatedButton] navigateToHome() - Animasi controller berjalan '
+      'selama 600ms',
+      (WidgetTester tester) async {
+        await tester.pumpWidget(buildSubject());
+
+        await tester.pump(const Duration(milliseconds: 300));
+        expect(find.byType(SuccessfulPage), findsOneWidget);
+
+        await tester.pump(const Duration(milliseconds: 300));
+        expect(find.byType(SuccessfulPage), findsOneWidget);
+        await cleanupTimer(tester);
+      },
+    );
   });
 }

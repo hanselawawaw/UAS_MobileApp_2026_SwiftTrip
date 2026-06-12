@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/cart_provider.dart';
@@ -146,7 +147,9 @@ class _LandVehicleSearchState extends State<LandVehicleSearch> {
   }
 
   void _onAddToCart() {
-    print('Debug: 1. Add to Cart Button Pressed');
+    if (kDebugMode) {
+      print('Debug: 1. Add to Cart Button Pressed');
+    }
     if (_selectedVehicle == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -160,7 +163,7 @@ class _LandVehicleSearchState extends State<LandVehicleSearch> {
     // Since VehiclePin already contains a CartTicket, we can use it directly
     // and just apply any transient UI-only modifications if needed.
     final baseTicket = _selectedVehicle!.ticket;
-    
+
     final cartTicket = baseTicket.copyWith(
       imageUrl: baseTicket.imageUrl ?? 'assets/images/train_vector.png',
     );
@@ -169,9 +172,7 @@ class _LandVehicleSearchState extends State<LandVehicleSearch> {
 
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (_) => const MainScreen(initialIndex: 1),
-      ),
+      MaterialPageRoute(builder: (_) => const MainScreen(initialIndex: 1)),
     );
   }
 
@@ -237,7 +238,7 @@ class _LandVehicleSearchState extends State<LandVehicleSearch> {
                                 scrollDirection: Axis.horizontal,
                                 clipBehavior: Clip.none,
                                 itemCount: _rideOptions.length,
-                                separatorBuilder: (_, __) =>
+                                separatorBuilder: (_, _) =>
                                     const SizedBox(width: 12),
                                 itemBuilder: (_, i) {
                                   final option = _rideOptions[i];
@@ -271,7 +272,7 @@ class _LandVehicleSearchState extends State<LandVehicleSearch> {
                             // ── Available vehicles list ─────────────────
                             if (_selectedRideIndex != null) ...[
                               Text(
-                                'Available ${_activeType}:',
+                                'Available $_activeType:',
                                 style: const TextStyle(
                                   fontFamily: 'Poppins',
                                   fontWeight: FontWeight.w600,
@@ -286,7 +287,7 @@ class _LandVehicleSearchState extends State<LandVehicleSearch> {
                                   scrollDirection: Axis.horizontal,
                                   clipBehavior: Clip.none,
                                   itemCount: _currentPins.length,
-                                  separatorBuilder: (_, __) =>
+                                  separatorBuilder: (_, _) =>
                                       const SizedBox(width: 12),
                                   itemBuilder: (_, i) => _VehicleCard(
                                     pin: _currentPins[i],
@@ -362,7 +363,9 @@ class _LandVehicleSearchState extends State<LandVehicleSearch> {
                         (d) => PurchaseItemModel(
                           label: d.label,
                           amount: d.amount,
-                          isDiscount: d.label.toLowerCase().contains('discount'),
+                          isDiscount: d.label.toLowerCase().contains(
+                            'discount',
+                          ),
                         ),
                       )
                       .toList(),

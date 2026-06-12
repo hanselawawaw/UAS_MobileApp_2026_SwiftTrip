@@ -15,7 +15,6 @@ class SearchingService {
 
   /// Fetches available ride options for land vehicles.
   Future<List<RideOption>> getRideOptions() async {
-    // TODO: Replace with real API call (e.g. Dio.get('/land-vehicles/options'))
     await Future.delayed(const Duration(milliseconds: 500));
     return const [
       RideOption(
@@ -44,7 +43,6 @@ class SearchingService {
 
   /// Fetches default purchase details for land vehicles.
   Future<List<DetailRow>> getPurchaseDetails() async {
-    // TODO: Replace with real API call
     await Future.delayed(const Duration(milliseconds: 300));
     return const [
       DetailRow(label: 'Tiket Kereta', amount: 'Rp 14.000.000'),
@@ -58,14 +56,18 @@ class SearchingService {
 
   /// Fetches available coupon categories.
   Future<List<String>> getCouponCategories() async {
-    // TODO: Fetch from backend
     await Future.delayed(const Duration(milliseconds: 200));
-    return ['Coupon Raya', 'Ticket Plane', 'Australia', 'Indonesia', 'Business'];
+    return [
+      'Coupon Raya',
+      'Ticket Plane',
+      'Australia',
+      'Indonesia',
+      'Business',
+    ];
   }
 
   /// Fetches coupons filtered by category.
   Future<List<CouponModel>> getCouponsByCategory(String category) async {
-    // TODO: Replace with backend API
     await Future.delayed(const Duration(milliseconds: 400));
 
     final Map<String, List<CouponModel>> mockData = {
@@ -138,9 +140,9 @@ class SearchingService {
       final response = await dio.post(
         '${Constants.promotionsUrl}collect/',
         data: {'code': code},
-        options: Options(headers: {
-          if (token != null) 'Authorization': 'Bearer $token',
-        }),
+        options: Options(
+          headers: {if (token != null) 'Authorization': 'Bearer $token'},
+        ),
       );
 
       return response.statusCode == 200;

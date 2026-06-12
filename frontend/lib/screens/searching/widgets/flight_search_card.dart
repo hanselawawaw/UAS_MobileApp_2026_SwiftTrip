@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
@@ -60,7 +61,10 @@ class _PesanButton extends StatelessWidget {
           from: selectedFlight!.origin,
           to: selectedFlight!.destination,
           date: selectedFlight!.departureTime.split('T').first,
-          departure: selectedFlight!.departureTime.split('T').last.substring(0, 5),
+          departure: selectedFlight!.departureTime
+              .split('T')
+              .last
+              .substring(0, 5),
           arrive: selectedFlight!.arrivalTime.split('T').last.substring(0, 5),
           operator: selectedFlight!.airlineName,
           flightNumber: selectedFlight!.flightNumber,
@@ -78,10 +82,7 @@ class _PesanButton extends StatelessWidget {
               label: 'Flight: ${selectedFlight!.airlineName}',
               amount: _formatRp(selectedFlight!.price.toInt()),
             ),
-            const PurchaseItemModel(
-              label: 'Service Fee',
-              amount: 'Rp. 0',
-            ),
+            const PurchaseItemModel(label: 'Service Fee', amount: 'Rp. 0'),
           ],
           totalPrice: _formatRp(selectedFlight!.price.toInt()),
           discountTotal: 0,
@@ -139,10 +140,12 @@ class _PesanButton extends StatelessWidget {
               top: 3,
               child: GestureDetector(
                 onTap: () {
-                  print('Debug: 1. Add to Cart Button Pressed');
+                  if (kDebugMode) {
+                    print('Debug: 1. Add to Cart Button Pressed');
+                  }
                   if (selectedFlight != null) {
-                    final displayClass = flightClassApi.toUpperCase() == 'FIRST' 
-                        ? 'First Class' 
+                    final displayClass = flightClassApi.toUpperCase() == 'FIRST'
+                        ? 'First Class'
                         : flightClassApi;
 
                     final ticket = CartTicket(
@@ -152,8 +155,14 @@ class _PesanButton extends StatelessWidget {
                       from: selectedFlight!.origin,
                       to: selectedFlight!.destination,
                       date: selectedFlight!.departureTime.split('T').first,
-                      departure: selectedFlight!.departureTime.split('T').last.substring(0, 5),
-                      arrive: selectedFlight!.arrivalTime.split('T').last.substring(0, 5),
+                      departure: selectedFlight!.departureTime
+                          .split('T')
+                          .last
+                          .substring(0, 5),
+                      arrive: selectedFlight!.arrivalTime
+                          .split('T')
+                          .last
+                          .substring(0, 5),
                       operator: selectedFlight!.airlineName,
                       flightNumber: selectedFlight!.flightNumber,
                       flightClass: displayClass,
@@ -277,9 +286,7 @@ class _FlightSearchCardState extends State<FlightSearchCard>
         if (!mounted) return;
         final langProvider = context.read<LanguageProvider>();
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(langProvider.translate('origin_dest_same')),
-          ),
+          SnackBar(content: Text(langProvider.translate('origin_dest_same'))),
         );
         return;
       }
@@ -290,9 +297,7 @@ class _FlightSearchCardState extends State<FlightSearchCard>
           final langProvider = context.read<LanguageProvider>();
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(
-                langProvider.translate('origin_dest_same_legs'),
-              ),
+              content: Text(langProvider.translate('origin_dest_same_legs')),
             ),
           );
           return;
@@ -521,7 +526,9 @@ class _FlightSearchCardState extends State<FlightSearchCard>
     final langProvider = context.read<LanguageProvider>();
     final result = await showAirportPicker(
       context,
-      label: isFrom ? langProvider.translate('from') : langProvider.translate('to'),
+      label: isFrom
+          ? langProvider.translate('from')
+          : langProvider.translate('to'),
     );
     if (result == null || !mounted) return;
     setState(() {
@@ -540,7 +547,9 @@ class _FlightSearchCardState extends State<FlightSearchCard>
     final langProvider = context.read<LanguageProvider>();
     final result = await showAirportPicker(
       context,
-      label: isTo ? langProvider.translate('to') : langProvider.translate('from'),
+      label: isTo
+          ? langProvider.translate('to')
+          : langProvider.translate('from'),
     );
     if (result == null || !mounted) return;
 
@@ -554,9 +563,7 @@ class _FlightSearchCardState extends State<FlightSearchCard>
       if (!mounted) return;
       final langProvider = context.read<LanguageProvider>();
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(langProvider.translate('origin_dest_same')),
-        ),
+        SnackBar(content: Text(langProvider.translate('origin_dest_same'))),
       );
       return;
     }

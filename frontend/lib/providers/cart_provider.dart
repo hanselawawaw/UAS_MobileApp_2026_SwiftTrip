@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import '../screens/cart/models/cart_models.dart';
 import '../screens/cart/services/cart_service.dart';
 
@@ -14,7 +14,9 @@ class CartProvider extends ChangeNotifier {
   }
 
   Future<void> addTicket(CartTicket ticket) async {
-    print('Debug: 2. Provider received ticket: ${ticket.type}');
+    if (kDebugMode) {
+      print('Debug: 2. Provider received ticket: ${ticket.type}');
+    }
     await _cartService.addTicket(ticket);
     await loadCart();
   }

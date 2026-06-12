@@ -45,7 +45,7 @@ class _AirportPickerSheetState extends State<_AirportPickerSheet> {
       }
       return;
     }
-    
+
     final results = await _service.searchAirports(query);
     if (mounted) {
       setState(() {
@@ -99,10 +99,7 @@ class _AirportPickerSheetState extends State<_AirportPickerSheet> {
                 controller: _controller,
                 autofocus: true,
                 onChanged: _onQueryChanged,
-                style: const TextStyle(
-                  fontFamily: 'Poppins',
-                  fontSize: 14,
-                ),
+                style: const TextStyle(fontFamily: 'Poppins', fontSize: 14),
                 decoration: InputDecoration(
                   hintText: 'Search city or airport (e.g. Jakarta, CGK)',
                   hintStyle: TextStyle(
@@ -151,13 +148,16 @@ class _AirportPickerSheetState extends State<_AirportPickerSheet> {
   }
 
   Widget _buildBody() {
-
     if (_searched && _results.isEmpty) {
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 32),
         child: Column(
           children: [
-            Icon(Icons.search_off, size: 40, color: Colors.black.withValues(alpha: 0.2)),
+            Icon(
+              Icons.search_off,
+              size: 40,
+              color: Colors.black.withValues(alpha: 0.2),
+            ),
             const SizedBox(height: 8),
             Text(
               'No airports found',
@@ -180,7 +180,7 @@ class _AirportPickerSheetState extends State<_AirportPickerSheet> {
       shrinkWrap: true,
       padding: const EdgeInsets.symmetric(horizontal: 8),
       itemCount: _results.length,
-      separatorBuilder: (_, __) => Divider(
+      separatorBuilder: (_, _) => Divider(
         height: 1,
         color: Colors.black.withValues(alpha: 0.06),
         indent: 56,

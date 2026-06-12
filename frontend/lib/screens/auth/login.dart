@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:swifttrip_frontend/screens/main/main_screen.dart';
 import 'signup.dart';
@@ -92,7 +94,9 @@ class _LoginPageState extends State<LoginPage> {
                 // ── Log In Button ──────────────────────────────────────
                 _isLoading
                     ? const CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF2B99E3)),
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          Color(0xFF2B99E3),
+                        ),
                       )
                     : AuthPrimaryButton(
                         text: 'Log in',
@@ -102,7 +106,9 @@ class _LoginPageState extends State<LoginPage> {
                           if (email.isEmpty || password.isEmpty) {
                             if (!mounted) return;
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Please fill all fields')),
+                              const SnackBar(
+                                content: Text('Please fill all fields'),
+                              ),
                             );
                             return;
                           }

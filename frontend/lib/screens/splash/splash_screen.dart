@@ -13,7 +13,7 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
-  final String _appName = "Swift Trip";
+  final String _appName = 'Swift Trip';
 
   @override
   void initState() {

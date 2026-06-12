@@ -20,7 +20,9 @@ class WishlistProvider extends ChangeNotifier {
       _wishlistedIds.clear();
       _wishlistedIds.addAll(ids);
     } catch (e) {
-      print('Error loading wishlist: $e');
+      if (kDebugMode) {
+        print('Error loading wishlist: $e');
+      }
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -38,7 +40,9 @@ class WishlistProvider extends ChangeNotifier {
       _wishlistedIds.clear();
       _wishlistedIds.addAll(items.map((i) => i.id));
     } catch (e) {
-      print('Error loading full wishlist: $e');
+      if (kDebugMode) {
+        print('Error loading full wishlist: $e');
+      }
     } finally {
       _isLoading = false;
       notifyListeners();

@@ -110,10 +110,10 @@ class _DestinationSearchPageState extends State<DestinationSearchPage> {
                       child: Container(
                         width: 36,
                         height: 36,
-                        decoration: BoxDecoration(
+                        decoration: const BoxDecoration(
                           color: Colors.white,
                           shape: BoxShape.circle,
-                          boxShadow: const [
+                          boxShadow: [
                             BoxShadow(
                               color: Color(0x26000000),
                               blurRadius: 10,
@@ -160,7 +160,7 @@ class _DestinationSearchPageState extends State<DestinationSearchPage> {
                   hintStyle: TextStyle(
                     fontFamily: 'Cairo',
                     fontSize: 16,
-                    color: Colors.black.withOpacity(0.4),
+                    color: Colors.black.withValues(alpha: 0.4),
                   ),
                   prefixIcon: _hasQuery
                       ? GestureDetector(
@@ -242,7 +242,7 @@ class _DestinationSearchPageState extends State<DestinationSearchPage> {
     return ListView.separated(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       itemCount: _searchResults.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 12),
+      separatorBuilder: (_, _) => const SizedBox(height: 12),
       itemBuilder: (context, index) {
         final destination = _searchResults[index];
         return SearchResultCard(
@@ -259,9 +259,9 @@ class _DestinationSearchPageState extends State<DestinationSearchPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // ── People are looking for ──────────────────────
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: const Text(
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20),
+            child: Text(
               'People are looking for...',
               style: TextStyle(
                 fontFamily: 'Poppins',

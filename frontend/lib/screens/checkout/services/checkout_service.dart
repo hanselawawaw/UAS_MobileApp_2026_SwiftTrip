@@ -10,14 +10,14 @@ class CheckoutService {
   final _dio = Dio();
 
   Future<CheckoutDetailsModel> getCheckoutDetails() async {
-    // Current implementation uses mock data for the details view, 
+    // Current implementation uses mock data for the details view,
     // which is fine for UI but confirmPurchase needs a real API.
     await Future.delayed(const Duration(milliseconds: 500));
 
-    return CheckoutDetailsModel(
+    return const CheckoutDetailsModel(
       discountTotal: 1300000,
       tickets: [
-        const CartTicket(
+        CartTicket(
           type: 'Train Ticket',
           bookingId: 'TRN-123456',
           classLabel: 'ECONOMY CLASS',
@@ -31,12 +31,13 @@ class CheckoutService {
           carriage: '01',
           seat: 'A12',
         ),
-        const CartTicket(
+        CartTicket(
           type: 'Accommodation Ticket',
           bookingId: 'HOT-789012',
           classLabel: 'Deluxe Room',
           priceRp: 1000000,
-          imageUrl: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+          imageUrl:
+              'https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
           stayDate: '20/2/2026',
           stayDuration: '1 Night',
           bedType: 'King Size',
@@ -44,19 +45,19 @@ class CheckoutService {
         ),
       ],
       purchaseItems: [
-        const PurchaseItemModel(label: 'Tiket Kereta', amount: 'Rp 14.000.000'),
-        const PurchaseItemModel(label: 'Hotel Ngawi', amount: 'Rp 1.000.000'),
-        const PurchaseItemModel(
+        PurchaseItemModel(label: 'Tiket Kereta', amount: 'Rp 14.000.000'),
+        PurchaseItemModel(label: 'Hotel Ngawi', amount: 'Rp 1.000.000'),
+        PurchaseItemModel(
           label: 'Voucher',
           amount: '-Rp 300.000',
           isDiscount: true,
         ),
-        const PurchaseItemModel(
+        PurchaseItemModel(
           label: 'Diskon Liburan',
           amount: '-Rp 1.000.000',
           isDiscount: true,
         ),
-        const PurchaseItemModel(label: 'PPN 11%', amount: 'Rp 1.650.000'),
+        PurchaseItemModel(label: 'PPN 11%', amount: 'Rp 1.650.000'),
       ],
       totalPrice: 'Rp 15.350.000',
     );
@@ -67,12 +68,10 @@ class CheckoutService {
       final token = await AuthRepository().getToken();
       final response = await _dio.post(
         '${Constants.bookingsUrl}confirm_checkout/',
-        data: {
-          'discount_rp': discountRp,
-        },
-        options: Options(headers: {
-          if (token != null) 'Authorization': 'Bearer $token',
-        }),
+        data: {'discount_rp': discountRp},
+        options: Options(
+          headers: {if (token != null) 'Authorization': 'Bearer $token'},
+        ),
       );
 
       debugPrint('Debug: Checkout Response Code: ${response.statusCode}');
@@ -83,4 +82,3 @@ class CheckoutService {
     }
   }
 }
-

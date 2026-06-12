@@ -23,7 +23,7 @@ class DestinationCard extends StatelessWidget {
           ),
         );
       },
-      child: Container(
+      child: SizedBox(
         width: 180,
         height: 135,
         child: Column(
@@ -71,7 +71,9 @@ class DestinationCard extends StatelessWidget {
                             showModalBottomSheet(
                               context: context,
                               shape: const RoundedRectangleBorder(
-                                borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                                borderRadius: BorderRadius.vertical(
+                                  top: Radius.circular(20),
+                                ),
                               ),
                               builder: (context) => Container(
                                 padding: const EdgeInsets.all(24),
@@ -93,19 +95,32 @@ class DestinationCard extends StatelessWidget {
                                         Navigator.pop(context);
                                         Navigator.push(
                                           context,
-                                          MaterialPageRoute(builder: (context) => const LoginPage()),
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                const LoginPage(),
+                                          ),
                                         );
                                       },
                                       style: ElevatedButton.styleFrom(
-                                        backgroundColor: const Color(0xFF2B99E3),
-                                        minimumSize: const Size(double.infinity, 45),
+                                        backgroundColor: const Color(
+                                          0xFF2B99E3,
+                                        ),
+                                        minimumSize: const Size(
+                                          double.infinity,
+                                          45,
+                                        ),
                                         shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(10),
+                                          borderRadius: BorderRadius.circular(
+                                            10,
+                                          ),
                                         ),
                                       ),
                                       child: const Text(
                                         'Log In',
-                                        style: TextStyle(fontFamily: 'Poppins', color: Colors.white),
+                                        style: TextStyle(
+                                          fontFamily: 'Poppins',
+                                          color: Colors.white,
+                                        ),
                                       ),
                                     ),
                                   ],

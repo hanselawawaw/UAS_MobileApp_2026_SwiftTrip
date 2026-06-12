@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import '../../../core/constants.dart';
 import '../../../repositories/auth_repository.dart';
 import '../../cart/models/cart_models.dart';
@@ -57,18 +58,20 @@ class HomeService {
             final target = ticket.to ?? ticket.location;
             if (target != null) {
               final upperTarget = target.trim().toUpperCase();
-              
+
               // 1. Prioritize AirportSearchService list
               bool matched = false;
               for (final airport in AirportSearchService.commonAirports) {
-                if (airport['iataCode']?.toUpperCase() == upperTarget && airport['lat'] != null && airport['lng'] != null) {
+                if (airport['iataCode']?.toUpperCase() == upperTarget &&
+                    airport['lat'] != null &&
+                    airport['lng'] != null) {
                   lat = double.tryParse(airport['lat']!);
                   lng = double.tryParse(airport['lng']!);
                   matched = true;
                   break;
                 }
               }
-              
+
               if (!matched) {
                 if (iataCoords.containsKey(upperTarget)) {
                   lat = iataCoords[upperTarget]![0];
@@ -108,7 +111,9 @@ class HomeService {
       }
       return [];
     } catch (e) {
-      print('Debug: Home Schedule Fetch Error: $e');
+      if (kDebugMode) {
+        print('Debug: Home Schedule Fetch Error: $e');
+      }
       return [];
     }
   }
@@ -139,7 +144,9 @@ class HomeService {
         ),
       ];
     } catch (e) {
-      print('Debug: Recommendation Fetch Error: $e');
+      if (kDebugMode) {
+        print('Debug: Recommendation Fetch Error: $e');
+      }
       return [];
     }
   }

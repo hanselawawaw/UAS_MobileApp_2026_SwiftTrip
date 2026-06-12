@@ -16,8 +16,6 @@ class CategoryPageBase extends StatelessWidget {
   final bool isLoading;
   final void Function(DestinationModel)? onItemTap;
 
-  // TODO: Add pagination / infinite scroll support when backend is ready
-
   const CategoryPageBase({
     super.key,
     required this.title,
@@ -131,7 +129,7 @@ class CategoryItemCard extends StatelessWidget {
                     Image.network(
                       item.imageUrl,
                       fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => Container(
+                      errorBuilder: (_, _, _) => Container(
                         color: Colors.grey.shade300,
                         child: const Icon(Icons.image, color: Colors.grey),
                       ),
@@ -160,7 +158,9 @@ class CategoryItemCard extends StatelessWidget {
                                 showModalBottomSheet(
                                   context: context,
                                   shape: const RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                                    borderRadius: BorderRadius.vertical(
+                                      top: Radius.circular(20),
+                                    ),
                                   ),
                                   builder: (context) => Container(
                                     padding: const EdgeInsets.all(24),
@@ -182,19 +182,31 @@ class CategoryItemCard extends StatelessWidget {
                                             Navigator.pop(context);
                                             Navigator.push(
                                               context,
-                                              MaterialPageRoute(builder: (context) => const LoginPage()),
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    const LoginPage(),
+                                              ),
                                             );
                                           },
                                           style: ElevatedButton.styleFrom(
-                                            backgroundColor: const Color(0xFF2B99E3),
-                                            minimumSize: const Size(double.infinity, 45),
+                                            backgroundColor: const Color(
+                                              0xFF2B99E3,
+                                            ),
+                                            minimumSize: const Size(
+                                              double.infinity,
+                                              45,
+                                            ),
                                             shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(10),
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
                                             ),
                                           ),
                                           child: const Text(
                                             'Log In',
-                                            style: TextStyle(fontFamily: 'Poppins', color: Colors.white),
+                                            style: TextStyle(
+                                              fontFamily: 'Poppins',
+                                              color: Colors.white,
+                                            ),
                                           ),
                                         ),
                                       ],
@@ -207,7 +219,9 @@ class CategoryItemCard extends StatelessWidget {
                               await provider.toggleWishlist(item.id);
                             },
                             child: Icon(
-                              isFavorite ? Icons.favorite : Icons.favorite_border,
+                              isFavorite
+                                  ? Icons.favorite
+                                  : Icons.favorite_border,
                               color: isFavorite ? Colors.red : Colors.white,
                               size: 18,
                             ),

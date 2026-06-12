@@ -20,9 +20,9 @@ class PaymentMethodController {
   bool bottomSheetShown = false;
 
   final List<PaymentMethodModel> availableMethods = [
-    PaymentMethodModel(id: 'CREDIT_CARD', name: 'Credit Card'),
-    PaymentMethodModel(id: 'BANK_TRANSFER', name: 'Bank Transfer'),
-    PaymentMethodModel(id: 'E_WALLET', name: 'E-Wallet'),
+    const PaymentMethodModel(id: 'CREDIT_CARD', name: 'Credit Card'),
+    const PaymentMethodModel(id: 'BANK_TRANSFER', name: 'Bank Transfer'),
+    const PaymentMethodModel(id: 'E_WALLET', name: 'E-Wallet'),
   ];
 
   void showPaymentOptions() => bottomSheetShown = true;
@@ -71,9 +71,12 @@ void main() {
     // METHOD: showPaymentOptions()
     // ----------------------------------------------------------
     group('showPaymentOptions()', () {
-      test('showPaymentOptions - bottomSheet belum ditampilkan sebelum dipanggil', () {
-        expect(controller.bottomSheetShown, isFalse);
-      });
+      test(
+        'showPaymentOptions - bottomSheet belum ditampilkan sebelum dipanggil',
+        () {
+          expect(controller.bottomSheetShown, isFalse);
+        },
+      );
 
       test('showPaymentOptions - menandai bottomSheetShown menjadi true', () {
         controller.showPaymentOptions();
@@ -123,7 +126,7 @@ void main() {
 
       test('selectPaymentMethod - ID metode tersimpan dengan benar', () {
         controller.selectPaymentMethod(
-          PaymentMethodModel(id: 'CREDIT_CARD', name: 'Credit Card'),
+          const PaymentMethodModel(id: 'CREDIT_CARD', name: 'Credit Card'),
         );
         expect(controller.selectedMethod?.id, equals('CREDIT_CARD'));
       });
@@ -158,14 +161,17 @@ void main() {
     // METHOD: processPayment()
     // ----------------------------------------------------------
     group('processPayment()', () {
-      test('processPayment - validasi gagal jika card number kurang dari 16 digit', () {
-        final valid = controller.validateCardDetails(
-          cardNumber: '1234 5678',
-          expiry: '12/25',
-          cvc: '123',
-        );
-        expect(valid, isFalse);
-      });
+      test(
+        'processPayment - validasi gagal jika card number kurang dari 16 digit',
+        () {
+          final valid = controller.validateCardDetails(
+            cardNumber: '1234 5678',
+            expiry: '12/25',
+            cvc: '123',
+          );
+          expect(valid, isFalse);
+        },
+      );
 
       test('processPayment - validasi gagal jika expiry tidak 5 karakter', () {
         final valid = controller.validateCardDetails(
@@ -194,9 +200,12 @@ void main() {
         expect(valid, isTrue);
       });
 
-      test('processPayment - CheckoutController.isLoading false sebelum proses', () {
-        expect(checkoutController.isLoading, isFalse);
-      });
+      test(
+        'processPayment - CheckoutController.isLoading false sebelum proses',
+        () {
+          expect(checkoutController.isLoading, isFalse);
+        },
+      );
 
       test('processPayment - lastErrorMessage null sebelum proses', () {
         expect(checkoutController.lastErrorMessage, isNull);
@@ -213,7 +222,7 @@ void main() {
       });
 
       test('processPayment - PaymentMethodModel.toJson() benar', () {
-        final method = PaymentMethodModel(id: 'CC', name: 'Credit Card');
+        const method = PaymentMethodModel(id: 'CC', name: 'Credit Card');
         final json = method.toJson();
         expect(json['id'], equals('CC'));
         expect(json['name'], equals('Credit Card'));

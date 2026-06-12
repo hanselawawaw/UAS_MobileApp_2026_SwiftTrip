@@ -369,7 +369,7 @@ class _FlightBreadcrumb extends StatelessWidget {
                     Container(
                       width: 4,
                       height: 1,
-                      color: Colors.black.withOpacity(0.2),
+                      color: Colors.black.withValues(alpha: 0.2),
                     ),
                     const SizedBox(width: 2),
                     Transform.rotate(
@@ -377,14 +377,14 @@ class _FlightBreadcrumb extends StatelessWidget {
                       child: Icon(
                         Icons.airplanemode_active,
                         size: 10,
-                        color: Colors.black.withOpacity(0.3),
+                        color: Colors.black.withValues(alpha: 0.3),
                       ),
                     ),
                     const SizedBox(width: 2),
                     Container(
                       width: 4,
                       height: 1,
-                      color: Colors.black.withOpacity(0.2),
+                      color: Colors.black.withValues(alpha: 0.2),
                     ),
                   ],
                 ),
@@ -406,7 +406,7 @@ class TicketDivider extends StatelessWidget {
       thickness: 1,
       indent: 13,
       endIndent: 13,
-      color: Colors.black.withOpacity(0.30),
+      color: Colors.black.withValues(alpha: 0.30),
     );
   }
 }

@@ -15,9 +15,7 @@ Widget buildTestableWidget(Widget child) {
       ChangeNotifierProvider(create: (_) => LanguageProvider()),
       ChangeNotifierProvider(create: (_) => CartProvider()),
     ],
-    child: MaterialApp(
-      home: Scaffold(body: child),
-    ),
+    child: MaterialApp(home: Scaffold(body: child)),
   );
 }
 
@@ -30,12 +28,11 @@ void main() {
     // ── Form renders correctly ─────────────────────────────────────────────
 
     group('Form — renders on SearchingPage', () {
-      testWidgets('should render SearchingPage without error',
-          (WidgetTester tester) async {
+      testWidgets('should render SearchingPage without error', (
+        WidgetTester tester,
+      ) async {
         // Act
-        await tester.pumpWidget(
-          buildTestableWidget(const SearchingPage()),
-        );
+        await tester.pumpWidget(buildTestableWidget(const SearchingPage()));
         await tester.pump();
 
         // Assert
@@ -44,12 +41,11 @@ void main() {
         await tester.pumpWidget(Container());
       });
 
-      testWidgets('should display SingleChildScrollView inside SearchingPage',
-          (WidgetTester tester) async {
+      testWidgets('should display SingleChildScrollView inside SearchingPage', (
+        WidgetTester tester,
+      ) async {
         // Act
-        await tester.pumpWidget(
-          buildTestableWidget(const SearchingPage()),
-        );
+        await tester.pumpWidget(buildTestableWidget(const SearchingPage()));
         await tester.pump();
 
         // Assert
@@ -63,47 +59,50 @@ void main() {
 
     group('validateSearchQuery() — Form validation', () {
       testWidgets(
-          'should show validation error when form is submitted with empty origin field',
-          (WidgetTester tester) async {
-        // Arrange
-        final formKey = GlobalKey<FormState>();
-        String? originValue;
+        'should show validation error when form is submitted with empty origin field',
+        (WidgetTester tester) async {
+          // Arrange
+          final formKey = GlobalKey<FormState>();
+          // ignore: unused_local_variable
+          String? originValue;
 
-        await tester.pumpWidget(
-          MaterialApp(
-            home: Scaffold(
-              body: Form(
-                key: formKey,
-                child: Column(
-                  children: [
-                    TextFormField(
-                      key: const Key('origin_field'),
-                      onSaved: (v) => originValue = v,
-                      validator: (v) =>
-                          (v == null || v.isEmpty) ? 'Origin required' : null,
-                    ),
-                    ElevatedButton(
-                      key: const Key('submit_btn'),
-                      onPressed: () => formKey.currentState?.validate(),
-                      child: const Text('Search'),
-                    ),
-                  ],
+          await tester.pumpWidget(
+            MaterialApp(
+              home: Scaffold(
+                body: Form(
+                  key: formKey,
+                  child: Column(
+                    children: [
+                      TextFormField(
+                        key: const Key('origin_field'),
+                        onSaved: (v) => originValue = v,
+                        validator: (v) =>
+                            (v == null || v.isEmpty) ? 'Origin required' : null,
+                      ),
+                      ElevatedButton(
+                        key: const Key('submit_btn'),
+                        onPressed: () => formKey.currentState?.validate(),
+                        child: const Text('Search'),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-        );
+          );
 
-        // Act
-        await tester.tap(find.byKey(const Key('submit_btn')));
-        await tester.pump();
+          // Act
+          await tester.tap(find.byKey(const Key('submit_btn')));
+          await tester.pump();
 
-        // Assert
-        expect(find.text('Origin required'), findsOneWidget);
-      });
+          // Assert
+          expect(find.text('Origin required'), findsOneWidget);
+        },
+      );
 
-      testWidgets('should pass validation when valid origin is entered',
-          (WidgetTester tester) async {
+      testWidgets('should pass validation when valid origin is entered', (
+        WidgetTester tester,
+      ) async {
         // Arrange
         final formKey = GlobalKey<FormState>();
         bool isValid = false;
@@ -147,8 +146,9 @@ void main() {
     // ── saveSearchState() via TextFormField ───────────────────────────────
 
     group('saveSearchState() — TextFormField saves data', () {
-      testWidgets('should save origin field value on form save',
-          (WidgetTester tester) async {
+      testWidgets('should save origin field value on form save', (
+        WidgetTester tester,
+      ) async {
         // Arrange
         final formKey = GlobalKey<FormState>();
         String? savedOrigin;
@@ -182,7 +182,9 @@ void main() {
 
         // Act
         await tester.enterText(
-            find.byKey(const Key('origin_field')), 'Jakarta');
+          find.byKey(const Key('origin_field')),
+          'Jakarta',
+        );
         await tester.tap(find.byKey(const Key('save_btn')));
         await tester.pump();
 
@@ -190,8 +192,9 @@ void main() {
         expect(savedOrigin, equals('Jakarta'));
       });
 
-      testWidgets('should save destination field value on form save',
-          (WidgetTester tester) async {
+      testWidgets('should save destination field value on form save', (
+        WidgetTester tester,
+      ) async {
         // Arrange
         final formKey = GlobalKey<FormState>();
         String? savedDestination;
@@ -225,7 +228,9 @@ void main() {
 
         // Act
         await tester.enterText(
-            find.byKey(const Key('destination_field')), 'Bali');
+          find.byKey(const Key('destination_field')),
+          'Bali',
+        );
         await tester.tap(find.byKey(const Key('save_btn')));
         await tester.pump();
 
@@ -237,8 +242,9 @@ void main() {
     // ── selectTravelType() via DropdownButton ─────────────────────────────
 
     group('selectTravelType() — DropdownButton interaction', () {
-      testWidgets('should display dropdown with travel type options',
-          (WidgetTester tester) async {
+      testWidgets('should display dropdown with travel type options', (
+        WidgetTester tester,
+      ) async {
         // Arrange
         String selectedType = 'One Way';
 
@@ -252,9 +258,13 @@ void main() {
                   items: const [
                     DropdownMenuItem(value: 'One Way', child: Text('One Way')),
                     DropdownMenuItem(
-                        value: 'Round Trip', child: Text('Round Trip')),
+                      value: 'Round Trip',
+                      child: Text('Round Trip'),
+                    ),
                     DropdownMenuItem(
-                        value: 'Multi City', child: Text('Multi City')),
+                      value: 'Multi City',
+                      child: Text('Multi City'),
+                    ),
                   ],
                   onChanged: (v) {
                     if (v != null) setState(() => selectedType = v);
@@ -275,8 +285,9 @@ void main() {
         expect(find.text('Multi City'), findsOneWidget);
       });
 
-      testWidgets('should update selected travel type when changed',
-          (WidgetTester tester) async {
+      testWidgets('should update selected travel type when changed', (
+        WidgetTester tester,
+      ) async {
         // Arrange
         String selectedType = 'One Way';
 
@@ -290,7 +301,9 @@ void main() {
                   items: const [
                     DropdownMenuItem(value: 'One Way', child: Text('One Way')),
                     DropdownMenuItem(
-                        value: 'Round Trip', child: Text('Round Trip')),
+                      value: 'Round Trip',
+                      child: Text('Round Trip'),
+                    ),
                   ],
                   onChanged: (v) {
                     if (v != null) setState(() => selectedType = v);
@@ -311,8 +324,9 @@ void main() {
         expect(selectedType, equals('Round Trip'));
       });
 
-      testWidgets('should call onChanged when DropdownButton value changes',
-          (WidgetTester tester) async {
+      testWidgets('should call onChanged when DropdownButton value changes', (
+        WidgetTester tester,
+      ) async {
         // Arrange
         String? changedValue;
 
@@ -324,7 +338,9 @@ void main() {
                 items: const [
                   DropdownMenuItem(value: 'One Way', child: Text('One Way')),
                   DropdownMenuItem(
-                      value: 'Round Trip', child: Text('Round Trip')),
+                    value: 'Round Trip',
+                    child: Text('Round Trip'),
+                  ),
                 ],
                 onChanged: (v) => changedValue = v,
               ),

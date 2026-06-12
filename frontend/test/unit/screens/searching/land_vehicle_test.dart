@@ -70,8 +70,9 @@ void main() {
           ),
         ];
 
-        when(() => mockService.getRideOptions())
-            .thenAnswer((_) async => mockOptions);
+        when(
+          () => mockService.getRideOptions(),
+        ).thenAnswer((_) async => mockOptions);
 
         // Act
         final result = await mockService.getRideOptions();
@@ -179,7 +180,7 @@ void main() {
 
         // Assert
         expect(selectedVehicle, isNotNull);
-        expect(selectedVehicle!.ticket.type, isNotEmpty);
+        expect(selectedVehicle.ticket.type, isNotEmpty);
       });
 
       test('should get matching pin from current pins list by bookingId', () {
@@ -278,7 +279,7 @@ void main() {
         const discountAmount = 0;
 
         // Act
-        final finalTotal = baseTotal - discountAmount;
+        const finalTotal = baseTotal - discountAmount;
 
         // Assert
         expect(finalTotal, equals(300000));

@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import '../../../core/constants.dart';
 import '../../../repositories/auth_repository.dart';
 import '../models/faq_item.dart';
@@ -24,19 +25,25 @@ class CustomerServiceService {
 
   Future<Options> _authOptions() async {
     final token = await _auth.getToken();
-    
+
     // Diagnostic log for local debugging
     if (token == null) {
-      print('[AUTH DEBUG] WARNING: Token is NULL. Sending request without authorization.');
+      if (kDebugMode) {
+        print(
+          '[AUTH DEBUG] WARNING: Token is NULL. Sending request without authorization.',
+        );
+      }
     } else {
-      final preview = token.length > 10 ? '${token.substring(0, 10)}...' : token;
-      print('[AUTH DEBUG] Token exists: $preview');
+      final preview = token.length > 10
+          ? '${token.substring(0, 10)}...'
+          : token;
+      if (kDebugMode) {
+        print('[AUTH DEBUG] Token exists: $preview');
+      }
     }
 
     return Options(
-      headers: {
-        if (token != null) 'Authorization': 'Bearer $token',
-      },
+      headers: {if (token != null) 'Authorization': 'Bearer $token'},
       validateStatus: (status) => status != null && status < 500,
     );
   }
@@ -73,38 +80,56 @@ class CustomerServiceService {
 
   Future<List<RecentQuestion>> getRecentQuestions() async {
     try {
-      final response = await _dio.get('tickets/', options: await _authOptions());
+      final response = await _dio.get(
+        'tickets/',
+        options: await _authOptions(),
+      );
       final List data = response.data as List;
       return data.map((e) => RecentQuestion.fromJson(e)).toList();
     } catch (e) {
-      print('getRecentQuestions error: $e');
+      if (kDebugMode) {
+        print('getRecentQuestions error: $e');
+      }
       return [];
     }
   }
 
   Future<List<TicketItem>> getTickets() async {
     try {
-      final response = await _dio.get('tickets/', options: await _authOptions());
+      final response = await _dio.get(
+        'tickets/',
+        options: await _authOptions(),
+      );
       final List data = response.data as List;
       return data.map((e) => TicketItem.fromJson(e)).toList();
     } catch (e) {
-      print('getTickets error: $e');
+      if (kDebugMode) {
+        print('getTickets error: $e');
+      }
       return [];
     }
   }
 
   Future<CsQuestion> getQuestionDetail(String ticketId) async {
-    final response = await _dio.get('tickets/$ticketId/', options: await _authOptions());
+    final response = await _dio.get(
+      'tickets/$ticketId/',
+      options: await _authOptions(),
+    );
     return CsQuestion.fromJson(response.data);
   }
 
   Future<List<CsFeedbackEntry>> getFeedbackThread(String ticketId) async {
     try {
-      final response = await _dio.get('tickets/$ticketId/thread/', options: await _authOptions());
+      final response = await _dio.get(
+        'tickets/$ticketId/thread/',
+        options: await _authOptions(),
+      );
       final List data = response.data as List;
       return data.map((e) => CsFeedbackEntry.fromJson(e)).toList();
     } catch (e) {
-      print('getFeedbackThread error: $e');
+      if (kDebugMode) {
+        print('getFeedbackThread error: $e');
+      }
       return [];
     }
   }
@@ -134,16 +159,24 @@ class CustomerServiceService {
         data: {'body': body},
         options: await _authOptions(),
       );
-      
+
       if (response.statusCode == 200 || response.statusCode == 201) {
-        print('[DB SUCCESS] Reply saved to Ticket $ticketId');
+        if (kDebugMode) {
+          print('[DB SUCCESS] Reply saved to Ticket $ticketId');
+        }
         return true;
       } else {
-        print('[DB ERROR] Failed to save reply. Status: ${response.statusCode}, Data: ${response.data}');
+        if (kDebugMode) {
+          print(
+            '[DB ERROR] Failed to save reply. Status: ${response.statusCode}, Data: ${response.data}',
+          );
+        }
         return false;
       }
     } catch (e) {
-      print('[DB EXCEPTION] Error saving reply: $e');
+      if (kDebugMode) {
+        print('[DB EXCEPTION] Error saving reply: $e');
+      }
       return false;
     }
   }
@@ -155,11 +188,15 @@ class CustomerServiceService {
         options: await _authOptions(),
       );
       if (response.data is List) {
-        return (response.data as List).map((e) => CsFeedbackEntry.fromJson(e)).toList();
+        return (response.data as List)
+            .map((e) => CsFeedbackEntry.fromJson(e))
+            .toList();
       }
       return [CsFeedbackEntry.fromJson(response.data)];
     } catch (e) {
-      print('generateAiReply error: $e');
+      if (kDebugMode) {
+        print('generateAiReply error: $e');
+      }
       return [];
     }
   }
@@ -168,7 +205,13 @@ class CustomerServiceService {
 
   Future<List<String>> getProblemTypes() async {
     await Future.delayed(const Duration(milliseconds: 200));
-    return ['Bugs', 'Text Error', 'Button Malfunctions', 'Design Error', 'Others'];
+    return [
+      'Bugs',
+      'Text Error',
+      'Button Malfunctions',
+      'Design Error',
+      'Others',
+    ];
   }
 
   Future<List<String>> getLocations() async {

@@ -5,7 +5,9 @@ import 'package:swifttrip_frontend/screens/cart/models/cart_models.dart';
 import '../models/chat_message.dart';
 
 class ChatService {
-  Future<List<ChatMessage>> getInitialMessages([String context = 'home']) async {
+  Future<List<ChatMessage>> getInitialMessages([
+    String context = 'home',
+  ]) async {
     return [
       ChatMessage.text(
         type: MsgType.ai,
@@ -16,13 +18,20 @@ class ChatService {
     ];
   }
 
-  Future<ChatMessage> sendMessage(String text, List<ChatMessage> history, [String context = 'home']) async {
+  Future<ChatMessage> sendMessage(
+    String text,
+    List<ChatMessage> history, [
+    String context = 'home',
+  ]) async {
     try {
       final baseUrlClean = Constants.baseUrl.replaceAll('/api/auth/', '');
       final url = Uri.parse('$baseUrlClean/api/support/ai-chat/');
       final response = await http.post(
         url,
-        headers: {'Content-Type': 'application/json', 'Accept-Language': 'en-US'},
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept-Language': 'en-US',
+        },
         body: jsonEncode({
           'message': text,
           'history': history.map((m) => m.toJson()).toList(),
@@ -36,7 +45,7 @@ class ChatService {
 
         if (intent == 'SEARCH' && data['type'] != null) {
           final type = (data['type'] as String).toLowerCase();
-          
+
           if (type == 'flight') {
             final flights = data['flights'] as List<dynamic>? ?? [];
             if (flights.isEmpty) {
@@ -45,7 +54,7 @@ class ChatService {
                 text: 'Sorry, I couldn\'t find any flights for that route.',
               );
             }
-            
+
             final f = flights.first;
             final ticket = CartTicket(
               type: 'Plane Ticket',
@@ -56,24 +65,38 @@ class ChatService {
               flightNumber: f['flight_number'],
               from: f['origin'],
               to: f['destination'],
-              date: (f['departure_time'] as String).length >= 10 ? (f['departure_time'] as String).substring(0, 10) : '--',
-              departure: (f['departure_time'] as String).length >= 16 ? (f['departure_time'] as String).substring(11, 16) : '--',
-              arrive: (f['arrival_time'] as String).length >= 16 ? (f['arrival_time'] as String).substring(11, 16) : '--',
-              latitude: f['latitude'] != null ? (f['latitude'] as num).toDouble() : null,
-              longitude: f['longitude'] != null ? (f['longitude'] as num).toDouble() : null,
+              date: (f['departure_time'] as String).length >= 10
+                  ? (f['departure_time'] as String).substring(0, 10)
+                  : '--',
+              departure: (f['departure_time'] as String).length >= 16
+                  ? (f['departure_time'] as String).substring(11, 16)
+                  : '--',
+              arrive: (f['arrival_time'] as String).length >= 16
+                  ? (f['arrival_time'] as String).substring(11, 16)
+                  : '--',
+              latitude: f['latitude'] != null
+                  ? (f['latitude'] as num).toDouble()
+                  : null,
+              longitude: f['longitude'] != null
+                  ? (f['longitude'] as num).toDouble()
+                  : null,
             );
             return ChatMessage.ticket(ticket: ticket);
-            
           } else {
             final landOptions = data['land_options'] as List<dynamic>? ?? [];
             if (landOptions.isEmpty) {
-              return ChatMessage.text(type: MsgType.ai, text: 'No vehicles found currently for $type.');
+              return ChatMessage.text(
+                type: MsgType.ai,
+                text: 'No vehicles found currently for $type.',
+              );
             }
-            
+
             final f = landOptions.first;
             final ticket = CartTicket(
               type: f['type'] ?? 'Ticket',
-              bookingId: f['bookingId'] ?? 'ID-${DateTime.now().millisecondsSinceEpoch}',
+              bookingId:
+                  f['bookingId'] ??
+                  'ID-${DateTime.now().millisecondsSinceEpoch}',
               classLabel: f['classLabel'] ?? 'Regular',
               priceRp: (f['priceRp'] ?? 0).toInt(),
               operator: f['operator'],
@@ -91,21 +114,21 @@ class ChatService {
             );
             return ChatMessage.ticket(ticket: ticket);
           }
-        } 
-        
+        }
+
         return ChatMessage.text(
           type: MsgType.ai,
           text: data['message'] ?? 'I have recorded your request.',
         );
       }
-      
+
       return ChatMessage.text(
         type: MsgType.ai,
-        text: 'Sorry, I had trouble connecting to the server. (${response.statusCode})',
+        text:
+            'Sorry, I had trouble connecting to the server. (${response.statusCode})',
       );
-      
     } catch (e) {
-      return ChatMessage.text(
+      return const ChatMessage.text(
         type: MsgType.ai,
         text: 'An error occurred. Please try again later.',
       );

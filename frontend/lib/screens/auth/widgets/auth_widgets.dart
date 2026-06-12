@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-
 class AuthWidgets {
   static Widget inputField({
     required TextEditingController controller,
@@ -58,7 +57,7 @@ class AuthWidgets {
               ),
             ),
           ),
-          if (suffixIcon != null) suffixIcon,
+          ?suffixIcon,
         ],
       ),
     );

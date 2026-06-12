@@ -83,7 +83,6 @@ class _AddRequestPageState extends State<AddRequestPage>
 
     if (image != null) {
       setState(() => _uploadedFileName = image.name);
-      // TODO: Actually upload the file to your backend here
     }
   }
 
@@ -207,7 +206,10 @@ class _AddRequestPageState extends State<AddRequestPage>
                       const SizedBox(height: 16),
 
                       // ── Dropdowns ──────────────────────────────────────────────
-                      const CsDropdownLabel(text: 'Problem Type', isRequired: true),
+                      const CsDropdownLabel(
+                        text: 'Problem Type',
+                        isRequired: true,
+                      ),
                       const SizedBox(height: 4),
                       CsDropdownField(
                         hint: '- - -',
@@ -227,7 +229,10 @@ class _AddRequestPageState extends State<AddRequestPage>
                             setState(() => _selectedLocation = val),
                       ),
                       const SizedBox(height: 12),
-                      const CsDropdownLabel(text: 'Publish Type', isRequired: true),
+                      const CsDropdownLabel(
+                        text: 'Publish Type',
+                        isRequired: true,
+                      ),
                       const SizedBox(height: 4),
                       CsDropdownField(
                         hint: '- - -',
@@ -253,7 +258,10 @@ class _AddRequestPageState extends State<AddRequestPage>
                       const SizedBox(height: 16),
 
                       // ── Main Statements Field ──────────────────────────────────
-                      const CsSectionLabel(text: 'Main Statements', isRequired: true),
+                      const CsSectionLabel(
+                        text: 'Main Statements',
+                        isRequired: true,
+                      ),
                       const SizedBox(height: 8),
                       CsInputField(
                         controller: _statementController,
@@ -287,9 +295,9 @@ class _AddRequestPageState extends State<AddRequestPage>
                                 borderRadius: BorderRadius.circular(20),
                               ),
                             ),
-                            child: Row(
+                            child: const Row(
                               mainAxisSize: MainAxisSize.min,
-                              children: const [
+                              children: [
                                 Text(
                                   'Send Request',
                                   style: TextStyle(

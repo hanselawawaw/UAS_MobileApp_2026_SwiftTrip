@@ -22,15 +22,23 @@ class PromoController {
   Promotion? appliedPromo;
 
   final List<Promotion> _available = [
-    Promotion(
-      id: 'PROMO10', title: 'Diskon 10%', dateRange: '2025-2026',
-      description: '10% off for all tickets', promotionType: 'PERCENTAGE',
-      discountValue: 10, minPurchase: 500000,
+    const Promotion(
+      id: 'PROMO10',
+      title: 'Diskon 10%',
+      dateRange: '2025-2026',
+      description: '10% off for all tickets',
+      promotionType: 'PERCENTAGE',
+      discountValue: 10,
+      minPurchase: 500000,
     ),
-    Promotion(
-      id: 'CASHBACK50', title: 'Cashback 50K', dateRange: '2025-2026',
-      description: 'Cashback Rp50.000', promotionType: 'CASHBACK',
-      discountValue: 50000, minPurchase: 100000,
+    const Promotion(
+      id: 'CASHBACK50',
+      title: 'Cashback 50K',
+      dateRange: '2025-2026',
+      description: 'Cashback Rp50.000',
+      promotionType: 'CASHBACK',
+      discountValue: 50000,
+      minPurchase: 100000,
     ),
   ];
 
@@ -139,13 +147,19 @@ void main() {
         expect(controller.validatePromoCode('INVALID123'), isFalse);
       });
 
-      test('validatePromoCode - mengembalikan true untuk kode valid PROMO10', () {
-        expect(controller.validatePromoCode('PROMO10'), isTrue);
-      });
+      test(
+        'validatePromoCode - mengembalikan true untuk kode valid PROMO10',
+        () {
+          expect(controller.validatePromoCode('PROMO10'), isTrue);
+        },
+      );
 
-      test('validatePromoCode - mengembalikan true untuk kode valid CASHBACK50', () {
-        expect(controller.validatePromoCode('CASHBACK50'), isTrue);
-      });
+      test(
+        'validatePromoCode - mengembalikan true untuk kode valid CASHBACK50',
+        () {
+          expect(controller.validatePromoCode('CASHBACK50'), isTrue);
+        },
+      );
 
       test('validatePromoCode - menyimpan appliedPromo setelah valid', () {
         controller.validatePromoCode('PROMO10');
@@ -173,10 +187,13 @@ void main() {
         expect(controller.showPromoStatus(), isEmpty);
       });
 
-      test('showPromoStatus - menampilkan pesan error untuk kode tidak valid', () {
-        controller.validatePromoCode('WRONG');
-        expect(controller.showPromoStatus(), equals('Invalid promo code'));
-      });
+      test(
+        'showPromoStatus - menampilkan pesan error untuk kode tidak valid',
+        () {
+          controller.validatePromoCode('WRONG');
+          expect(controller.showPromoStatus(), equals('Invalid promo code'));
+        },
+      );
 
       test('showPromoStatus - menampilkan pesan sukses untuk kode valid', () {
         controller.validatePromoCode('PROMO10');
@@ -199,42 +216,67 @@ void main() {
       });
 
       test('applyDiscount - menghitung diskon PERCENTAGE dengan benar', () {
-        final promo = Promotion(
-          id: 'P1', title: '10%', dateRange: '2025', description: '',
-          promotionType: 'PERCENTAGE', discountValue: 10, minPurchase: 0,
+        const promo = Promotion(
+          id: 'P1',
+          title: '10%',
+          dateRange: '2025',
+          description: '',
+          promotionType: 'PERCENTAGE',
+          discountValue: 10,
+          minPurchase: 0,
         );
         expect(controller.applyDiscount(1000000, promo), equals(100000));
       });
 
       test('applyDiscount - menghitung diskon CASHBACK dengan benar', () {
-        final promo = Promotion(
-          id: 'P2', title: 'CB50K', dateRange: '2025', description: '',
-          promotionType: 'CASHBACK', discountValue: 50000, minPurchase: 0,
+        const promo = Promotion(
+          id: 'P2',
+          title: 'CB50K',
+          dateRange: '2025',
+          description: '',
+          promotionType: 'CASHBACK',
+          discountValue: 50000,
+          minPurchase: 0,
         );
         expect(controller.applyDiscount(1000000, promo), equals(50000));
       });
 
       test('applyDiscount - mengembalikan 0 jika total < minPurchase', () {
-        final promo = Promotion(
-          id: 'P3', title: 'Min 1jt', dateRange: '2025', description: '',
-          promotionType: 'PERCENTAGE', discountValue: 10, minPurchase: 1000000,
+        const promo = Promotion(
+          id: 'P3',
+          title: 'Min 1jt',
+          dateRange: '2025',
+          description: '',
+          promotionType: 'PERCENTAGE',
+          discountValue: 10,
+          minPurchase: 1000000,
         );
         // total 500000 < minPurchase 1000000 → diskon 0
         expect(controller.applyDiscount(500000, promo), equals(0));
       });
 
       test('applyDiscount - berlaku jika total == minPurchase', () {
-        final promo = Promotion(
-          id: 'P4', title: 'Exact', dateRange: '2025', description: '',
-          promotionType: 'PERCENTAGE', discountValue: 20, minPurchase: 500000,
+        const promo = Promotion(
+          id: 'P4',
+          title: 'Exact',
+          dateRange: '2025',
+          description: '',
+          promotionType: 'PERCENTAGE',
+          discountValue: 20,
+          minPurchase: 500000,
         );
         expect(controller.applyDiscount(500000, promo), equals(100000));
       });
 
       test('applyDiscount - diskon tidak melebihi total', () {
-        final promo = Promotion(
-          id: 'P5', title: 'Cashback besar', dateRange: '2025', description: '',
-          promotionType: 'CASHBACK', discountValue: 200000, minPurchase: 0,
+        const promo = Promotion(
+          id: 'P5',
+          title: 'Cashback besar',
+          dateRange: '2025',
+          description: '',
+          promotionType: 'CASHBACK',
+          discountValue: 200000,
+          minPurchase: 0,
         );
         final discount = controller.applyDiscount(100000, promo);
         // cashback flat = 200000, tapi wajar jika hasil negatif → test bahwa nilai adalah 200000

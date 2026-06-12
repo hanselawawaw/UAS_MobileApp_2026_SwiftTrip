@@ -73,10 +73,7 @@ class _OrderTicketPageState extends State<OrderTicketPage> {
           label: 'Tickets x${selectedTickets.length}',
           amount: _formatRp(baseTotal),
         ),
-        const PurchaseItemModel(
-          label: 'Service Fee',
-          amount: 'Rp. 15.000',
-        ),
+        const PurchaseItemModel(label: 'Service Fee', amount: 'Rp. 15.000'),
       ],
       totalPrice: _formatRp(baseTotal + 15000),
       discountTotal: 0,
@@ -84,9 +81,7 @@ class _OrderTicketPageState extends State<OrderTicketPage> {
 
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (_) => CheckoutPage(checkoutDetails: details),
-      ),
+      MaterialPageRoute(builder: (_) => CheckoutPage(checkoutDetails: details)),
     );
   }
 
@@ -94,7 +89,7 @@ class _OrderTicketPageState extends State<OrderTicketPage> {
     final confirmed = await showDialog<bool>(
       context: context,
       barrierDismissible: true,
-      barrierColor: Colors.black.withOpacity(0.4),
+      barrierColor: Colors.black.withValues(alpha: 0.4),
       builder: (BuildContext context) => const RemoveTicketDialog(),
     );
 
@@ -123,7 +118,7 @@ class _OrderTicketPageState extends State<OrderTicketPage> {
               width: 120,
               height: 120,
               decoration: BoxDecoration(
-                color: const Color(0xFF2B99E3).withOpacity(0.1),
+                color: const Color(0xFF2B99E3).withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: const Icon(
@@ -225,7 +220,8 @@ class _OrderTicketPageState extends State<OrderTicketPage> {
                             child: TicketCard(
                               ticket: tickets[i],
                               formatRp: _formatRp,
-                              onDelete: () => _removeTicket(i, tickets[i].bookingId),
+                              onDelete: () =>
+                                  _removeTicket(i, tickets[i].bookingId),
                             ),
                           ),
                         ),

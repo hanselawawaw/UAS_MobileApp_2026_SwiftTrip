@@ -4,7 +4,6 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:swifttrip_frontend/screens/cart/widgets/ticket_card.dart';
 import '../../widgets/top_bar.dart';
-import '../cart/cart.dart';
 import '../main/main_screen.dart';
 import 'services/next_trip_service.dart';
 import 'models/purchase_detail.dart';
@@ -38,7 +37,7 @@ class _NextTripPageState extends State<NextTripPage> {
     final ticket = widget.ticket ?? await _nextTripService.getNextTrip();
 
     List<PurchaseDetail> details = [];
-    if (widget.ticket != null && ticket != null) {
+    if (widget.ticket != null) {
       // If passing ticket directly (Paid History), calculate details locally
       details = [
         PurchaseDetail(
@@ -82,7 +81,7 @@ class _NextTripPageState extends State<NextTripPage> {
     showDialog(
       context: context,
       barrierDismissible: true,
-      barrierColor: Colors.black.withOpacity(0.4),
+      barrierColor: Colors.black.withValues(alpha: 0.4),
       builder: (BuildContext context) {
         return Dialog(
           backgroundColor: Colors.transparent,
@@ -154,7 +153,7 @@ class _NextTripPageState extends State<NextTripPage> {
                                 Shadow(
                                   offset: const Offset(0, 0),
                                   blurRadius: 8,
-                                  color: Colors.black.withOpacity(0.25),
+                                  color: Colors.black.withValues(alpha: 0.25),
                                 ),
                               ],
                             ),
@@ -164,9 +163,7 @@ class _NextTripPageState extends State<NextTripPage> {
                     ),
                     GestureDetector(
                       onTap: () {
-                        // TODO: Implement backend API call to delete/cancel the trip
-                        // Simulate deletion and navigate home
-                        Navigator.pop(context); // Close dialog
+                        Navigator.pop(context);
                         Navigator.pushAndRemoveUntil(
                           context,
                           MaterialPageRoute(
@@ -265,7 +262,11 @@ class _NextTripPageState extends State<NextTripPage> {
                           details: _purchaseDetails,
                           total: _ticket != null
                               ? (widget.ticket != null
-                                    ? _formatRp(_ticket!.priceRp + _ticket!.serviceFee - _ticket!.discountRp)
+                                    ? _formatRp(
+                                        _ticket!.priceRp +
+                                            _ticket!.serviceFee -
+                                            _ticket!.discountRp,
+                                      )
                                     : _formatRp(_ticket!.priceRp))
                               : 'Rp 0',
                         ),
@@ -292,12 +293,12 @@ class _MapPlaceholder extends StatelessWidget {
         width: double.infinity,
         height: 180,
         color: const Color(0xFFCBD5E1),
-        child: Stack(
+        child: const Stack(
           children: [
             Center(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
-                children: const [
+                children: [
                   Icon(Icons.map_outlined, size: 48, color: Colors.white54),
                   SizedBox(height: 8),
                   Text(

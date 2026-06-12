@@ -1,6 +1,4 @@
 import 'dart:convert';
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -57,7 +55,9 @@ void main() {
   // ── Language Widget ───────────────────────────────────────────
 
   group('Profile Service Widget - Language', () {
-    testWidgets('renders language screen title and language list entries', (tester) async {
+    testWidgets('renders language screen title and language list entries', (
+      tester,
+    ) async {
       final provider = LanguageProvider();
       await tester.pumpWidget(
         ChangeNotifierProvider<LanguageProvider>.value(
@@ -85,14 +85,19 @@ void main() {
       await tester.tap(find.text('Indonesia'));
       await tester.pump();
 
-      expect(find.textContaining('Language updated to Indonesia'), findsOneWidget);
+      expect(
+        find.textContaining('Language updated to Indonesia'),
+        findsOneWidget,
+      );
     });
   });
 
   // ── Clear Cache Widget ────────────────────────────────────────
 
   group('Profile Service Widget - Cache', () {
-    testWidgets('renders loading then cache rows and total cache', (tester) async {
+    testWidgets('renders loading then cache rows and total cache', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         DefaultAssetBundle(
           bundle: _TestAssetBundle(),
@@ -110,7 +115,9 @@ void main() {
       expect(find.text('304 kb'), findsOneWidget);
     });
 
-    testWidgets('tap clear cache updates values and shows snackbar', (tester) async {
+    testWidgets('tap clear cache updates values and shows snackbar', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         DefaultAssetBundle(
           bundle: _TestAssetBundle(),
@@ -131,7 +138,9 @@ void main() {
   // ── Logout Widget ─────────────────────────────────────────────
 
   group('Profile Service Widget - Logout', () {
-    testWidgets('taps logout menu item and navigates to LoginPage', (tester) async {
+    testWidgets('taps logout menu item and navigates to LoginPage', (
+      tester,
+    ) async {
       final languageProvider = LanguageProvider();
       await tester.pumpWidget(
         ChangeNotifierProvider<LanguageProvider>.value(

@@ -38,8 +38,8 @@ class _SuccessfulPageState extends State<SuccessfulPage>
       Navigator.pushReplacement(
         context,
         PageRouteBuilder(
-          pageBuilder: (_, __, ___) => PaymentDetailPage(details: widget.details),
-          transitionsBuilder: (_, animation, __, child) =>
+          pageBuilder: (_, _, _) => PaymentDetailPage(details: widget.details),
+          transitionsBuilder: (_, animation, _, child) =>
               FadeTransition(opacity: animation, child: child),
           transitionDuration: const Duration(milliseconds: 400),
         ),

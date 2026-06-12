@@ -84,7 +84,7 @@ class _VehicleMapWidgetState extends State<VehicleMapWidget> {
           options: MapOptions(
             initialCenter: _myLocation,
             initialZoom: 14.0,
-            onTap: (_, __) => widget.onMapTap?.call(),
+            onTap: (_, _) => widget.onMapTap?.call(),
           ),
           children: [
             // ── OSM Tile Layer ───────────────────────────────────────────
@@ -107,7 +107,8 @@ class _VehicleMapWidgetState extends State<VehicleMapWidget> {
                 // Vehicle pins
                 ...widget.pins.map((pin) {
                   final isSelected =
-                      widget.selectedPin?.ticket.bookingId == pin.ticket.bookingId;
+                      widget.selectedPin?.ticket.bookingId ==
+                      pin.ticket.bookingId;
                   return Marker(
                     point: LatLng(pin.latitude, pin.longitude),
                     width: isSelected ? 48 : 38,

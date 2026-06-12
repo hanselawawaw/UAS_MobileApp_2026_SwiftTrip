@@ -80,8 +80,8 @@ class _RecommendationCard extends StatelessWidget {
                 end: Alignment.bottomCenter,
                 stops: const [0.0, 1.0],
                 colors: [
-                  Colors.black.withOpacity(0.20),
-                  Colors.black.withOpacity(0.60),
+                  Colors.black.withValues(alpha: 0.20),
+                  Colors.black.withValues(alpha: 0.60),
                 ],
               ),
             ),
@@ -162,7 +162,7 @@ class _RecommendationImage extends StatelessWidget {
       return Image.network(
         imageUrl!,
         fit: BoxFit.cover,
-        errorBuilder: (_, __, ___) => fallback,
+        errorBuilder: (_, _, _) => fallback,
         loadingBuilder: (_, child, progress) {
           if (progress == null) return child;
           return Container(

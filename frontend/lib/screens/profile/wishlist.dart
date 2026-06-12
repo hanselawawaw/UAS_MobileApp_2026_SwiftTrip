@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/wishlist_provider.dart';
 import '../destination/widgets/search_result_card.dart';
-import '../destination/destination_screen.dart';
 
 class WishlistScreen extends StatefulWidget {
   const WishlistScreen({super.key});
@@ -61,7 +60,7 @@ class _WishlistScreenState extends State<WishlistScreen> {
           return ListView.separated(
             padding: const EdgeInsets.all(16),
             itemCount: provider.wishlistItems.length,
-            separatorBuilder: (_, __) => const SizedBox(height: 16),
+            separatorBuilder: (_, _) => const SizedBox(height: 16),
             itemBuilder: (context, index) {
               final destination = provider.wishlistItems[index];
               return SearchResultCard(
@@ -83,7 +82,7 @@ class _WishlistScreenState extends State<WishlistScreen> {
           Container(
             padding: const EdgeInsets.all(32),
             decoration: BoxDecoration(
-              color: const Color(0xFF2B99E3).withOpacity(0.1),
+              color: const Color(0xFF2B99E3).withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: const Icon(
@@ -129,7 +128,7 @@ class _WishlistScreenState extends State<WishlistScreen> {
                 borderRadius: BorderRadius.circular(30),
               ),
               elevation: 5,
-              shadowColor: const Color(0xFF2B99E3).withOpacity(0.4),
+              shadowColor: const Color(0xFF2B99E3).withValues(alpha: 0.4),
             ),
             child: const Text(
               'Start Exploring',

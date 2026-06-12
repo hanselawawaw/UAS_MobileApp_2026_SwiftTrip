@@ -32,7 +32,7 @@ class DestinationSection extends StatelessWidget {
                   color: Colors.black,
                 ),
               ),
-              if (suffix != null) suffix!,
+              ?suffix,
             ],
           ),
         ),

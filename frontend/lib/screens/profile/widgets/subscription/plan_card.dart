@@ -27,7 +27,7 @@ class PlanCard extends StatelessWidget {
         boxShadow: [
           BoxShadow(
             // White outer glow
-            color: Colors.white.withOpacity(isActive ? 0.25 : 0.1),
+            color: Colors.white.withValues(alpha: isActive ? 0.25 : 0.1),
             blurRadius: 15,
             spreadRadius: 10,
             offset: const Offset(0, 4),
@@ -45,10 +45,10 @@ class PlanCard extends StatelessWidget {
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  plan.gradientColor.withOpacity(0.7),
+                  plan.gradientColor.withValues(alpha: 0.7),
                   plan.gradientColor,
                   plan.gradientColor,
-                  plan.gradientColor.withOpacity(0.6),
+                  plan.gradientColor.withValues(alpha: 0.6),
                 ],
               ),
               shape: const RoundedRectangleBorder(
@@ -137,9 +137,9 @@ class PlanCard extends StatelessWidget {
                               const Color(0x401A294A),
                             ]
                           : [
-                              plan.gradientColor.withOpacity(0.66),
+                              plan.gradientColor.withValues(alpha: 0.66),
                               plan.gradientColor,
-                              plan.gradientColor.withOpacity(0.66),
+                              plan.gradientColor.withValues(alpha: 0.66),
                             ],
                     ),
                     shape: RoundedRectangleBorder(

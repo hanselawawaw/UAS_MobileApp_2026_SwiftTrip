@@ -192,8 +192,6 @@ class _ExpiryDateFormatter extends TextInputFormatter {
 
     // Validate year and month relative to current date
     if (digits.length > 2) {
-      final enteredYear = int.tryParse(digits.substring(2)) ?? 0;
-
       // Reject first digit of year if it can never form a valid year
       if (digits.length == 3) {
         final firstYearDigit = int.tryParse(digits[2]) ?? 0;
@@ -205,7 +203,8 @@ class _ExpiryDateFormatter extends TextInputFormatter {
         final year = int.tryParse(digits.substring(2, 4)) ?? 0;
         final month = int.tryParse(digits.substring(0, 2)) ?? 0;
 
-        if (year < currentYear || (year == currentYear && month < currentMonth)) {
+        if (year < currentYear ||
+            (year == currentYear && month < currentMonth)) {
           return oldValue;
         }
       }
@@ -224,4 +223,3 @@ class _ExpiryDateFormatter extends TextInputFormatter {
     );
   }
 }
-

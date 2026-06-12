@@ -6,15 +6,10 @@ import 'services/review_service.dart';
 import 'widgets/dropdown_field.dart';
 
 class ReviewPage extends StatefulWidget {
-  // TODO: Accept bookingId and targetName from caller to link review to booking
   final String targetName;
   final String? destinationId;
 
-  const ReviewPage({
-    super.key,
-    required this.targetName,
-    this.destinationId,
-  });
+  const ReviewPage({super.key, required this.targetName, this.destinationId});
 
   @override
   State<ReviewPage> createState() => _ReviewPageState();
@@ -52,7 +47,6 @@ class _ReviewPageState extends State<ReviewPage> {
   }
 
   Future<void> _handleAddPost() async {
-    // TODO: Validate fields before submitting
     await _reviewService.submitReview(
       targetName: widget.targetName,
       destinationId: widget.destinationId,
@@ -189,7 +183,10 @@ class _ReviewPageState extends State<ReviewPage> {
                   ),
 
                   const SizedBox(height: 16),
-                  Divider(color: Colors.black.withOpacity(0.30), thickness: 1),
+                  Divider(
+                    color: Colors.black.withValues(alpha: 0.30),
+                    thickness: 1,
+                  ),
                   const SizedBox(height: 20),
 
                   // ── Tell Us What You Loved ──────────────────────────
@@ -206,12 +203,15 @@ class _ReviewPageState extends State<ReviewPage> {
                     ),
                   ),
                   const SizedBox(height: 12),
-                  _isLoading ? const Center(child: CircularProgressIndicator()) : DropdownFieldWidget(
-                    hint: 'How Does It Feels?',
-                    value: _selectedFeeling,
-                    items: _feelingOptions,
-                    onChanged: (val) => setState(() => _selectedFeeling = val),
-                  ),
+                  _isLoading
+                      ? const Center(child: CircularProgressIndicator())
+                      : DropdownFieldWidget(
+                          hint: 'How Does It Feels?',
+                          value: _selectedFeeling,
+                          items: _feelingOptions,
+                          onChanged: (val) =>
+                              setState(() => _selectedFeeling = val),
+                        ),
 
                   const SizedBox(height: 24),
 
@@ -309,9 +309,9 @@ class _ReviewPageState extends State<ReviewPage> {
                       ),
                     ],
                   ),
-                  child: Row(
+                  child: const Row(
                     mainAxisSize: MainAxisSize.min,
-                    children: const [
+                    children: [
                       Text(
                         'Add Post',
                         style: TextStyle(

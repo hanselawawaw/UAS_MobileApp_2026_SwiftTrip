@@ -48,7 +48,8 @@ void main() {
         const destination = 'DPS';
 
         // Act
-        final isValid = origin.isNotEmpty &&
+        final isValid =
+            origin.isNotEmpty &&
             destination.isNotEmpty &&
             origin != destination;
 
@@ -62,7 +63,7 @@ void main() {
         const destination = 'CGK';
 
         // Act
-        final isValid = origin != destination;
+        const isValid = origin != destination;
 
         // Assert
         expect(isValid, isFalse);
@@ -309,7 +310,7 @@ void main() {
     group('getCouponsByCategory()', () {
       test('should return coupons for valid category', () async {
         // Arrange
-        final service = SearchingService();
+        const service = SearchingService();
 
         // Act
         final result = await service.getCouponsByCategory('Coupon Raya');
@@ -322,7 +323,7 @@ void main() {
 
       test('should return empty list for unknown category', () async {
         // Arrange
-        final service = SearchingService();
+        const service = SearchingService();
 
         // Act
         final result = await service.getCouponsByCategory('Unknown');

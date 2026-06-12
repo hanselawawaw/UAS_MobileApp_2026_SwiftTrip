@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:swifttrip_frontend/core/constants.dart';
-import '../profile/profile.dart';
 import 'models/subscription_plan_model.dart';
 import 'services/subscription_service.dart';
 import 'widgets/subscription/sub_top_bar.dart';

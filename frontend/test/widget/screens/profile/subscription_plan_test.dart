@@ -13,19 +13,26 @@ void main() {
   late MockSubscriptionService mockSubscriptionService;
 
   final List<SubscriptionPlan> dummyPlans = [
-    SubscriptionPlan(
+    const SubscriptionPlan(
       id: 'basic-plan',
       name: 'Basic Plan',
       gradientColor: Colors.blue,
-      features: [PlanFeature(text: 'Feature 1'), PlanFeature(text: 'Feature 2')],
+      features: [
+        PlanFeature(text: 'Feature 1'),
+        PlanFeature(text: 'Feature 2'),
+      ],
       buttonLabel: 'Current Plan',
       isCurrent: true,
     ),
-    SubscriptionPlan(
+    const SubscriptionPlan(
       id: 'premium-plan',
       name: 'Premium Plan',
       gradientColor: Colors.purple,
-      features: [PlanFeature(text: 'Feature 1'), PlanFeature(text: 'Feature 2'), PlanFeature(text: 'Feature 3')],
+      features: [
+        PlanFeature(text: 'Feature 1'),
+        PlanFeature(text: 'Feature 2'),
+        PlanFeature(text: 'Feature 3'),
+      ],
       buttonLabel: 'Upgrade Now',
       isCurrent: false,
     ),
@@ -33,36 +40,61 @@ void main() {
 
   setUp(() {
     mockSubscriptionService = MockSubscriptionService();
-    when(() => mockSubscriptionService.getPlans()).thenAnswer((_) async => dummyPlans);
+    when(
+      () => mockSubscriptionService.getPlans(),
+    ).thenAnswer((_) async => dummyPlans);
   });
 
   group('Profile Subscription Plan - Widget Test', () {
     testWidgets('renders loading indicator initially', (tester) async {
       // Arrange
       final completer = Completer<List<SubscriptionPlan>>();
-      when(() => mockSubscriptionService.getPlans()).thenAnswer((_) => completer.future);
+      when(
+        () => mockSubscriptionService.getPlans(),
+      ).thenAnswer((_) => completer.future);
 
-      await tester.pumpWidget(MaterialApp(home: SubscriptionPlanScreen(subscriptionService: mockSubscriptionService)));
+      await tester.pumpWidget(
+        MaterialApp(
+          home: SubscriptionPlanScreen(
+            subscriptionService: mockSubscriptionService,
+          ),
+        ),
+      );
 
       // Assert
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
     });
 
-    testWidgets('renders subscription title and at least one plan card after fetch', (tester) async {
-      // Arrange
-      await tester.pumpWidget(MaterialApp(home: SubscriptionPlanScreen(subscriptionService: mockSubscriptionService)));
+    testWidgets(
+      'renders subscription title and at least one plan card after fetch',
+      (tester) async {
+        // Arrange
+        await tester.pumpWidget(
+          MaterialApp(
+            home: SubscriptionPlanScreen(
+              subscriptionService: mockSubscriptionService,
+            ),
+          ),
+        );
 
-      // Act
-      await tester.pumpAndSettle();
+        // Act
+        await tester.pumpAndSettle();
 
-      // Assert
-      expect(find.text('Subscription Plan'), findsOneWidget);
-      expect(find.byType(PlanCard), findsWidgets);
-    });
+        // Assert
+        expect(find.text('Subscription Plan'), findsOneWidget);
+        expect(find.byType(PlanCard), findsWidgets);
+      },
+    );
 
     testWidgets('tapping active plan area keeps screen stable', (tester) async {
       // Arrange
-      await tester.pumpWidget(MaterialApp(home: SubscriptionPlanScreen(subscriptionService: mockSubscriptionService)));
+      await tester.pumpWidget(
+        MaterialApp(
+          home: SubscriptionPlanScreen(
+            subscriptionService: mockSubscriptionService,
+          ),
+        ),
+      );
       await tester.pumpAndSettle();
 
       // Act

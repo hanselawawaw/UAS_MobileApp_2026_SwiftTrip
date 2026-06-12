@@ -13,9 +13,7 @@ Widget buildTestableWidget(Widget child) {
       ChangeNotifierProvider(create: (_) => LanguageProvider()),
       ChangeNotifierProvider(create: (_) => CartProvider()),
     ],
-    child: MaterialApp(
-      home: Scaffold(body: child),
-    ),
+    child: MaterialApp(home: Scaffold(body: child)),
   );
 }
 
@@ -27,46 +25,49 @@ void main() {
 
     group('validator() — TextFormField Passenger input', () {
       testWidgets(
-          'should show validation error when passenger field is empty on submit',
-          (WidgetTester tester) async {
-        // Arrange
-        final formKey = GlobalKey<FormState>();
+        'should show validation error when passenger field is empty on submit',
+        (WidgetTester tester) async {
+          // Arrange
+          final formKey = GlobalKey<FormState>();
 
-        await tester.pumpWidget(
-          MaterialApp(
-            home: Scaffold(
-              body: Form(
-                key: formKey,
-                child: Column(
-                  children: [
-                    TextFormField(
-                      key: const Key('passenger_field'),
-                      keyboardType: TextInputType.number,
-                      validator: (v) =>
-                          (v == null || v.isEmpty) ? 'Passenger required' : null,
-                    ),
-                    ElevatedButton(
-                      key: const Key('validate_btn'),
-                      onPressed: () => formKey.currentState?.validate(),
-                      child: const Text('Confirm'),
-                    ),
-                  ],
+          await tester.pumpWidget(
+            MaterialApp(
+              home: Scaffold(
+                body: Form(
+                  key: formKey,
+                  child: Column(
+                    children: [
+                      TextFormField(
+                        key: const Key('passenger_field'),
+                        keyboardType: TextInputType.number,
+                        validator: (v) => (v == null || v.isEmpty)
+                            ? 'Passenger required'
+                            : null,
+                      ),
+                      ElevatedButton(
+                        key: const Key('validate_btn'),
+                        onPressed: () => formKey.currentState?.validate(),
+                        child: const Text('Confirm'),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-        );
+          );
 
-        // Act
-        await tester.tap(find.byKey(const Key('validate_btn')));
-        await tester.pump();
+          // Act
+          await tester.tap(find.byKey(const Key('validate_btn')));
+          await tester.pump();
 
-        // Assert
-        expect(find.text('Passenger required'), findsOneWidget);
-      });
+          // Assert
+          expect(find.text('Passenger required'), findsOneWidget);
+        },
+      );
 
-      testWidgets('should pass validation when passenger count is entered',
-          (WidgetTester tester) async {
+      testWidgets('should pass validation when passenger count is entered', (
+        WidgetTester tester,
+      ) async {
         // Arrange
         final formKey = GlobalKey<FormState>();
         bool isValid = false;
@@ -81,8 +82,9 @@ void main() {
                     TextFormField(
                       key: const Key('passenger_field'),
                       keyboardType: TextInputType.number,
-                      validator: (v) =>
-                          (v == null || v.isEmpty) ? 'Passenger required' : null,
+                      validator: (v) => (v == null || v.isEmpty)
+                          ? 'Passenger required'
+                          : null,
                     ),
                     ElevatedButton(
                       key: const Key('validate_btn'),
@@ -111,17 +113,14 @@ void main() {
     // ── savePassengerDetails() — PassengerCount display ───────────────────
 
     group('savePassengerDetails() — PassengerCount widget display', () {
-      testWidgets('should display correct passenger label in widget',
-          (WidgetTester tester) async {
+      testWidgets('should display correct passenger label in widget', (
+        WidgetTester tester,
+      ) async {
         // Arrange
         const pc = PassengerCount(adults: 2, children: 1);
 
         await tester.pumpWidget(
-          MaterialApp(
-            home: Scaffold(
-              body: Text(pc.displayLabel),
-            ),
-          ),
+          MaterialApp(home: Scaffold(body: Text(pc.displayLabel))),
         );
         await tester.pump();
 
@@ -129,15 +128,14 @@ void main() {
         expect(find.text('2 Adults, 1 Child'), findsOneWidget);
       });
 
-      testWidgets('should display "1 Adult" for single adult passenger',
-          (WidgetTester tester) async {
+      testWidgets('should display "1 Adult" for single adult passenger', (
+        WidgetTester tester,
+      ) async {
         // Arrange
         const pc = PassengerCount(adults: 1);
 
         await tester.pumpWidget(
-          MaterialApp(
-            home: Scaffold(body: Text(pc.displayLabel)),
-          ),
+          MaterialApp(home: Scaffold(body: Text(pc.displayLabel))),
         );
 
         // Assert
@@ -145,40 +143,45 @@ void main() {
       });
 
       testWidgets(
-          'should show updated passenger count after increment button tap',
-          (WidgetTester tester) async {
-        // Arrange
-        int adultCount = 1;
+        'should show updated passenger count after increment button tap',
+        (WidgetTester tester) async {
+          // Arrange
+          int adultCount = 1;
 
-        await tester.pumpWidget(
-          StatefulBuilder(
-            builder: (context, setState) => MaterialApp(
-              home: Scaffold(
-                body: Column(
-                  children: [
-                    Text('Adults: $adultCount', key: const Key('adult_count')),
-                    IconButton(
-                      key: const Key('increment_btn'),
-                      icon: const Icon(Icons.add),
-                      onPressed: () => setState(() => adultCount++),
-                    ),
-                  ],
+          await tester.pumpWidget(
+            StatefulBuilder(
+              builder: (context, setState) => MaterialApp(
+                home: Scaffold(
+                  body: Column(
+                    children: [
+                      Text(
+                        'Adults: $adultCount',
+                        key: const Key('adult_count'),
+                      ),
+                      IconButton(
+                        key: const Key('increment_btn'),
+                        icon: const Icon(Icons.add),
+                        onPressed: () => setState(() => adultCount++),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-        );
+          );
 
-        // Act
-        await tester.tap(find.byKey(const Key('increment_btn')));
-        await tester.pump();
+          // Act
+          await tester.tap(find.byKey(const Key('increment_btn')));
+          await tester.pump();
 
-        // Assert
-        expect(find.text('Adults: 2'), findsOneWidget);
-      });
+          // Assert
+          expect(find.text('Adults: 2'), findsOneWidget);
+        },
+      );
 
-      testWidgets('should not allow adult count to go below 1',
-          (WidgetTester tester) async {
+      testWidgets('should not allow adult count to go below 1', (
+        WidgetTester tester,
+      ) async {
         // Arrange
         int adultCount = 1;
 
@@ -215,8 +218,9 @@ void main() {
     // ── selectSeat() via DropdownButton ───────────────────────────────────
 
     group('selectSeat() — DropdownButton seat class', () {
-      testWidgets('should render seat class dropdown with options',
-          (WidgetTester tester) async {
+      testWidgets('should render seat class dropdown with options', (
+        WidgetTester tester,
+      ) async {
         // Arrange
         String selectedClass = 'Economy';
 
@@ -228,10 +232,11 @@ void main() {
                   key: const Key('seat_dropdown'),
                   value: selectedClass,
                   items: const [
+                    DropdownMenuItem(value: 'Economy', child: Text('Economy')),
                     DropdownMenuItem(
-                        value: 'Economy', child: Text('Economy')),
-                    DropdownMenuItem(
-                        value: 'Business', child: Text('Business')),
+                      value: 'Business',
+                      child: Text('Business'),
+                    ),
                     DropdownMenuItem(value: 'First', child: Text('First')),
                   ],
                   onChanged: (v) {
@@ -253,8 +258,9 @@ void main() {
         expect(find.text('First'), findsOneWidget);
       });
 
-      testWidgets('should update seat class when Business is selected',
-          (WidgetTester tester) async {
+      testWidgets('should update seat class when Business is selected', (
+        WidgetTester tester,
+      ) async {
         // Arrange
         String selectedClass = 'Economy';
 
@@ -266,10 +272,11 @@ void main() {
                   key: const Key('seat_dropdown'),
                   value: selectedClass,
                   items: const [
+                    DropdownMenuItem(value: 'Economy', child: Text('Economy')),
                     DropdownMenuItem(
-                        value: 'Economy', child: Text('Economy')),
-                    DropdownMenuItem(
-                        value: 'Business', child: Text('Business')),
+                      value: 'Business',
+                      child: Text('Business'),
+                    ),
                   ],
                   onChanged: (v) {
                     if (v != null) setState(() => selectedClass = v);
@@ -294,8 +301,9 @@ void main() {
     // ── confirmTicketSelection() via ElevatedButton ───────────────────────
 
     group('confirmTicketSelection() — ElevatedButton', () {
-      testWidgets('should render ElevatedButton for confirm ticket',
-          (WidgetTester tester) async {
+      testWidgets('should render ElevatedButton for confirm ticket', (
+        WidgetTester tester,
+      ) async {
         // Arrange
         bool confirmed = false;
 
@@ -319,18 +327,18 @@ void main() {
         expect(confirmed, isTrue);
       });
 
-      testWidgets('should disable confirm button when no flight is selected',
-          (WidgetTester tester) async {
+      testWidgets('should disable confirm button when no flight is selected', (
+        WidgetTester tester,
+      ) async {
         // Arrange
-        bool? selectedFlight; // null = no flight selected
 
         await tester.pumpWidget(
-          MaterialApp(
+          const MaterialApp(
             home: Scaffold(
               body: ElevatedButton(
-                key: const Key('confirm_btn'),
-                onPressed: selectedFlight != null ? () {} : null,
-                child: const Text('Confirm'),
+                key: Key('confirm_btn'),
+                onPressed: null,
+                child: Text('Confirm'),
               ),
             ),
           ),
@@ -339,7 +347,8 @@ void main() {
 
         // Assert — button is disabled (onPressed is null)
         final btn = tester.widget<ElevatedButton>(
-            find.byKey(const Key('confirm_btn')));
+          find.byKey(const Key('confirm_btn')),
+        );
         expect(btn.onPressed, isNull);
       });
     });

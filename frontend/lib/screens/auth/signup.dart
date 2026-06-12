@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'forgot_pass/forgot_pass.dart';
 import 'widgets/auth_widgets.dart';
@@ -205,7 +207,8 @@ class _SignupPageState extends State<SignupPage> {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                             content: Text(
-                                'Signup successful! Please complete your profile.'),
+                              'Signup successful! Please complete your profile.',
+                            ),
                           ),
                         );
                         Navigator.pushReplacement(
